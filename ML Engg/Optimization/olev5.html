@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Optimization Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 5</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "What is the learning rate in gradient descent primarily responsible for?",
+    choice1: "A) Preventing overfitting",
+    choice2: "B) Adjusting regularization strength",
+    choice3: "C) Controlling step size in weight updates",
+    choice4: "D) Initializing weights",
+    answer: 3,
+    explanation: "The learning rate determines the step size taken towards the minimum in each iteration of gradient descent."
+  },
+  {
+    question: "What can happen if the learning rate is too high?",
+    choice1: "A) Model will converge faster",
+    choice2: "B) It may overshoot the minimum",
+    choice3: "C) Gradient will vanish",
+    choice4: "D) Training will be stable",
+    answer: 2,
+    explanation: "A high learning rate might overshoot the optimal minimum, leading to instability or divergence."
+  },
+  {
+    question: "Which of the following techniques is best for reducing high variance (overfitting)?",
+    choice1: "A) Increasing model complexity",
+    choice2: "B) Reducing dataset",
+    choice3: "C) L2 Regularization",
+    choice4: "D) Increasing learning rate",
+    answer: 3,
+    explanation: "L2 regularization adds a penalty term to reduce large weights, which helps combat overfitting."
+  },
+  {
+    question: "Which of the following is NOT a type of regularization in ML?",
+    choice1: "A) L1",
+    choice2: "B) L2",
+    choice3: "C) Dropout",
+    choice4: "D) KNN",
+    answer: 4,
+    explanation: "KNN is a non-parametric algorithm, not a regularization method."
+  },
+  {
+    question: "In Ridge regression, what is minimized?",
+    choice1: "A) MSE only",
+    choice2: "B) Absolute value of coefficients",
+    choice3: "C) MSE + squared norm of weights",
+    choice4: "D) Variance",
+    answer: 3,
+    explanation: "Ridge adds L2 regularization, which penalizes the sum of squared weights."
+  },
+  {
+    question: "In Lasso regression, what is minimized?",
+    choice1: "A) MSE only",
+    choice2: "B) MSE + L1 norm",
+    choice3: "C) MSE + L2 norm",
+    choice4: "D) Variance",
+    answer: 2,
+    explanation: "Lasso adds L1 regularization, which penalizes the absolute value of weights."
+  },
+  {
+    question: "What is the primary effect of L1 regularization?",
+    choice1: "A) Reduces weights equally",
+    choice2: "B) Increases number of features",
+    choice3: "C) Causes some weights to become zero",
+    choice4: "D) Reduces loss",
+    answer: 3,
+    explanation: "L1 regularization promotes sparsity, forcing some coefficients to become zero."
+  },
+  {
+    question: "What is dropout in deep learning?",
+    choice1: "A) A regularization technique",
+    choice2: "B) Weight initialization method",
+    choice3: "C) Feature selection method",
+    choice4: "D) Activation function",
+    answer: 1,
+    explanation: "Dropout randomly disables a subset of neurons during training to prevent overfitting."
+  },
+  {
+    question: "Compute the L2 norm regularization penalty for weights [2, -3, 4].",
+    choice1: "A) 25",
+    choice2: "B) 29",
+    choice3: "C) 13",
+    choice4: "D) 30",
+    answer: 2,
+    explanation: "L2 = 2² + (-3)² + 4² = 4 + 9 + 16 = 29"
+  },
+  {
+    question: "Code Snippet:\n\nimport numpy as np\ndef ridge_loss(X, y, w, alpha):\n    mse = np.mean((X @ w - y)**2)\n    l2_penalty = alpha * np.sum(w**2)\n    return mse + l2_penalty\n\nWhat does the above function compute?",
+    choice1: "A) Lasso Loss",
+    choice2: "B) Mean Squared Error",
+    choice3: "C) Ridge Loss",
+    choice4: "D) Hinge Loss",
+    answer: 3,
+    explanation: "This is the Ridge Loss function (MSE + L2 regularization term)."
+  }
+];
+
+
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='olev6.html'">Go to Level 6 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'olev5.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

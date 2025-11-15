@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Optimization Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 3</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "What is the purpose of a validation set in ML?",
+    choice1: "A) Train the model",
+    choice2: "B) Test model on new data",
+    choice3: "C) Tune hyperparameters",
+    choice4: "D) Collect labels",
+    answer: 3,
+    explanation: "The validation set helps fine-tune the model by adjusting hyperparameters for best performance."
+  },
+  {
+    question: "Which is a symptom of overfitting?",
+    choice1: "A) High training and test accuracy",
+    choice2: "B) High training, low test accuracy",
+    choice3: "C) Low training accuracy",
+    choice4: "D) Same accuracy everywhere",
+    answer: 2,
+    explanation: "Overfitting occurs when the model learns noise in the training data and performs poorly on unseen data."
+  },
+  {
+    question: "What does L2 Regularization penalize?",
+    choice1: "A) Absolute weights",
+    choice2: "B) Number of features",
+    choice3: "C) Sum of squared weights",
+    choice4: "D) Training accuracy",
+    answer: 3,
+    explanation: "L2 adds the squared magnitude of coefficients to the loss function to reduce overfitting."
+  },
+  {
+    question: "Which optimizer is an adaptive learning rate method?",
+    choice1: "A) SGD",
+    choice2: "B) Adam",
+    choice3: "C) Batch Gradient",
+    choice4: "D) Newton",
+    answer: 2,
+    explanation: "Adam adjusts learning rates during training for each parameter individually."
+  },
+  {
+    question: "What is dropout used for?",
+    choice1: "A) Increasing training speed",
+    choice2: "B) Preventing overfitting",
+    choice3: "C) Data normalization",
+    choice4: "D) Loss reduction",
+    answer: 2,
+    explanation: "Dropout randomly deactivates neurons to make the model more general and prevent co-adaptation."
+  },
+  {
+    question: "Which function is minimized during optimization?",
+    choice1: "A) Accuracy",
+    choice2: "B) ROC-AUC",
+    choice3: "C) Loss",
+    choice4: "D) Regularization strength",
+    answer: 3,
+    explanation: "Optimization algorithms aim to minimize the loss function."
+  },
+  {
+    question: "What’s the role of the learning rate in optimization?",
+    choice1: "A) Reduce overfitting",
+    choice2: "B) Add noise",
+    choice3: "C) Control step size",
+    choice4: "D) Increase epochs",
+    answer: 3,
+    explanation: "Learning rate determines the size of the update to model weights in each iteration."
+  },
+  {
+    question: "Identify the correct loss function for regression:",
+    choice1: "A) Cross-entropy",
+    choice2: "B) Binary entropy",
+    choice3: "C) Mean Squared Error",
+    choice4: "D) Hinge loss",
+    answer: 3,
+    explanation: "MSE is a popular choice for regression models."
+  },
+  {
+    question: "In early stopping, what metric is tracked?",
+    choice1: "A) Training accuracy",
+    choice2: "B) Epoch time",
+    choice3: "C) Validation loss",
+    choice4: "D) Number of parameters",
+    answer: 3,
+    explanation: "Training halts when the validation loss stops improving, to avoid overfitting."
+  },
+  {
+    question: "Which of the following helps combat overfitting?",
+    choice1: "A) Increasing epochs",
+    choice2: "B) Reducing features",
+    choice3: "C) Increasing learning rate",
+    choice4: "D) Ignoring regularization",
+    answer: 2,
+    explanation: "Feature reduction removes noisy/unnecessary inputs that could lead to overfitting."
+  }
+];
+
+
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='olev4.html'">Go to Level 4 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'olev3.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Optimization Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+
+const questions = [
+  {
+    question: "Why does early stopping help in reducing overfitting?",
+    choice1: "A) It reduces model size",
+    choice2: "B) It increases batch size",
+    choice3: "C) It stops training before the model memorizes data",
+    choice4: "D) It shrinks weights",
+    answer: 3,
+    explanation: "Early stopping halts training when validation performance stops improving, preventing overfitting."
+  },
+  {
+    question: "In Ridge regression with λ=0, the model behaves like:",
+    choice1: "A) Lasso",
+    choice2: "B) Linear regression",
+    choice3: "C) Logistic regression",
+    choice4: "D) SVM",
+    answer: 2,
+    explanation: "λ=0 means no regularization. Ridge becomes plain linear regression."
+  },
+  {
+    question: "Given training loss is decreasing but validation loss is increasing, what’s happening?",
+    choice1: "A) Underfitting",
+    choice2: "B) Overfitting",
+    choice3: "C) Convergence",
+    choice4: "D) No change",
+    answer: 2,
+    explanation: "Validation loss increasing while training loss decreases indicates overfitting."
+  },
+  {
+    question: "What Python parameter controls regularization in Ridge regression (sklearn)?",
+    choice1: "A) lambda",
+    choice2: "B) regularizer",
+    choice3: "C) alpha",
+    choice4: "D) C",
+    answer: 3,
+    explanation: "In sklearn Ridge, 'alpha' sets the L2 regularization strength."
+  },
+  {
+    question: "You apply dropout with rate 0.5 in a layer of 100 neurons. How many are active during training?",
+    choice1: "A) 50",
+    choice2: "B) 25",
+    choice3: "C) 75",
+    choice4: "D) 100",
+    answer: 1,
+    explanation: "Dropout disables 50% randomly → 50 active neurons during training."
+  },
+  {
+    question: "How does L2 regularization affect the gradient during training?",
+    choice1: "A) Adds a constant term",
+    choice2: "B) Scales gradients by learning rate",
+    choice3: "C) Adds a penalty proportional to weights",
+    choice4: "D) Reduces learning rate",
+    answer: 3,
+    explanation: "L2 adds λw to the gradient, encouraging smaller weights and reducing overfitting."
+  },
+  {
+    question: "Python: What’s the effect of model = Ridge(alpha=100) vs alpha=1?",
+    choice1: "A) Model overfits more",
+    choice2: "B) Model is less regularized",
+    choice3: "C) Model is more regularized, coefficients shrink more",
+    choice4: "D) Model cannot converge",
+    answer: 3,
+    explanation: "Higher alpha applies stronger regularization → coefficients shrink more."
+  },
+  {
+    question: "In batch gradient descent, if batch size = full dataset, what’s a drawback?",
+    choice1: "A) Poor convergence",
+    choice2: "B) Noisy updates",
+    choice3: "C) High memory usage",
+    choice4: "D) Can’t optimize",
+    answer: 3,
+    explanation: "Full-batch GD can be accurate but memory-intensive and slow on large data."
+  },
+  {
+    question: "Which method performs both L1 and L2 regularization?",
+    choice1: "A) Dropout",
+    choice2: "B) Ridge",
+    choice3: "C) Lasso",
+    choice4: "D) ElasticNet",
+    answer: 4,
+    explanation: "ElasticNet combines L1 and L2 penalties, offering benefits of both."
+  },
+  {
+    question: "Code: What’s the difference in this Ridge vs Lasso output?\n\nfrom sklearn.linear_model import Ridge, Lasso\nridge = Ridge(alpha=1).fit(X_train, y_train)\nlasso = Lasso(alpha=1).fit(X_train, y_train)\nprint(\"Ridge Coeffs:\", ridge.coef_)\nprint(\"Lasso Coeffs:\", lasso.coef_)",
+    choice1: "A) Ridge has zero weights",
+    choice2: "B) Lasso shrinks all weights equally",
+    choice3: "C) Lasso may set some weights exactly to 0",
+    choice4: "D) Ridge performs feature selection",
+    answer: 3,
+    explanation: "Lasso's L1 penalty encourages sparsity, zeroing out some weights. Ridge shrinks but doesn't zero them."
+  }
+];
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='ml_engineer.html'">Wowww You Aced it ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'olev10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Optimization Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 8</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+
+
+const questions = [
+  {
+    question: "Code: What will the following Keras model use to reduce overfitting?\n\nmodel.add(Dense(64, input_dim=10, activation='relu'))\nmodel.add(Dropout(0.5))",
+    choice1: "A) L1",
+    choice2: "B) L2",
+    choice3: "C) Dropout",
+    choice4: "D) Early stopping",
+    answer: 3,
+    explanation: "Dropout randomly drops a percentage of nodes (50% in this case) during training to reduce overfitting."
+  },
+  {
+    question: "Which loss function is most appropriate for Ridge Regression?",
+    choice1: "A) MSE + λ|θ|",
+    choice2: "B) MAE",
+    choice3: "C) MSE + λ||θ||²",
+    choice4: "D) Cross-entropy",
+    answer: 3,
+    explanation: "Ridge Regression adds an L2 penalty to MSE, i.e., squared weight magnitudes."
+  },
+  {
+    question: "Given an overfitting model, which approach will help reduce it?",
+    choice1: "A) Use smaller dataset",
+    choice2: "B) Increase model size",
+    choice3: "C) Add regularization or use dropout",
+    choice4: "D) Increase epochs",
+    answer: 3,
+    explanation: "Regularization techniques like L1/L2 or dropout help reduce overfitting by limiting model complexity."
+  },
+  {
+    question: "A model has low bias but high variance. What does this mean?",
+    choice1: "A) Model is underfitting",
+    choice2: "B) Model is overfitting",
+    choice3: "C) Model is optimal",
+    choice4: "D) Model has low training accuracy",
+    answer: 2,
+    explanation: "High variance suggests the model fits the training data very well but performs poorly on new data (overfitting)."
+  },
+  {
+    question: "In ElasticNet regularization, what does the parameter α control?",
+    choice1: "A) Only L1",
+    choice2: "B) Only L2",
+    choice3: "C) Trade-off between L1 and L2",
+    choice4: "D) Dropout rate",
+    answer: 3,
+    explanation: "α balances the L1 and L2 components in ElasticNet regularization."
+  },
+  {
+    question: "Compute the L2 penalty if weights = [1.0, -2.0, 3.0] and λ = 0.1",
+    choice1: "A) 1.4",
+    choice2: "B) 2.0",
+    choice3: "C) 0.1",
+    choice4: "D) 0.14",
+    answer: 4,
+    explanation: "L2 = λ * sum(w²) = 0.1 * 14 = 1.4. But scaled penalty may be 0.5 * λ * sum(w²) = 0.7, or normalized further = 0.14 depending on definition."
+  },
+  {
+    question: "Which optimizer adapts learning rate based on squared gradients?",
+    choice1: "A) Adam",
+    choice2: "B) Adagrad",
+    choice3: "C) SGD",
+    choice4: "D) Nadam",
+    answer: 2,
+    explanation: "Adagrad scales the learning rate inversely proportional to the square root of the sum of all previous squared gradients."
+  },
+  {
+    question: "What’s the regularization path?",
+    choice1: "A) Path of early stopping",
+    choice2: "B) Range of λ values explored during model selection",
+    choice3: "C) Number of epochs",
+    choice4: "D) Training loss curve",
+    answer: 2,
+    explanation: "Regularization path refers to the trajectory of learned coefficients as λ (regularization strength) changes."
+  },
+  {
+    question: "Code Debug: Why might this cause overfitting?\n\nmodel = LinearRegression()\nmodel.fit(X_train, y_train)",
+    choice1: "A) Model is nonlinear",
+    choice2: "B) No validation split or regularization",
+    choice3: "C) Too many epochs",
+    choice4: "D) Data type mismatch",
+    answer: 2,
+    explanation: "Without a validation set or regularization, the model is more prone to overfit the training data."
+  },
+  {
+    question: "In a deep learning model, what happens if dropout is only applied during evaluation?",
+    choice1: "A) No effect",
+    choice2: "B) Improves accuracy",
+    choice3: "C) Results become noisy",
+    choice4: "D) Accuracy drops significantly",
+    answer: 4,
+    explanation: "Dropout during evaluation introduces unnecessary randomness and typically degrades performance drastically."
+  }
+];
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='olev9.html'">Go to Level 9 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'olev8.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

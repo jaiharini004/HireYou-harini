@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Optimization Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+
+const questions = [
+  {
+    question: "You’re using gradient descent with learning rate η = 0.1 on the cost function J(θ) = θ². If θ = 2, compute the updated θ after one step.",
+    choice1: "A) 1.6",
+    choice2: "B) 1.8",
+    choice3: "C) 2.2",
+    choice4: "D) 1.9",
+    answer: 1,
+    explanation: "Gradient = dJ/dθ = 2θ = 4. θ_new = θ − η × gradient = 2 − 0.1 × 4 = 1.6"
+  },
+  {
+    question: "Which of the following can prevent overfitting in a deep neural network?",
+    choice1: "A) Increasing the number of layers",
+    choice2: "B) Adding dropout layers",
+    choice3: "C) Increasing batch size",
+    choice4: "D) Decreasing learning rate",
+    answer: 2,
+    explanation: "Dropout reduces overfitting by randomly deactivating neurons during training, improving generalization."
+  },
+  {
+    question: "You have a model overfitting the training data. Which regularization technique adds a penalty on large weights?",
+    choice1: "A) L2 Regularization",
+    choice2: "B) L1 Regularization",
+    choice3: "C) Dropout",
+    choice4: "D) Batch Normalization",
+    answer: 1,
+    explanation: "L2 regularization adds a λ∑w² penalty to discourage large weight magnitudes."
+  },
+  {
+    question: "What is the cost function of Ridge Regression?",
+    choice1: "A) MSE + λ|w|",
+    choice2: "B) MSE + λ∑w²",
+    choice3: "C) MAE + λ∑w²",
+    choice4: "D) MSE + λ∑|w|",
+    answer: 2,
+    explanation: "Ridge regression applies L2 regularization: MSE + λ∑w²."
+  },
+  {
+    question: "Given the following Python snippet, what kind of regularization is applied?\n\nfrom sklearn.linear_model import Lasso\nmodel = Lasso(alpha=0.1)",
+    choice1: "A) No regularization",
+    choice2: "B) L1 Regularization",
+    choice3: "C) L2 Regularization",
+    choice4: "D) ElasticNet",
+    answer: 2,
+    explanation: "Lasso regression applies L1 regularization, encouraging sparse weight vectors."
+  },
+  {
+    question: "Why can a large learning rate cause optimization to fail?",
+    choice1: "A) It converges too quickly",
+    choice2: "B) It gets stuck in local minima",
+    choice3: "C) It skips over minima and diverges",
+    choice4: "D) It underfits the data",
+    answer: 3,
+    explanation: "High learning rate may overshoot the optimum, leading to oscillation or divergence."
+  },
+  {
+    question: "You trained two models:\nModel A: Train accuracy = 98%, Test = 70%\nModel B: Train = 85%, Test = 83%\nWhich is better and why?",
+    choice1: "A) Model A; higher train accuracy",
+    choice2: "B) Model B; better generalization",
+    choice3: "C) Model A; more complex",
+    choice4: "D) Model B; underfitting",
+    answer: 2,
+    explanation: "Model B generalizes better, having a smaller train-test gap."
+  },
+  {
+    question: "L1 and L2 regularization affect weights differently. What is the main effect of L1?",
+    choice1: "A) Shrinks all weights to zero",
+    choice2: "B) Drives some weights exactly to zero",
+    choice3: "C) Spreads weights evenly",
+    choice4: "D) Affects loss function curvature",
+    answer: 2,
+    explanation: "L1 drives some weights to zero, performing feature selection."
+  },
+  {
+    question: "In neural networks, what is the main reason for using Adam optimizer over basic SGD?",
+    choice1: "A) It uses higher learning rate",
+    choice2: "B) It requires no gradient",
+    choice3: "C) It adapts learning rate per parameter",
+    choice4: "D) It regularizes automatically",
+    answer: 3,
+    explanation: "Adam adapts the learning rate using first and second moments of the gradients."
+  },
+  {
+    question: "You’re minimizing: J(θ) = θ² + 3θ + 2. What’s the gradient at θ = 2, and update with η = 0.05?",
+    choice1: "A) New θ = 1.7",
+    choice2: "B) New θ = 1.5",
+    choice3: "C) New θ = 1.4",
+    choice4: "D) New θ = 1.9",
+    answer: 1,
+    explanation: "Gradient: dJ/dθ = 2θ + 3 = 7 → θ_new = 2 − 0.05×7 = 1.65 ≈ 1.7"
+  }
+];
+
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='olev10.html'">Go to Level 10 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'olev9.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
