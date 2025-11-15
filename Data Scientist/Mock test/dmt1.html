@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 1 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "What is the output of len([1, [2, 3], 4]) in Python?",
+        choice1: "A) 3",
+        choice2: "B) 4",
+        choice3: "C) 5",
+        choice4: "D) Error",
+        answer: 1,
+        explanation: "The list has 3 elements: 1, [2, 3], and 4. The len() function counts top-level elements only."
+      },
+      {
+        question: "Which Python library is mainly used for numerical computing?",
+        choice1: "A) Pandas",
+        choice2: "B) Seaborn",
+        choice3: "C) NumPy",
+        choice4: "D) Matplotlib",
+        answer: 3,
+        explanation: "NumPy is optimized for numerical operations on arrays and matrices."
+      },
+      {
+        question: "In SQL, which clause is used to filter the result set based on a condition?",
+        choice1: "A) ORDER BY",
+        choice2: "B) SELECT",
+        choice3: "C) GROUP BY",
+        choice4: "D) WHERE",
+        answer: 4,
+        explanation: "The WHERE clause is used to filter records in SQL."
+      },
+      {
+        question: "Which method is used to read a CSV file using Pandas?",
+        choice1: "A) pd.open_csv()",
+        choice2: "B) pd.csv_read()",
+        choice3: "C) pd.read_csv()",
+        choice4: "D) pd.load_csv()",
+        answer: 3,
+        explanation: "The correct method is pd.read_csv()."
+      },
+      {
+        question: "What does df.head(3) return in Pandas?",
+        choice1: "A) Last 3 rows",
+        choice2: "B) First 3 columns",
+        choice3: "C) First 3 rows",
+        choice4: "D) First 3 columns and rows",
+        answer: 3,
+        explanation: ".head(n) returns the first n rows."
+      },
+      {
+        question: "Which function is used in NumPy to create an array of zeros?",
+        choice1: "A) np.zeros()",
+        choice2: "B) np.ones()",
+        choice3: "C) np.empty()",
+        choice4: "D) np.arrays()",
+        answer: 1,
+        explanation: "np.zeros() creates an array filled with zeros."
+      },
+      {
+        question: "What is the file format used to store structured data in a table-like format?",
+        choice1: "A) JSON",
+        choice2: "B) XML",
+        choice3: "C) CSV",
+        choice4: "D) TXT",
+        answer: 3,
+        explanation: "CSV (Comma-Separated Values) is used for tabular structured data."
+      },
+      {
+        question: "Which Pandas method is used to merge two dataframes on a common column?",
+        choice1: "A) join()",
+        choice2: "B) append()",
+        choice3: "C) merge()",
+        choice4: "D) stack()",
+        answer: 3,
+        explanation: "merge() combines dataframes based on keys."
+      },
+      {
+        question: "What is the result of np.array([1, 2, 3]) + 5?",
+        choice1: "A) Error",
+        choice2: "B) [6, 7, 8]",
+        choice3: "C) [5, 6, 7]",
+        choice4: "D) [1, 2, 3, 5]",
+        answer: 2,
+        explanation: "NumPy supports broadcasting; adds 5 to each element."
+      },
+      {
+        question: "Which SQL command is used to retrieve data from a database?",
+        choice1: "A) INSERT",
+        choice2: "B) SELECT",
+        choice3: "C) UPDATE",
+        choice4: "D) DELETE",
+        answer: 2,
+        explanation: "SELECT is used to fetch data from a table."
+      }
+    ];
+
+    let score = 0;
+
+    function renderQuiz() {
+      const quiz = document.getElementById("quiz");
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+
+        const qTitle = document.createElement("h3");
+        qTitle.textContent = `${index + 1}. ${q.question}`;
+        qDiv.appendChild(qTitle);
+
+        const opts = document.createElement("div");
+        opts.className = "options";
+
+        for (let i = 1; i <= 4; i++) {
+          const btn = document.createElement("button");
+          btn.textContent = q[`choice${i}`];
+          btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+          opts.appendChild(btn);
+        }
+
+        const exp = document.createElement("div");
+        exp.className = "explanation";
+        exp.id = `exp${index}`;
+
+        qDiv.appendChild(opts);
+        qDiv.appendChild(exp);
+        quiz.appendChild(qDiv);
+      });
+    }
+
+    function handleAnswer(qDiv, selected, correct, explanation) {
+      const explanationEl = qDiv.querySelector(".explanation");
+      if (selected === correct) {
+        score += 2;
+        explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+      } else {
+        explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+      }
+      explanationEl.style.display = 'block';
+      qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+      const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+      if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+    }
+
+    function showFinalScore() {
+      document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+      document.getElementById("submitBtn").style.display = 'none';
+      document.getElementById("nextBtn").style.display = 'block';
+    }
+
+    function goToNextLevel() {
+      window.location.href = "dmt2.html"; // next level page
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>

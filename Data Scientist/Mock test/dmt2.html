@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 2 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+    const questions = [
+    {
+      question: "What does axis=0 represent in Pandas operations like .sum(axis=0)?",
+      choice1: "A) Row-wise operation",
+      choice2: "B) Column-wise operation",
+      choice3: "C) Element-wise operation", 
+      choice4: "D) None",
+      answer: 2,
+      explanation: "axis=0 means down the rows (column-wise)."
+  },
+    {
+      question: "Which method in Pandas is used to check for missing values?",
+      choice1: "A) is_null()",
+      choice2: "B) null()",
+      choice3: "C) isna()",
+      choice4: "D) missing()",
+      answer: 3,
+      explanation: "isna() or isnull() are used to detect missing values."
+    },
+    {
+      question: "JSON stands for:",
+      choice1: "A) JavaScript Online Notation",
+      choice2: "B) Java Standard Object Notation",
+      choice3: "C) JavaScript Object Notation",
+      choice4: "D) JavaScript Object Naming",
+      answer: 3,
+      explanation: "JSON is a lightweight format for storing and transporting data."
+    },
+    {
+      question: "Which of the following Python keywords is used to define a function?",
+      choice1: "A) def",
+      choice2: "B) function",
+      choice3: "C) define",
+      choice4: "D) lambda",
+      answer: 1,
+      explanation: "def is used to define functions in Python."
+    },
+    {
+      question: "Which method is used to concatenate two Pandas dataframes vertically?",
+      choice1: "A) pd.join()",
+      choice2: "B) pd.append()",
+      choice3: "C) pd.merge()",
+      choice4: "D) pd.concat()",
+      answer: 4,
+      explanation: "concat() can combine dataframes vertically or horizontally."
+    },
+    {
+      question: "What is the output type of df.describe() in Pandas?",
+      choice1: "A) List",
+      choice2: "B) DataFrame",
+      choice3: "C) Series",
+      choice4: "D) Dictionary",
+      answer: 2,
+      explanation: ".describe() returns a summary as a DataFrame."
+    },
+    {
+      question: "Which command is used to install external Python libraries?",
+      choice1: "A) python install",
+      choice2: "B) pip install",
+      choice3: "C) python get",
+      choice4: "D) import",
+      answer: 2,
+      explanation: "pip install is used to install packages."
+    },
+    {
+      question: "In SQL, which clause is used to group rows with the same values?",
+      choice1: "A) ORDER BY",
+      choice2: "B) GROUP BY",
+      choice3: "C) HAVING",
+      choice4: "D) WHERE",
+      answer: 2,
+      explanation: "GROUP BY groups rows with the same value in columns."
+    },
+    {
+      question: "Which file type is commonly used to interact with APIs?",
+      choice1: "A) PDF",
+      choice2: "B) DOCX",
+      choice3: "C) JSON",
+      choice4: "D) XLSX",
+      answer: 3,
+      explanation: "APIs commonly return data in JSON format."
+    },
+    {
+      question: "Which Pandas method gives the number of non-null values in each column?",
+      choice1: "A) notnull()",
+      choice2: "B) count()",
+      choice3: "C) describe()",
+      choice4: "D) sum()",
+      answer: 2,
+      explanation: ".count() returns non-null entries for each column."
+    }
+
+    ];
+
+    let score = 0;
+
+    function renderQuiz() {
+      const quiz = document.getElementById("quiz");
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+
+        const qTitle = document.createElement("h3");
+        qTitle.textContent = `${index + 1}. ${q.question}`;
+        qDiv.appendChild(qTitle);
+
+        const opts = document.createElement("div");
+        opts.className = "options";
+
+        for (let i = 1; i <= 4; i++) {
+          const btn = document.createElement("button");
+          btn.textContent = q[`choice${i}`];
+          btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+          opts.appendChild(btn);
+        }
+
+        const exp = document.createElement("div");
+        exp.className = "explanation";
+        exp.id = `exp${index}`;
+
+        qDiv.appendChild(opts);
+        qDiv.appendChild(exp);
+        quiz.appendChild(qDiv);
+      });
+    }
+
+    function handleAnswer(qDiv, selected, correct, explanation) {
+      const explanationEl = qDiv.querySelector(".explanation");
+      if (selected === correct) {
+        score += 2;
+        explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+      } else {
+        explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+      }
+      explanationEl.style.display = 'block';
+      qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+      const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+      if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+    }
+
+    function showFinalScore() {
+      document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+      document.getElementById("submitBtn").style.display = 'none';
+      document.getElementById("nextBtn").style.display = 'block';
+    }
+
+    function goToNextLevel() {
+      window.location.href = "dmt3.html"; // next level page
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>

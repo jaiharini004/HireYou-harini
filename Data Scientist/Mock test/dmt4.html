@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 4 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+    const questions=[
+
+    
+      
+    {
+          question: "What is the square of the standard deviation?",
+          choice1: "A) Mean",
+          choice2: "B) Median",
+          choice3: "C) Variance",
+          choice4: "D) Mode",
+          answer: 3,
+          explanation: "Variance is the square of the standard deviation."
+        },
+        {
+          question: "Which of the following is NOT a valid probability value?",
+          choice1: "A) 0",
+          choice2: "B) 1",
+          choice3: "C) -0.1",
+          choice4: "D) 0.75",
+          answer: 3,
+          explanation: "Probability must be between 0 and 1."
+        },
+        {
+          question: "Which statistical test is best for comparing more than two means?",
+          choice1: "A) T-test",
+          choice2: "B) ANOVA",
+          choice3: "C) Z-test",
+          choice4: "D) Regression",
+          answer: 2,
+          explanation: "ANOVA (Analysis of Variance) compares means of 3 or more groups."
+        },
+        {
+          question: "What does a z-score represent?",
+          choice1: "A) Raw value of data",
+          choice2: "B) Percentage",
+          choice3: "C) Number of standard deviations from the mean",
+          choice4: "D) Mean",
+          answer: 3,
+          explanation: "Z-score = (x - μ)/σ."
+        },
+        {
+          question: "In linear algebra, what is a matrix?",
+          choice1: "A) A single number",
+          choice2: "B) A 1D array",
+          choice3: "C) A 2D array",
+          choice4: "D) A function",
+          answer: 3,
+          explanation: "A matrix is a rectangular array of numbers arranged in rows and columns."
+        },
+        {
+          question: "What operation is used to find the gradient in gradient descent?",
+          choice1: "A) Addition",
+          choice2: "B) Subtraction",
+          choice3: "C) Derivative",
+          choice4: "D) Matrix multiplication",
+          answer: 3,
+          explanation: "Gradients are calculated using derivatives."
+        },
+        {
+          question: "What does eigenvalue represent in linear algebra?",
+          choice1: "A) Mean of the matrix",
+          choice2: "B) Variance of a matrix",
+          choice3: "C) Scaling factor of an eigenvector",
+          choice4: "D) Rank of a matrix",
+          answer: 3,
+          explanation: "An eigenvalue indicates how much an eigenvector is stretched."
+        },
+        {
+          question: "Which probability distribution is symmetrical and continuous?",
+          choice1: "A) Binomial",
+          choice2: "B) Poisson",
+          choice3: "C) Normal",
+          choice4: "D) Geometric",
+          answer: 3,
+          explanation: "The normal distribution is both symmetric and continuous."
+        },
+        {
+          question: "Which is used to minimize a cost function in ML?",
+          choice1: "A) Cross-validation",
+          choice2: "B) Gradient Descent",
+          choice3: "C) Hypothesis Testing",
+          choice4: "D) Logistic Regression",
+          answer: 2,
+          explanation: "Gradient descent minimizes the cost function."
+        },
+        {
+          question: "What does the Central Limit Theorem state?",
+          choice1: "A) The mean of population = mean of sample",
+          choice2: "B) Variance of sample = population variance",
+          choice3: "C) Sampling distribution of mean approaches normality as sample size increases",
+          choice4: "D) All samples are normally distributed",
+          answer: 3,
+          explanation: "The Central Limit Theorem states that the distribution of the sample means will be approximately normal, regardless of the population's distribution, for large sample sizes."
+        }
+
+
+    ];
+
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "dmt5.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

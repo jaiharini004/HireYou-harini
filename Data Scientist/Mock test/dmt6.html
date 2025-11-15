@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 6 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+    const questions=[
+
+    {
+              question: "What is the default backend for visualizing data in Seaborn and Matplotlib?",
+              choice1: "A) Tkinter",
+              choice2: "B) Qt",
+              choice3: "C) Jupyter Notebook",
+              choice4: "D) Agg",
+              answer: 3,
+              explanation: "In data science workflows, Jupyter Notebooks are commonly used to display visuals."
+            },
+            {
+              question: "When is a line chart most appropriate?",
+              choice1: "A) For comparing categories",
+              choice2: "B) For showing proportions",
+              choice3: "C) For showing trends over time",
+              choice4: "D) For showing correlation",
+              answer: 3,
+              explanation: "Line charts are ideal for visualizing data changes over time."
+            },
+            {
+              question: "What is one advantage of using Power BI or Tableau over code-based libraries?",
+              choice1: "A) More accurate models",
+              choice2: "B) Real-time model building",
+              choice3: "C) Drag-and-drop interface",
+              choice4: "D) Native support for Python",
+              answer: 3,
+              explanation: "GUI tools like Tableau allow quick visual creation without programming."
+            },
+            {
+              question: "What type of chart best shows part-to-whole relationships?",
+              choice1: "A) Line chart",
+              choice2: "B) Histogram",
+              choice3: "C) Pie chart",
+              choice4: "D) Scatter plot",
+              answer: 3,
+              explanation: "Pie charts represent proportions of a whole."
+            },
+            {
+              question: "Which library is based on Matplotlib but offers more aesthetically pleasing visuals?",
+              choice1: "A) Bokeh",
+              choice2: "B) Plotly",
+              choice3: "C) Seaborn",
+              choice4: "D) Altair",
+              answer: 3,
+              explanation: "Seaborn builds on Matplotlib and improves style and default formatting."
+            },
+            {
+              question: "What does the term EDA stand for?",
+              choice1: "A) External Data Analysis",
+              choice2: "B) Exploratory Data Analysis",
+              choice3: "C) Estimation and Data Assessment",
+              choice4: "D) Empirical Distribution Algorithm",
+              answer: 2,
+              explanation: "EDA refers to exploring data to understand patterns, anomalies, and relationships."
+            },
+            {
+              question: "What is the role of layout in a dashboard?",
+              choice1: "A) Data cleaning",
+              choice2: "B) Model evaluation",
+              choice3: "C) Organizing visual components for readability",
+              choice4: "D) Applying filters to data",
+              answer: 3,
+              explanation: "A clear layout helps users consume and interact with data more effectively."
+            },
+            {
+              question: "What is the main reason to use annotations in a plot?",
+              choice1: "A) Improve speed",
+              choice2: "B) Add interactivity",
+              choice3: "C) Highlight important insights",
+              choice4: "D) Animate plots",
+              answer: 3,
+              explanation: "Annotations help direct attention to key data points or findings."
+            },
+            {
+              question: "Why is color choice important in visualization?",
+              choice1: "A) Reduces data size",
+              choice2: "B) Affects model accuracy",
+              choice3: "C) Influences perception and readability",
+              choice4: "D) Increases algorithm performance",
+              answer: 3,
+              explanation: "Colors can emphasize trends or confuse users if poorly selected."
+            },
+            {
+              question: "What should you avoid in visual communication to non-technical audiences?",
+              choice1: "A) Using clear titles",
+              choice2: "B) Showing too many variables at once",
+              choice3: "C) Explaining context",
+              choice4: "D) Using labels",
+              answer: 2,
+              explanation: "Overloading visuals with too many variables can confuse non-technical audiences."
+            }
+
+    ];
+
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "dmt7.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 7 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+    const questions=[
+
+
+            
+              // ... previous 60 questions ...
+              {
+                question: "What type of machine learning is used when labeled data is available?",
+                choice1: "A) Unsupervised Learning",
+                choice2: "B) Reinforcement Learning",
+                choice3: "C) Supervised Learning",
+                choice4: "D) Semi-supervised Learning",
+                answer: 3,
+                explanation: "Supervised learning uses labeled data to train models."
+              },
+              {
+                question: "Which algorithm is best suited for classification problems?",
+                choice1: "A) Linear Regression",
+                choice2: "B) Logistic Regression",
+                choice3: "C) K-Means Clustering",
+                choice4: "D) PCA",
+                answer: 2,
+                explanation: "Logistic Regression is used for binary and multi-class classification tasks."
+              },
+              {
+                question: "Which metric is most appropriate for imbalanced classification tasks?",
+                choice1: "A) Accuracy",
+                choice2: "B) F1-Score",
+                choice3: "C) Mean Squared Error",
+                choice4: "D) R-squared",
+                answer: 2,
+                explanation: "F1-score balances precision and recall, making it suitable for imbalanced datasets."
+              },
+              {
+                question: "What is the goal of unsupervised learning?",
+                choice1: "A) Predict labels",
+                choice2: "B) Maximize accuracy",
+                choice3: "C) Discover hidden patterns or structure",
+                choice4: "D) Fit a regression line",
+                answer: 3,
+                explanation: "Unsupervised learning finds patterns or groupings in data without labels."
+              },
+              {
+                question: "Which algorithm is typically used for clustering?",
+                choice1: "A) Decision Tree",
+                choice2: "B) KNN",
+                choice3: "C) K-Means",
+                choice4: "D) SVM",
+                answer: 3,
+                explanation: "K-Means is a popular clustering algorithm in unsupervised learning."
+              },
+              {
+                question: "What does PCA help with?",
+                choice1: "A) Classification accuracy",
+                choice2: "B) Feature engineering",
+                choice3: "C) Dimensionality reduction",
+                choice4: "D) Model evaluation",
+                answer: 3,
+                explanation: "Principal Component Analysis (PCA) reduces feature space while preserving variance."
+              },
+              {
+                question: "Which library is commonly used for building machine learning models in Python?",
+                choice1: "A) Pandas",
+                choice2: "B) NumPy",
+                choice3: "C) Scikit-learn",
+                choice4: "D) Matplotlib",
+                answer: 3,
+                explanation: "Scikit-learn provides a wide range of ML algorithms and tools."
+              },
+              {
+                question: "Which metric measures error for regression tasks?",
+                choice1: "A) Accuracy",
+                choice2: "B) F1-Score",
+                choice3: "C) Mean Absolute Error (MAE)",
+                choice4: "D) ROC-AUC",
+                answer: 3,
+                explanation: "MAE is used to evaluate regression model performance."
+              },
+              {
+                question: "What does cross-validation help with?",
+                choice1: "A) Overfitting detection and reliable model evaluation",
+                choice2: "B) Training on new data",
+                choice3: "C) Increasing precision",
+                choice4: "D) Feature selection",
+                answer: 1,
+                explanation: "Cross-validation tests model performance on different subsets to avoid overfitting."
+              },
+              {
+                question: "What is the role of hyperparameter tuning?",
+                choice1: "A) Changing dataset",
+                choice2: "B) Improving training speed",
+                choice3: "C) Optimizing model performance",
+                choice4: "D) Scaling input data",
+                answer: 3,
+                explanation: "Hyperparameter tuning helps find the best model configuration."
+              }
+
+
+    ];
+
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "dmt8.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

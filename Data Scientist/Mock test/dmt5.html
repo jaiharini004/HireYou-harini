@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 5 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+    const questions=[
+
+        
+          
+    {
+            question: "Which Python library is commonly used for creating static 2D plots?",
+            choice1: "A) Plotly",
+            choice2: "B) Seaborn",
+            choice3: "C) Matplotlib",
+            choice4: "D) Dash",
+            answer: 3,
+            explanation: "Matplotlib is a foundational library for static visualizations in Python."
+          },
+          {
+            question: "What does a heatmap typically represent?",
+            choice1: "A) Distribution of values across multiple categories",
+            choice2: "B) Variance in dataset",
+            choice3: "C) Correlation between variables",
+            choice4: "D) Classification results",
+            answer: 3,
+            explanation: "Heatmaps are often used to visualize correlation matrices or intensities."
+          },
+          {
+            question: "Which Seaborn plot is best to show the distribution of a single variable?",
+            choice1: "A) Box plot",
+            choice2: "B) Bar plot",
+            choice3: "C) Count plot",
+            choice4: "D) Histogram",
+            answer: 4,
+            explanation: "Histograms show the frequency distribution of a numeric variable."
+          },
+          {
+            question: "What does a box plot display?",
+            choice1: "A) Only the mean",
+            choice2: "B) Mean and median",
+            choice3: "C) Quartiles, median, and outliers",
+            choice4: "D) Only range",
+            answer: 3,
+            explanation: "Box plots display the interquartile range, median, and potential outliers."
+          },
+          {
+            question: "Which tool is most suitable for creating interactive dashboards?",
+            choice1: "A) NumPy",
+            choice2: "B) Tableau",
+            choice3: "C) Seaborn",
+            choice4: "D) Matplotlib",
+            answer: 2,
+            explanation: "Tableau is widely used for creating interactive and shareable dashboards."
+          },
+          {
+            question: "What feature makes Plotly stand out over Matplotlib?",
+            choice1: "A) Faster rendering",
+            choice2: "B) Better color palette",
+            choice3: "C) Interactivity",
+            choice4: "D) Integration with NumPy",
+            answer: 3,
+            explanation: "Plotly provides built-in interactivity for web and dashboards."
+          },
+          {
+            question: "What is the primary goal of data visualization?",
+            choice1: "A) Store data",
+            choice2: "B) Train models",
+            choice3: "C) Communicate insights clearly",
+            choice4: "D) Replace statistical analysis",
+            answer: 3,
+            explanation: "Visualization helps make insights more understandable and impactful."
+          },
+          {
+            question: "Which color scale is most appropriate for diverging data?",
+            choice1: "A) Monochrome",
+            choice2: "B) Rainbow",
+            choice3: "C) Sequential",
+            choice4: "D) Red-blue",
+            answer: 4,
+            explanation: "Red-blue or similar diverging color scales highlight variance from a midpoint."
+          },
+          {
+            question: "In a scatter plot, what does each point represent?",
+            choice1: "A) A category",
+            choice2: "B) A data summary",
+            choice3: "C) An observation with 2 variables",
+            choice4: "D) A bar chart",
+            answer: 3,
+            explanation: "Scatter plots show individual data points across two numeric variables."
+          },
+          {
+            question: "What does a high correlation coefficient (close to 1 or -1) indicate?",
+            choice1: "A) No relationship",
+            choice2: "B) Strong linear relationship",
+            choice3: "C) Constant variance",
+            choice4: "D) Non-linear dependency",
+            answer: 2,
+            explanation: "A coefficient close to ±1 means a strong positive or negative linear correlation."
+          }
+
+    ];
+
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "dmt6.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 10 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+    const questions=[
+  
+                    // ... previous 90 questions ...
+                    {
+                      question: "What does the silhouette score measure in clustering?",
+                      choice1: "A) Classification accuracy",
+                      choice2: "B) Goodness of fit",
+                      choice3: "C) Similarity within and separation between clusters",
+                      choice4: "D) Distance between outliers",
+                      answer: 3,
+                      explanation: "A high silhouette score indicates well-separated and compact clusters."
+                    },
+                    {
+                      question: "What does PCA aim to achieve?",
+                      choice1: "A) Increase data redundancy",
+                      choice2: "B) Reduce feature correlation",
+                      choice3: "C) Reduce dimensionality while preserving variance",
+                      choice4: "D) Generate synthetic features",
+                      answer: 3,
+                      explanation: "PCA transforms data to fewer dimensions while retaining the most information."
+                    },
+                    {
+                      question: "Which metric is NOT typically used for regression evaluation?",
+                      choice1: "A) RMSE",
+                      choice2: "B) MAE",
+                      choice3: "C) R-squared",
+                      choice4: "D) F1-Score",
+                      answer: 4,
+                      explanation: "F1-Score is used in classification, not regression tasks."
+                    },
+                    {
+                      question: "What is the main advantage of Random Forests over a single Decision Tree?",
+                      choice1: "A) Simpler model",
+                      choice2: "B) Higher bias",
+                      choice3: "C) Better generalization and reduced overfitting",
+                      choice4: "D) Fewer computations",
+                      answer: 3,
+                      explanation: "Ensemble methods like Random Forests reduce variance and overfitting."
+                    },
+                    {
+                      question: "What is a confusion matrix used for?",
+                      choice1: "A) Regression summary",
+                      choice2: "B) Visualizing neural networks",
+                      choice3: "C) Evaluating classification performance",
+                      choice4: "D) Data clustering",
+                      answer: 3,
+                      explanation: "A confusion matrix shows true/false positives and negatives in classification."
+                    },
+                    {
+                      question: "What does the term \"kernel trick\" in SVM refer to?",
+                      choice1: "A) Reducing feature dimensions",
+                      choice2: "B) Optimizing hyperparameters",
+                      choice3: "C) Applying kernel functions to transform data into higher dimensions",
+                      choice4: "D) Scaling data",
+                      answer: 3,
+                      explanation: "The kernel trick allows SVM to find non-linear decision boundaries."
+                    },
+                    {
+                      question: "What is the role of the activation function in a neural network?",
+                      choice1: "A) Normalize inputs",
+                      choice2: "B) Add non-linearity",
+                      choice3: "C) Increase training speed",
+                      choice4: "D) Reduce overfitting",
+                      answer: 2,
+                      explanation: "Without activation functions, neural networks behave like linear models."
+                    },
+                    {
+                      question: "What is backpropagation used for in neural networks?",
+                      choice1: "A) Forward prediction",
+                      choice2: "B) Reducing data dimensionality",
+                      choice3: "C) Updating weights based on loss gradient",
+                      choice4: "D) Data normalization",
+                      answer: 3,
+                      explanation: "Backpropagation calculates gradients for updating model parameters."
+                    },
+                    {
+                      question: "What does a high variance in a model indicate?",
+                      choice1: "A) Underfitting",
+                      choice2: "B) Simplicity",
+                      choice3: "C) Overfitting",
+                      choice4: "D) Strong generalization",
+                      answer: 3,
+                      explanation: "High variance implies the model captures noise in the training data."
+                    },
+                    {
+                      question: "Which of the following is a dimensionality reduction technique?",
+                      choice1: "A) Random Forest",
+                      choice2: "B) PCA",
+                      choice3: "C) Logistic Regression",
+                      choice4: "D) Naive Bayes",
+                      answer: 2,
+                      explanation: "Principal Component Analysis reduces the number of features while retaining important variance."
+                    }                
+                
+    ];
+
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "scientist.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 9 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+    const questions=[
+
+    {
+                    question: "Which of the following is a supervised learning algorithm?",
+                    choice1: "A) K-Means Clustering",
+                    choice2: "B) PCA",
+                    choice3: "C) Linear Regression",
+                    choice4: "D) Apriori Algorithm",
+                    answer: 3,
+                    explanation: "Linear Regression is a supervised learning algorithm where the model learns from labeled data."
+                  },
+                  {
+                    question: "In Linear Regression, which metric is used to measure the goodness of fit?",
+                    choice1: "A) Silhouette Score",
+                    choice2: "B) R-squared",
+                    choice3: "C) Accuracy",
+                    choice4: "D) AUC",
+                    answer: 2,
+                    explanation: "R-squared measures the proportion of variance in the dependent variable explained by the independent variables."
+                  },
+                  {
+                    question: "What is the primary assumption of a linear regression model?",
+                    choice1: "A) The data is non-linear",
+                    choice2: "B) The features are categorical",
+                    choice3: "C) There is a linear relationship between inputs and output",
+                    choice4: "D) The data has missing values",
+                    answer: 3,
+                    explanation: "Linear regression assumes a linear relationship between independent and dependent variables."
+                  },
+                  {
+                    question: "Which of these metrics is suitable for evaluating a classification model?",
+                    choice1: "A) RMSE",
+                    choice2: "B) R-squared",
+                    choice3: "C) Accuracy",
+                    choice4: "D) MSE",
+                    answer: 3,
+                    explanation: "Accuracy is the proportion of correctly classified instances in classification problems."
+                  },
+                  {
+                    question: "What does the ROC curve illustrate?",
+                    choice1: "A) Relationship between variance and bias",
+                    choice2: "B) Performance of a model at various classification thresholds",
+                    choice3: "C) Changes in model accuracy over time",
+                    choice4: "D) Relationship between features",
+                    answer: 2,
+                    explanation: "ROC curves show the trade-off between true positive rate and false positive rate."
+                  },
+                  {
+                    question: "Which technique is used to prevent overfitting in decision trees?",
+                    choice1: "A) Increasing depth",
+                    choice2: "B) Ignoring missing values",
+                    choice3: "C) Pruning",
+                    choice4: "D) Feature scaling",
+                    answer: 3,
+                    explanation: "Pruning helps limit the depth of a tree to prevent it from fitting noise in the data."
+                  },
+                  {
+                    question: "What is the purpose of cross-validation?",
+                    choice1: "A) Improve feature importance",
+                    choice2: "B) Increase model complexity",
+                    choice3: "C) Estimate model performance on unseen data",
+                    choice4: "D) Decrease number of features",
+                    answer: 3,
+                    explanation: "Cross-validation splits data into training and validation sets multiple times to assess generalization."
+                  },
+                  {
+                    question: "What does a high bias indicate in a model?",
+                    choice1: "A) Model overfits the training data",
+                    choice2: "B) Model underfits the data",
+                    choice3: "C) Model performs well",
+                    choice4: "D) Model uses too many features",
+                    answer: 2,
+                    explanation: "High bias means the model is too simple and fails to capture patterns in the data."
+                  },
+                  {
+                    question: "Which model is most suitable for non-linear classification problems?",
+                    choice1: "A) Linear Regression",
+                    choice2: "B) Logistic Regression",
+                    choice3: "C) SVM with RBF kernel",
+                    choice4: "D) K-Means Clustering",
+                    answer: 3,
+                    explanation: "The RBF kernel in SVM allows handling non-linear classification tasks effectively."
+                  },
+                  {
+                    question: "What is the main purpose of feature scaling in KNN?",
+                    choice1: "A) Improve data visualization",
+                    choice2: "B) Increase the number of features",
+                    choice3: "C) Ensure equal contribution of features in distance calculation",
+                    choice4: "D) Reduce dimensionality",
+                    answer: 3,
+                    explanation: "In KNN, distance metrics are sensitive to feature scale, so normalization is crucial."
+                  }
+                  
+
+    ];
+
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "dmt10.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

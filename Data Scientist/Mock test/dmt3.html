@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 3 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+const questions=[
+{
+        question: "What is the mean of the data set [4, 5, 8, 10, 3]?",
+        choice1: "A) 6",
+        choice2: "B) 5",
+        choice3: "C) 7",
+        choice4: "D) 4",
+        answer: 1,
+        explanation: "Mean = (4+5+8+10+3)/5 = 30/5 = 6."
+      },
+      {
+        question: "What does a high standard deviation indicate in a dataset?",
+        choice1: "A) Data is closely clustered",
+        choice2: "B) Data is spread out",
+        choice3: "C) Mean is very high",
+        choice4: "D) Mean is zero",
+        answer: 2,
+        explanation: "High standard deviation means values are more spread out from the mean."
+      },
+      {
+        question: "Which of the following is NOT a measure of central tendency?",
+        choice1: "A) Mean",
+        choice2: "B) Median",
+        choice3: "C) Mode",
+        choice4: "D) Variance",
+        answer: 4,
+        explanation: "Variance measures spread, not central tendency."
+      },
+      {
+        question: "What does a p-value less than 0.05 typically indicate?",
+        choice1: "A) The null hypothesis is true",
+        choice2: "B) The result is not statistically significant",
+        choice3: "C) Strong evidence against the null hypothesis",
+        choice4: "D) Data is normally distributed",
+        answer: 3,
+        explanation: "A p-value < 0.05 suggests strong evidence to reject the null hypothesis."
+      },
+      {
+        question: "In a normal distribution, what percentage of data falls within ±1 standard deviation of the mean?",
+        choice1: "A) 50%",
+        choice2: "B) 68%",
+        choice3: "C) 95%",
+        choice4: "D) 99.7%",
+        answer: 2,
+        explanation: "68% of data lies within ±1 standard deviation in a normal distribution."
+      },
+      {
+        question: "Which distribution is best used for modeling the number of rare events in a fixed time period?",
+        choice1: "A) Normal",
+        choice2: "B) Poisson",
+        choice3: "C) Binomial",
+        choice4: "D) Uniform",
+        answer: 2,
+        explanation: "Poisson distribution is used for rare event counts over time or space."
+      },
+      {
+        question: "What is the derivative of a constant?",
+        choice1: "A) 0",
+        choice2: "B) 1",
+        choice3: "C) The constant itself",
+        choice4: "D) Undefined",
+        answer: 1,
+        explanation: "The rate of change of a constant is 0."
+      },
+      {
+        question: "What does the t-test compare?",
+        choice1: "A) Mean of two samples",
+        choice2: "B) Variance of two samples",
+        choice3: "C) Correlation between two variables",
+        choice4: "D) Shape of two distributions",
+        answer: 1,
+        explanation: "A t-test compares the means of two groups."
+      },
+      {
+        question: "What is the shape of a normal distribution curve?",
+        choice1: "A) Skewed left",
+        choice2: "B) Skewed right",
+        choice3: "C) Bell-shaped",
+        choice4: "D) Uniform",
+        answer: 3,
+        explanation: "The normal distribution is symmetric and bell-shaped."
+      },
+      {
+        question: "What is the sum of all probabilities in a probability distribution?",
+        choice1: "A) 0",
+        choice2: "B) 1",
+        choice3: "C) Between 0 and 1",
+        choice4: "D) Cannot be determined",
+        answer: 2,
+        explanation: "All probabilities in a distribution must add up to 1."
+      }
+    ];
+
+let score = 0;
+
+    function renderQuiz() {
+      const quiz = document.getElementById("quiz");
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+
+        const qTitle = document.createElement("h3");
+        qTitle.textContent = `${index + 1}. ${q.question}`;
+        qDiv.appendChild(qTitle);
+
+        const opts = document.createElement("div");
+        opts.className = "options";
+
+        for (let i = 1; i <= 4; i++) {
+          const btn = document.createElement("button");
+          btn.textContent = q[`choice${i}`];
+          btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+          opts.appendChild(btn);
+        }
+
+        const exp = document.createElement("div");
+        exp.className = "explanation";
+        exp.id = `exp${index}`;
+
+        qDiv.appendChild(opts);
+        qDiv.appendChild(exp);
+        quiz.appendChild(qDiv);
+      });
+    }
+
+    function handleAnswer(qDiv, selected, correct, explanation) {
+      const explanationEl = qDiv.querySelector(".explanation");
+      if (selected === correct) {
+        score += 2;
+        explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+      } else {
+        explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+      }
+      explanationEl.style.display = 'block';
+      qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+      const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+      if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+    }
+
+    function showFinalScore() {
+      document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+      document.getElementById("submitBtn").style.display = 'none';
+      document.getElementById("nextBtn").style.display = 'block';
+    }
+
+    function goToNextLevel() {
+      window.location.href = "dmt4.html"; // next level page
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>
