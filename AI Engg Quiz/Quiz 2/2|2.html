@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 2 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 1</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "Which of the following is a type of supervised learning?",
+    choice1: "A) K-Means Clustering",
+    choice2: "B) Principal Component Analysis (PCA)",
+    choice3: "C) Linear Regression",
+    choice4: "D) DBSCAN",
+    answer: 3,
+    explanation: "Linear Regression is a supervised learning algorithm because it learns from labeled data to predict continuous output."
+  },
+  {
+    question: "What distinguishes supervised learning from unsupervised learning?",
+    choice1: "A) Supervised learning requires clustering",
+    choice2: "B) Supervised learning uses reinforcement feedback",
+    choice3: "C) Supervised learning uses labeled data",
+    choice4: "D) Supervised learning is used only for image processing",
+    answer: 3,
+    explanation: "Supervised learning uses labeled data to train models, whereas unsupervised learning deals with unlabeled data."
+  },
+  {
+    question: "Which algorithm is commonly used for unsupervised learning?",
+    choice1: "A) Decision Tree",
+    choice2: "B) K-Means",
+    choice3: "C) Logistic Regression",
+    choice4: "D) Naive Bayes",
+    answer: 2,
+    explanation: "K-Means is an unsupervised clustering algorithm used to group similar data points without labels."
+  },
+  {
+    question: "In which scenario would you use unsupervised learning?",
+    choice1: "A) Predicting stock prices",
+    choice2: "B) Classifying emails as spam or not",
+    choice3: "C) Grouping customers based on behavior",
+    choice4: "D) Diagnosing a disease based on symptoms",
+    answer: 3,
+    explanation: "Grouping customers without prior labels is a typical use case for unsupervised learning."
+  },
+  {
+    question: "What type of learning is involved in classification problems?",
+    choice1: "A) Unsupervised",
+    choice2: "B) Supervised",
+    choice3: "C) Reinforcement",
+    choice4: "D) Semi-supervised",
+    answer: 2,
+    explanation: "Classification is a supervised learning task where the model learns from labeled data to assign categories."
+  },
+  {
+    question: "Which of the following is NOT typically used in unsupervised learning?",
+    choice1: "A) Target labels",
+    choice2: "B) Clustering",
+    choice3: "C) Anomaly detection",
+    choice4: "D) Dimensionality reduction",
+    answer: 1,
+    explanation: "Unsupervised learning doesn't use target labels; it works with input data alone."
+  },
+  {
+    question: "What is the primary goal of supervised learning?",
+    choice1: "A) To explore data structures",
+    choice2: "B) To predict outcomes based on labeled data",
+    choice3: "C) To reduce dimensionality",
+    choice4: "D) To find anomalies in data",
+    answer: 2,
+    explanation: "Supervised learning’s goal is to predict an output based on input-label pairs."
+  },
+  {
+    question: "Which of these is an example of a supervised learning task?",
+    choice1: "A) Identifying topics in a set of articles",
+    choice2: "B) Predicting house prices based on features",
+    choice3: "C) Segmenting customer data",
+    choice4: "D) Clustering genes based on activity",
+    answer: 2,
+    explanation: "Predicting house prices is a regression task, which is a supervised learning example."
+  },
+  {
+    question: "Semi-supervised learning is:",
+    choice1: "A) Only based on labeled data",
+    choice2: "B) A mix of labeled and unlabeled data",
+    choice3: "C) Used only in reinforcement learning",
+    choice4: "D) Equivalent to unsupervised learning",
+    answer: 2,
+    explanation: "Semi-supervised learning combines a small amount of labeled data with a large amount of unlabeled data."
+  },
+  {
+    question: "Unsupervised learning algorithms are best suited for:",
+    choice1: "A) Weather forecasting",
+    choice2: "B) Market segmentation",
+    choice3: "C) Disease diagnosis",
+    choice4: "D) Credit score prediction",
+    answer: 2,
+    explanation: "Market segmentation involves grouping users without labels, a classic unsupervised learning application."
+  }
+];
+
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='2l2.html'">Go to Level 2 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '2l1.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
