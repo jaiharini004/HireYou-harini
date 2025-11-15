@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Supervised Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 6</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "A model gives outputs: [4, 5, 6], and actual values are [5, 5, 5]. What is the Mean Squared Error (MSE)?",
+    choice1: "A) 1",
+    choice2: "B) 2",
+    choice3: "C) 3",
+    choice4: "D) 0",
+    answer: 1,
+    explanation: "MSE = [(1² + 0² + 1²)/3] = (1 + 0 + 1)/3 = 0.67 ≈ 1"
+  },
+  {
+    question: "Which unsupervised algorithm is most suitable for discovering non-linear clusters with noise?",
+    choice1: "A) Linear Regression",
+    choice2: "B) Logistic Regression",
+    choice3: "C) DBSCAN",
+    choice4: "D) Random Forest",
+    answer: 3,
+    explanation: "DBSCAN can detect complex-shaped clusters and identify outliers."
+  },
+  {
+    question: "What is the primary goal of classification models?",
+    choice1: "A) Predict continuous values",
+    choice2: "B) Cluster similar data",
+    choice3: "C) Predict discrete labels",
+    choice4: "D) Reduce dimensions",
+    answer: 3,
+    explanation: "Classification outputs discrete categories or labels."
+  },
+  {
+    question: "The output of a supervised model is continuous. What type of problem is it?",
+    choice1: "A) Classification",
+    choice2: "B) Regression",
+    choice3: "C) Clustering",
+    choice4: "D) Feature selection",
+    answer: 2,
+    explanation: "Continuous outputs = Regression problem"
+  },
+  {
+    question: "Which metric is suitable for evaluating a multi-class classification model?",
+    choice1: "A) MAE",
+    choice2: "B) Precision",
+    choice3: "C) ROC-AUC",
+    choice4: "D) Macro F1-score",
+    answer: 4,
+    explanation: "Macro F1-score works well across multiple classes with balanced performance."
+  },
+  {
+    question: "A classification model has 70% accuracy on training and 95% on test. What does this indicate?",
+    choice1: "A) Underfitting",
+    choice2: "B) Overfitting",
+    choice3: "C) Data leakage",
+    choice4: "D) Good performance",
+    answer: 3,
+    explanation: "Test accuracy being too high suggests the model has seen test data indirectly → Data leakage."
+  },
+  {
+    question: "Which method reduces dimensionality while preserving variance?",
+    choice1: "A) KNN",
+    choice2: "B) PCA",
+    choice3: "C) K-Means",
+    choice4: "D) Logistic Regression",
+    answer: 2,
+    explanation: "Principal Component Analysis reduces features but retains most data variance."
+  },
+  {
+    question: "If k=5 in KNN, what does it mean?",
+    choice1: "A) There are 5 features",
+    choice2: "B) There are 5 models",
+    choice3: "C) The model looks at 5 nearest neighbors",
+    choice4: "D) There are 5 classes",
+    answer: 3,
+    explanation: "k=5 means predictions are based on the 5 nearest neighbors."
+  },
+  {
+    question: "What does high variance in a model indicate?",
+    choice1: "A) Model is too simple",
+    choice2: "B) Overfitting",
+    choice3: "C) Underfitting",
+    choice4: "D) High bias",
+    answer: 2,
+    explanation: "High variance = model fits training data too closely = Overfitting"
+  },
+  {
+    question: "In K-Means, what does the ‘k’ represent?",
+    choice1: "A) Kernel",
+    choice2: "B) Number of features",
+    choice3: "C) Number of data points",
+    choice4: "D) Number of clusters",
+    answer: 4,
+    explanation: "‘k’ is the number of clusters you want the algorithm to form."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='suplev7.html'">Go to Level 7 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'suplev6.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
