@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 3 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "What is the core idea behind transfer learning?",
+    options: [
+      "A) Training a model from scratch",
+      "B) Using unlabeled data only",
+      "C) Using knowledge from a pre-trained model for a new but related task",
+      "D) Using unsupervised learning only"
+    ],
+    answer: 2,
+    explanation: "Transfer learning involves leveraging a model trained on one task and adapting it for a different (often related) task to save time and data."
+  },
+  {
+    question: "Which of the following is a key benefit of transfer learning?",
+    options: [
+      "A) Increased overfitting",
+      "B) Needs larger dataset",
+      "C) Faster training and better performance on smaller datasets",
+      "D) Requires complex hardware"
+    ],
+    answer: 2,
+    explanation: "Since pretrained models have already learned useful features, they can be fine-tuned quickly on smaller datasets."
+  },
+  {
+    question: "What does \"fine-tuning\" refer to in transfer learning?",
+    options: [
+      "A) Training only the output layer",
+      "B) Updating some or all layers of a pretrained model on a new task",
+      "C) Compressing the model",
+      "D) Reducing dropout"
+    ],
+    answer: 1,
+    explanation: "Fine-tuning adjusts the weights of a pretrained model to better fit a new dataset/task."
+  },
+  {
+    question: "In which layer(s) are weights typically frozen during transfer learning?",
+    options: [
+      "A) Early layers",
+      "B) Output layer",
+      "C) All layers",
+      "D) Final layers only"
+    ],
+    answer: 0,
+    explanation: "Early layers capture general features (edges, textures), so they’re often frozen, while deeper layers are fine-tuned."
+  },
+  {
+    question: "What type of tasks is ResNet commonly pretrained for?",
+    options: [
+      "A) Text summarization",
+      "B) Speech recognition",
+      "C) Image classification",
+      "D) Sentiment analysis"
+    ],
+    answer: 2,
+    explanation: "ResNet is a convolutional neural network architecture trained primarily on image datasets like ImageNet."
+  },
+  {
+    question: "Which pretrained model is best suited for NLP tasks like sentiment analysis or text classification?",
+    options: [
+      "A) ResNet",
+      "B) VGG16",
+      "C) BERT",
+      "D) LeNet"
+    ],
+    answer: 2,
+    explanation: "BERT (Bidirectional Encoder Representations from Transformers) is designed specifically for natural language understanding tasks."
+  },
+  {
+    question: "What is a common strategy when using BERT for a new NLP task?",
+    options: [
+      "A) Remove all layers",
+      "B) Add a task-specific output layer and fine-tune",
+      "C) Freeze all layers",
+      "D) Convert it to a CNN"
+    ],
+    answer: 1,
+    explanation: "For transfer learning with BERT, a small output head is added (e.g., classifier), and the entire model or last few layers are fine-tuned."
+  },
+  {
+    question: "Why are pretrained models like ResNet or BERT effective for transfer learning?",
+    options: [
+      "A) They are always the best models",
+      "B) They learn general-purpose features useful for many tasks",
+      "C) They are smaller",
+      "D) They require no data to train"
+    ],
+    answer: 1,
+    explanation: "Pretrained models are trained on large datasets and learn representations that transfer well to related tasks."
+  },
+  {
+    question: "What is the downside of using very large pretrained models like BERT or GPT in production?",
+    options: [
+      "A) High computational and memory cost",
+      "B) Low accuracy",
+      "C) Lack of training data",
+      "D) Limited to image tasks"
+    ],
+    answer: 0,
+    explanation: "These models are often very large, making them resource-intensive to deploy and slow to infer."
+  },
+  {
+    question: "Which approach best describes \"feature extraction\" in transfer learning?",
+    options: [
+      "A) Training all model layers",
+      "B) Using random weights",
+      "C) Using pretrained model to extract features without updating weights",
+      "D) Performing hyperparameter tuning"
+    ],
+    answer: 2,
+    explanation: "In feature extraction, the pretrained model is used as a fixed feature extractor — the model’s layers are frozen and only the output layer is trained."
+  }
+];
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+    const q = questions[current];
+    document.getElementById('question').textContent = q.question;
+    const choicesDiv = document.getElementById('choices');
+    choicesDiv.innerHTML = '';
+    document.getElementById('explanation').textContent = '';
+
+    q.options.forEach((option, index) => {
+      const btn = document.createElement('div');
+      btn.className = 'choice';
+      btn.textContent = option;
+      btn.onclick = () => checkAnswer(index, btn);
+      choicesDiv.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, element) {
+    const q = questions[current];
+    const allChoices = document.querySelectorAll('.choice');
+
+    allChoices.forEach(c => c.onclick = null);
+
+    if (selected === q.answer) {
+      element.classList.add('correct');
+      score++;
+    } else {
+      element.classList.add('wrong');
+      allChoices[q.answer].classList.add('correct');
+    }
+
+    document.getElementById('explanation').textContent = "📝 " + q.explanation;
+  }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='3l10.html'">Go to Level 10 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '3l9.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

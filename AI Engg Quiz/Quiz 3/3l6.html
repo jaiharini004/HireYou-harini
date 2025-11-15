@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 3 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 6</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "What is the main purpose of an activation function in a neural network?",
+    options: [
+      "A) To initialize weights",
+      "B) To introduce non-linearity",
+      "C) To normalize input features",
+      "D) To reduce overfitting"
+    ],
+    answer: 1,
+    explanation: "Activation functions introduce non-linearity into the network, allowing it to learn complex patterns."
+  },
+  {
+    question: "Which activation function is commonly used in the output layer for binary classification?",
+    options: [
+      "A) Tanh",
+      "B) ReLU",
+      "C) Sigmoid",
+      "D) Softmax"
+    ],
+    answer: 2,
+    explanation: "Sigmoid squashes outputs between 0 and 1, making it ideal for binary classification problems."
+  },
+  {
+    question: "What is a key issue with the sigmoid activation function?",
+    options: [
+      "A) Vanishing gradient",
+      "B) Exploding gradient",
+      "C) Negative output values",
+      "D) Hard to implement"
+    ],
+    answer: 0,
+    explanation: "Sigmoid can cause gradients to vanish as the function saturates at both ends, slowing or stopping learning."
+  },
+  {
+    question: "Which activation function outputs values in the range (-1, 1)?",
+    options: [
+      "A) ReLU",
+      "B) Tanh",
+      "C) Sigmoid",
+      "D) Softmax"
+    ],
+    answer: 1,
+    explanation: "The tanh function outputs values between -1 and 1, helping with zero-centered data."
+  },
+  {
+    question: "Why is ReLU often preferred in hidden layers of deep networks?",
+    options: [
+      "A) It’s non-differentiable",
+      "B) It avoids vanishing gradients",
+      "C) It outputs negative values",
+      "D) It’s only for classification"
+    ],
+    answer: 1,
+    explanation: "ReLU allows faster convergence by not saturating in the positive direction and avoids vanishing gradients."
+  },
+  {
+    question: "What happens in ReLU when the input is less than 0?",
+    options: [
+      "A) Returns the input",
+      "B) Outputs 0",
+      "C) Outputs -1",
+      "D) Applies sigmoid"
+    ],
+    answer: 1,
+    explanation: "ReLU outputs 0 for all negative input values and passes positive ones as is."
+  },
+  {
+    question: "In a multi-class classification problem, which activation function is most suitable in the output layer?",
+    options: [
+      "A) Sigmoid",
+      "B) Softmax",
+      "C) Tanh",
+      "D) ReLU"
+    ],
+    answer: 1,
+    explanation: "Softmax is used to represent probabilities across multiple classes by converting scores into a probability distribution."
+  },
+  {
+    question: "Which function is considered a smoothed version of the ReLU?",
+    options: [
+      "A) Sigmoid",
+      "B) Leaky ReLU",
+      "C) Tanh",
+      "D) Softmax"
+    ],
+    answer: 1,
+    explanation: "Leaky ReLU addresses the 'dying ReLU' problem by allowing a small, non-zero gradient for negative inputs."
+  },
+  {
+    question: "Which activation function is zero-centered and helps faster convergence during training?",
+    options: [
+      "A) Sigmoid",
+      "B) Tanh",
+      "C) ReLU",
+      "D) Softmax"
+    ],
+    answer: 1,
+    explanation: "Tanh outputs values in the range [-1, 1], making it zero-centered and helping gradients flow more evenly."
+  },
+  {
+    question: "What is a limitation of using ReLU as an activation function?",
+    options: [
+      "A) Can’t be used in classification",
+      "B) Dying ReLU problem",
+      "C) Doesn’t support gradient descent",
+      "D) Too slow to compute"
+    ],
+    answer: 1,
+    explanation: "ReLU can suffer from the 'dying ReLU' problem where neurons stop activating due to zero gradients for negative inputs."
+  }
+];
+
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+    const q = questions[current];
+    document.getElementById('question').textContent = q.question;
+    const choicesDiv = document.getElementById('choices');
+    choicesDiv.innerHTML = '';
+    document.getElementById('explanation').textContent = '';
+
+    q.options.forEach((option, index) => {
+      const btn = document.createElement('div');
+      btn.className = 'choice';
+      btn.textContent = option;
+      btn.onclick = () => checkAnswer(index, btn);
+      choicesDiv.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, element) {
+    const q = questions[current];
+    const allChoices = document.querySelectorAll('.choice');
+
+    allChoices.forEach(c => c.onclick = null);
+
+    if (selected === q.answer) {
+      element.classList.add('correct');
+      score++;
+    } else {
+      element.classList.add('wrong');
+      allChoices[q.answer].classList.add('correct');
+    }
+
+    document.getElementById('explanation').textContent = "📝 " + q.explanation;
+  }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='3l7.html'">Go to Level 7 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '3l6.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

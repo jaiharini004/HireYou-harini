@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 3 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 3</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "What makes RNNs different from traditional feedforward networks?",
+    options: [
+      "A) They use convolution operations",
+      "B) They are only used for images",
+      "C) They have feedback loops to handle sequences",
+      "D) They don't use activation functions"
+    ],
+    answer: 2,
+    explanation: "RNNs have feedback loops that allow them to retain information from previous time steps, making them suitable for sequence data."
+  },
+  {
+    question: "Which problem do standard RNNs often face when dealing with long sequences?",
+    options: [
+      "A) Exploding weights",
+      "B) Vanishing gradients",
+      "C) No training required",
+      "D) Missing data"
+    ],
+    answer: 1,
+    explanation: "Standard RNNs struggle with vanishing gradients, where gradients become too small during backpropagation, limiting their ability to learn long-term dependencies."
+  },
+  {
+    question: "What type of data are RNNs particularly good at processing?",
+    options: [
+      "A) Static images",
+      "B) Sequential data like time series or text",
+      "C) Tabular data",
+      "D) Audio spectrograms only"
+    ],
+    answer: 1,
+    explanation: "RNNs are well-suited for sequential data like time series, language, or audio due to their ability to retain previous context."
+  },
+  {
+    question: "What mechanism in LSTM helps it remember information over long time periods?",
+    options: [
+      "A) Activation functions",
+      "B) Cell state and gating mechanisms",
+      "C) Weight initialization",
+      "D) Dropout layers"
+    ],
+    answer: 1,
+    explanation: "LSTMs use a memory cell and three gates (input, forget, output) to manage long-term memory and prevent vanishing gradients."
+  },
+  {
+    question: "Which gate in an LSTM decides what information should be discarded?",
+    options: [
+      "A) Input gate",
+      "B) Forget gate",
+      "C) Output gate",
+      "D) Memory gate"
+    ],
+    answer: 1,
+    explanation: "The forget gate looks at the current input and previous state to decide what information to remove from the cell state."
+  },
+  {
+    question: "Which is a major advantage of LSTMs over standard RNNs?",
+    options: [
+      "A) Faster training",
+      "B) Less memory usage",
+      "C) Ability to handle long-term dependencies",
+      "D) Use in image classification"
+    ],
+    answer: 2,
+    explanation: "LSTMs solve the vanishing gradient problem, making them better at learning long-term patterns in sequences."
+  },
+  {
+    question: "In LSTM, what does the input gate control?",
+    options: [
+      "A) Whether to add new information to the cell state",
+      "B) If the memory should be deleted",
+      "C) Whether to predict the next output",
+      "D) How to initialize the weights"
+    ],
+    answer: 0,
+    explanation: "The input gate controls how much of the new input should be written into the cell state."
+  },
+  {
+    question: "What is a potential drawback of standard RNNs compared to LSTMs?",
+    options: [
+      "A) RNNs are too complex",
+      "B) RNNs can't train on GPUs",
+      "C) RNNs struggle with long sequences due to vanishing gradients",
+      "D) RNNs require more data"
+    ],
+    answer: 2,
+    explanation: "Standard RNNs have difficulty learning from long sequences because of vanishing gradients, which LSTMs are designed to fix."
+  },
+  {
+    question: "Which component is not part of an LSTM cell?",
+    options: [
+      "A) Forget gate",
+      "B) Attention gate",
+      "C) Input gate",
+      "D) Output gate"
+    ],
+    answer: 1,
+    explanation: "Standard LSTM cells do not have an “attention gate.” Attention is a separate mechanism used in more advanced models like Transformers."
+  },
+  {
+    question: "Why is backpropagation through time (BPTT) used in RNNs?",
+    options: [
+      "A) To train CNNs efficiently",
+      "B) To make the model more interpretable",
+      "C) To compute gradients over multiple time steps",
+      "D) To apply reinforcement learning"
+    ],
+    answer: 2,
+    explanation: "BPTT is a version of backpropagation adapted to RNNs to compute gradients over sequences of time steps."
+  }
+];
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+       
+  function loadQuestion() {
+    const q = questions[current];
+    document.getElementById('question').textContent = q.question;
+    const choicesDiv = document.getElementById('choices');
+    choicesDiv.innerHTML = '';
+    document.getElementById('explanation').textContent = '';
+
+    q.options.forEach((option, index) => {
+      const btn = document.createElement('div');
+      btn.className = 'choice';
+      btn.textContent = option;
+      btn.onclick = () => checkAnswer(index, btn);
+      choicesDiv.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, element) {
+    const q = questions[current];
+    const allChoices = document.querySelectorAll('.choice');
+
+    allChoices.forEach(c => c.onclick = null);
+
+    if (selected === q.answer) {
+      element.classList.add('correct');
+      score++;
+    } else {
+      element.classList.add('wrong');
+      allChoices[q.answer].classList.add('correct');
+    }
+
+    document.getElementById('explanation').textContent = "📝 " + q.explanation;
+  }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='3l4.html'">Go to Level 4 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '3l3.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 3 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "Which of the following frameworks uses dynamic computation graphs by default?",
+    options: [
+      "A) TensorFlow 1.x",
+      "B) PyTorch",
+      "C) Keras",
+      "D) Scikit-learn"
+    ],
+    answer: 1,
+    explanation: "PyTorch uses dynamic computation graphs (define-by-run), which allows more flexibility and easier debugging during runtime."
+  },
+  {
+    question: "What is the high-level API built on top of TensorFlow to simplify model building?",
+    options: [
+      "A) Theano",
+      "B) CNTK",
+      "C) Keras",
+      "D) TFLearn"
+    ],
+    answer: 2,
+    explanation: "Keras is a user-friendly high-level API that integrates with TensorFlow to build and train neural networks easily."
+  },
+  {
+    question: "In TensorFlow 2.x, eager execution is:",
+    options: [
+      "A) Turned off by default",
+      "B) Deprecated",
+      "C) Turned on by default",
+      "D) Only available in Keras"
+    ],
+    answer: 2,
+    explanation: "TensorFlow 2.x enables eager execution by default, allowing operations to execute immediately, similar to PyTorch."
+  },
+  {
+    question: "Which function is commonly used in PyTorch to define a model?",
+    options: [
+      "A) tf.keras.Sequential()",
+      "B) class Model(nn.Module)",
+      "C) model.compile()",
+      "D) model.fit()"
+    ],
+    answer: 1,
+    explanation: "In PyTorch, you define custom models by subclassing torch.nn.Module."
+  },
+  {
+    question: "Which of the following is NOT a built-in optimizer in PyTorch?",
+    options: [
+      "A) SGD",
+      "B) Adam",
+      "C) AdaBoost",
+      "D) RMSprop"
+    ],
+    answer: 2,
+    explanation: "AdaBoost is an ensemble method, not an optimizer. The others are standard optimizers in PyTorch (torch.optim)."
+  },
+  {
+    question: "What does model.compile() do in Keras?",
+    options: [
+      "A) Trains the model",
+      "B) Builds the model architecture",
+      "C) Configures the model for training with optimizer, loss, and metrics",
+      "D) Evaluates the model"
+    ],
+    answer: 2,
+    explanation: "model.compile() sets up the loss function, optimizer, and metrics before training a model in Keras."
+  },
+  {
+    question: "In TensorFlow/Keras, which method is used to train the model?",
+    options: [
+      "A) model.predict()",
+      "B) model.evaluate()",
+      "C) model.fit()",
+      "D) model.summary()"
+    ],
+    answer: 2,
+    explanation: "model.fit() is used to train the model on input data and labels in Keras/TensorFlow."
+  },
+  {
+    question: "What is the role of DataLoader in PyTorch?",
+    options: [
+      "A) Initialize layers",
+      "B) Efficiently load and batch data for training",
+      "C) Apply activation functions",
+      "D) Set random seed"
+    ],
+    answer: 1,
+    explanation: "PyTorch’s DataLoader wraps datasets to provide mini-batches and supports shuffling and multiprocessing."
+  },
+  {
+    question: "Which of these frameworks is most often used in production at scale by large tech companies?",
+    options: [
+      "A) TensorFlow",
+      "B) Keras",
+      "C) PyTorch",
+      "D) Scikit-learn"
+    ],
+    answer: 0,
+    explanation: "TensorFlow is widely used in production due to its performance, scalability, and TensorFlow Serving for deployment."
+  },
+  {
+    question: "Which of the following statements is TRUE about Keras and TensorFlow?",
+    options: [
+      "A) Keras is a replacement for TensorFlow",
+      "B) TensorFlow cannot be used without Keras",
+      "C) Keras is now fully integrated into TensorFlow as tf.keras",
+      "D) Keras only supports CNNs"
+    ],
+    answer: 2,
+    explanation: "Keras is now a core part of TensorFlow and accessible via tf.keras, simplifying model creation and training."
+  }
+];
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+    const q = questions[current];
+    document.getElementById('question').textContent = q.question;
+    const choicesDiv = document.getElementById('choices');
+    choicesDiv.innerHTML = '';
+    document.getElementById('explanation').textContent = '';
+
+    q.options.forEach((option, index) => {
+      const btn = document.createElement('div');
+      btn.className = 'choice';
+      btn.textContent = option;
+      btn.onclick = () => checkAnswer(index, btn);
+      choicesDiv.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, element) {
+    const q = questions[current];
+    const allChoices = document.querySelectorAll('.choice');
+
+    allChoices.forEach(c => c.onclick = null);
+
+    if (selected === q.answer) {
+      element.classList.add('correct');
+      score++;
+    } else {
+      element.classList.add('wrong');
+      allChoices[q.answer].classList.add('correct');
+    }
+
+    document.getElementById('explanation').textContent = "📝 " + q.explanation;
+  }
+
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='ai_engineer.html'">Hurreyy ! You Aced it 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '3l10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

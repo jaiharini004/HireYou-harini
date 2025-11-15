@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 3 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 4</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is the primary function of the self-attention mechanism in a transformer?",
+    options: [
+      "A) To encode position of tokens",
+      "B) To generate output from tokens",
+      "C) To compute the importance of each word in the input relative to the others",
+      "D) To reduce dimensionality"
+    ],
+    answer: 2,
+    explanation: "Self-attention allows each word to weigh the importance of all other words in the input sequence, enabling contextual understanding."
+  },
+  {
+    question: "What are the key components of a self-attention mechanism?",
+    options: [
+      "A) Encoder, decoder, and output",
+      "B) Query, key, and value",
+      "C) Bias, weights, and dropout",
+      "D) Forward and backward cells"
+    ],
+    answer: 1,
+    explanation: "Self-attention uses queries, keys, and values to compute the attention scores that determine the output representations."
+  },
+  {
+    question: "What is the purpose of positional encoding in transformers?",
+    options: [
+      "A) To sort the input tokens",
+      "B) To remove the need for self-attention",
+      "C) To add information about the position of tokens in the sequence",
+      "D) To train the model faster"
+    ],
+    answer: 2,
+    explanation: "Since transformers lack recurrence, positional encoding provides a sense of word order to the model."
+  },
+  {
+    question: "What does multi-head attention help with in transformers?",
+    options: [
+      "A) Learning different types of relationships in parallel",
+      "B) Making the model smaller",
+      "C) Replacing self-attention",
+      "D) Avoiding positional encoding"
+    ],
+    answer: 0,
+    explanation: "Multi-head attention allows the model to focus on various parts of the sequence simultaneously by using multiple attention heads."
+  },
+  {
+    question: "Which of the following is not a key component of a transformer encoder block?",
+    options: [
+      "A) Multi-head attention",
+      "B) Feedforward layer",
+      "C) Layer normalization",
+      "D) Recurrent cell"
+    ],
+    answer: 3,
+    explanation: "Transformers are not based on recurrence; they use attention mechanisms and feedforward networks."
+  },
+  {
+    question: "What architecture is BERT based on?",
+    options: [
+      "A) RNN",
+      "B) LSTM",
+      "C) Transformer encoder",
+      "D) Transformer decoder"
+    ],
+    answer: 2,
+    explanation: "BERT (Bidirectional Encoder Representations from Transformers) uses only the encoder part of the transformer architecture."
+  },
+  {
+    question: "What kind of transformer architecture does GPT use?",
+    options: [
+      "A) Full transformer (encoder-decoder)",
+      "B) Bi-directional transformer",
+      "C) Transformer decoder only",
+      "D) Recurrent transformer"
+    ],
+    answer: 2,
+    explanation: "GPT (Generative Pre-trained Transformer) uses only the decoder stack of the transformer architecture for text generation."
+  },
+  {
+    question: "What makes transformers more parallelizable than RNNs or LSTMs?",
+    options: [
+      "A) Recurrent loops",
+      "B) Attention mechanism without recurrence",
+      "C) They use CNNs",
+      "D) They don’t require GPUs"
+    ],
+    answer: 1,
+    explanation: "Since transformers process input tokens simultaneously (not sequentially like RNNs), they are more parallelizable and efficient."
+  },
+  {
+    question: "In self-attention, the dot product of query and key is divided by what?",
+    options: [
+      "A) Batch size",
+      "B) Square root of the dimension of the key",
+      "C) Learning rate",
+      "D) Number of heads"
+    ],
+    answer: 1,
+    explanation: "The dot product is scaled by the square root of the key dimension to prevent extremely large gradients."
+  },
+  {
+    question: "What does the \"attention\" in transformers allow the model to do?",
+    options: [
+      "A) Memorize training data",
+      "B) Predict next word using only grammar",
+      "C) Focus on relevant parts of the input sequence when generating output",
+      "D) Encode images"
+    ],
+    answer: 2,
+    explanation: "Attention lets the model dynamically focus on different parts of the input sequence, improving contextual understanding."
+  }
+];
+
+
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+       
+     
+    function loadQuestion() {
+    const q = questions[current];
+    document.getElementById('question').textContent = q.question;
+    const choicesDiv = document.getElementById('choices');
+    choicesDiv.innerHTML = '';
+    document.getElementById('explanation').textContent = '';
+
+    q.options.forEach((option, index) => {
+      const btn = document.createElement('div');
+      btn.className = 'choice';
+      btn.textContent = option;
+      btn.onclick = () => checkAnswer(index, btn);
+      choicesDiv.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, element) {
+    const q = questions[current];
+    const allChoices = document.querySelectorAll('.choice');
+
+    allChoices.forEach(c => c.onclick = null);
+
+    if (selected === q.answer) {
+      element.classList.add('correct');
+      score++;
+    } else {
+      element.classList.add('wrong');
+      allChoices[q.answer].classList.add('correct');
+    }
+
+    document.getElementById('explanation').textContent = "📝 " + q.explanation;
+  }
+
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='3l5.html'">Go to Level 5 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '3l4.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
