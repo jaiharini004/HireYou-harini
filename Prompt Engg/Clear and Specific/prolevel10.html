@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Prompt Engineering Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+const questions = [
+  {
+    question: "You ask: 'List 10 emotions and map each to a color, a sound, and a metaphor.' How many unique mappings must be generated?",
+    choice1: "A) 10",
+    choice2: "B) 20",
+    choice3: "C) 30",
+    choice4: "D) 40",
+    answer: 3,
+    explanation: "10 emotions × 3 mappings = 30 outputs."
+  },
+  {
+    question: "Which phrase improves clarity: 'Describe 3 uses of AI quickly' vs. 'List 3 concise AI use-cases in 1 sentence each'?",
+    choice1: "A) First one",
+    choice2: "B) Second one",
+    choice3: "C) Both equal",
+    choice4: "D) Neither",
+    answer: 2,
+    explanation: "The second is clearer with scope, format, and length defined."
+  },
+  {
+    question: "A table has 5 columns and 7 rows (excluding headers). You prompt AI to fill it with one word per cell. Total tokens used (1 token/word)?",
+    choice1: "A) 35",
+    choice2: "B) 36",
+    choice3: "C) 40",
+    choice4: "D) 45",
+    answer: 1,
+    explanation: "5 columns × 7 rows = 35 words = 35 tokens."
+  },
+  {
+    question: "You want: 'A 2-paragraph story, each with 3 complex sentences. Each sentence: 20 tokens.' Total token count?",
+    choice1: "A) 100",
+    choice2: "B) 120",
+    choice3: "C) 60",
+    choice4: "D) 140",
+    answer: 2,
+    explanation: "2 paragraphs × 3 sentences × 20 tokens = 120 tokens."
+  },
+  {
+    question: "You prompt: 'Generate 4 analogies comparing prompt engineering to sports, food, music, and teaching.' How many conceptual mappings are needed?",
+    choice1: "A) 4",
+    choice2: "B) 8",
+    choice3: "C) 12",
+    choice4: "D) 16",
+    answer: 1,
+    explanation: "One analogy per domain = 4 concept-level mappings."
+  },
+  {
+    question: "Create 3 marketing slogans for 2 products in 2 styles: professional & playful. How many outputs required?",
+    choice1: "A) 6",
+    choice2: "B) 8",
+    choice3: "C) 10",
+    choice4: "D) 12",
+    answer: 4,
+    explanation: "2 products × 2 styles × 3 slogans = 12 slogans."
+  },
+  {
+    question: "A task involves reviewing 5 websites, each with a title (6 words), summary (40 words), and rating (1 word). Total words?",
+    choice1: "A) 235",
+    choice2: "B) 230",
+    choice3: "C) 215",
+    choice4: "D) 245",
+    answer: 1,
+    explanation: "5 × (6 + 40 + 1) = 235 words."
+  },
+  {
+    question: "Why does 'Give 7 detailed responses in short form' cause inconsistency?",
+    choice1: "A) Numbers are bad",
+    choice2: "B) 'Detailed' and 'short' conflict",
+    choice3: "C) 7 is a large number",
+    choice4: "D) AI can’t format",
+    answer: 2,
+    explanation: "Conflicting constraints — 'detailed' vs. 'short' — lead to variable output styles."
+  },
+  {
+    question: "You prompt: 'List 5 AI use-cases with 2 risks and 2 mitigations each.' How many total data points?",
+    choice1: "A) 20",
+    choice2: "B) 25",
+    choice3: "C) 30",
+    choice4: "D) 35",
+    answer: 2,
+    explanation: "5 use-cases × (1 + 2 + 2) = 5 × 5 = 25"
+  },
+  {
+    question: "A research prompt outputs 3 hypotheses, each with 2 supporting points and 2 counterpoints. Total statements?",
+    choice1: "A) 12",
+    choice2: "B) 15",
+    choice3: "C) 18",
+    choice4: "D) 21",
+    answer: 2,
+    explanation: "3 hypotheses × (1 + 2 + 2) = 3 × 5 = 15"
+  }
+];
+
+
+//qsn part
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='prompt_engineer.html'">Wowww You Aced it ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'prolevel10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

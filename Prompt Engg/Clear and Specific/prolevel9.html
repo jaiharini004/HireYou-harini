@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Prompt Engineering Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "A prompt requests: 'Summarize 3 articles. Each summary: 2 paragraphs, 4 sentences per paragraph.' How many total sentences?",
+    choice1: "A) 12",
+    choice2: "B) 18",
+    choice3: "C) 24",
+    choice4: "D) 30",
+    answer: 4,
+    explanation: "3 articles × 2 paragraphs × 4 sentences = 24 sentences."
+  },
+  {
+    question: "If each sentence averages 12 words, how many words total in Question 81's output?",
+    choice1: "A) 144",
+    choice2: "B) 216",
+    choice3: "C) 288",
+    choice4: "D) 360",
+    answer: 3,
+    explanation: "24 sentences × 12 words = 288 words."
+  },
+  {
+    question: "A prompt requests 4 product reviews, each with: a title (5 words), a review (2 paragraphs, 3 sentences each). Average 10 words per sentence. Total word count?",
+    choice1: "A) 200",
+    choice2: "B) 260",
+    choice3: "C) 280",
+    choice4: "D) 300",
+    answer: 2,
+    explanation: "Each review: 5 (title) + (2×3×10) = 5 + 60 = 65 words. 4 reviews × 65 = 260 words."
+  },
+  {
+    question: "You request: 'For 6 AI tools, list 3 pros and 3 cons per tool, 1 line each.' How many lines?",
+    choice1: "A) 18",
+    choice2: "B) 36",
+    choice3: "C) 48",
+    choice4: "D) 24",
+    answer: 2,
+    explanation: "6 tools × (3 pros + 3 cons) = 6 × 6 = 36 lines."
+  },
+  {
+    question: "You write: 'Generate a tweet (280 characters max), then give 3 possible replies (140 characters each). What’s the character limit for total output?",
+    choice1: "A) 420",
+    choice2: "B) 560",
+    choice3: "C) 600",
+    choice4: "D) 700",
+    answer: 2,
+    explanation: "280 + (3 × 140) = 280 + 420 = 700 characters."
+  },
+  {
+    question: "Why does this fail as a clear instruction: 'Give me 4 very different but similar answers'?",
+    choice1: "A) It’s too short",
+    choice2: "B) It’s oxymoronic and confusing",
+    choice3: "C) It lacks formatting",
+    choice4: "D) It’s creative",
+    answer: 2,
+    explanation: "'Very different but similar' is a contradiction without further context — leads to AI confusion."
+  },
+  {
+    question: "A multi-part prompt: 'Create a 4x3 matrix comparing 4 tools on 3 criteria, then rank tools overall. How many data cells plus 1 ranking line?",
+    choice1: "A) 12",
+    choice2: "B) 13",
+    choice3: "C) 15",
+    choice4: "D) 16",
+    answer: 2,
+    explanation: "4×3 = 12 matrix cells + 1 ranking output = 13 total response elements."
+  },
+  {
+    question: "Which prompt is more likely to yield structured responses?",
+    choice1: "A) 'Explain AI to me.'",
+    choice2: "B) 'Explain AI in 3 bullet points, each under 15 words.'",
+    choice3: "C) 'Tell me something smart.'",
+    choice4: "D) 'AI is amazing.'",
+    answer: 2,
+    explanation: "It sets format (bullets), scope (3 points), and length (15 words) — highly directive."
+  },
+  {
+    question: "You request: 'Write 5 definitions of NLP, each increasing in technicality.' Which skill does this prompt test?",
+    choice1: "A) Humor synthesis",
+    choice2: "B) Complexity scaling",
+    choice3: "C) Formatting compliance",
+    choice4: "D) Token prediction",
+    answer: 2,
+    explanation: "It requires the model to gradually increase complexity, which is an advanced prompting technique."
+  },
+  {
+    question: "If each NLP definition from Question 89 averages 18, 24, 30, 36, and 42 words respectively, what is the total word count?",
+    choice1: "A) 140",
+    choice2: "B) 150",
+    choice3: "C) 160",
+    choice4: "D) 170",
+    answer: 2,
+    explanation: "18 + 24 + 30 + 36 + 42 = 150 words."
+  }
+];
+
+
+//qsn part
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='prolevel10.html'">Go to Level 10 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'prolevel9.html'; // Redirect to Level 2 directly
+}
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

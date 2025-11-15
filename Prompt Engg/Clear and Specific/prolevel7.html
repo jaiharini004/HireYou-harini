@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Prompt Engineering Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 7</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [ 
+  {
+    question: "A prompt asks for: '7 strategies to improve focus, each with 2 examples, all under 300 words.' How many unique response units (strategies + examples) must be generated?",
+    choice1: "A) 7",
+    choice2: "B) 14",
+    choice3: "C) 21",
+    choice4: "D) 28",
+    answer: 3,
+    explanation: "7 strategies × 2 examples = 14 examples + 7 strategies = 21 unique parts in the output."
+  },
+  {
+    question: "You structure a prompt with 5 sub-instructions and expect 3 lines per instruction. What’s the expected total line count?",
+    choice1: "A) 5",
+    choice2: "B) 8",
+    choice3: "C) 10",
+    choice4: "D) 15",
+    answer: 4,
+    explanation: "5 sub-tasks × 3 lines each = 15 lines in total."
+  },
+  {
+    question: "Which prompt enforces both structure and tone?",
+    choice1: "A) 'Tell me a joke.'",
+    choice2: "B) 'Write a funny tweet about AI ethics, under 280 characters.'",
+    choice3: "C) 'What do you know about humor?'",
+    choice4: "D) 'AI is hilarious.'",
+    answer: 2,
+    explanation: "It defines tone (funny), format (tweet), and constraint (character limit)."
+  },
+  {
+    question: "You request: 'Summarize this report in 3 paragraphs, each exactly 4 sentences.' How many sentences total?",
+    choice1: "A) 12",
+    choice2: "B) 9",
+    choice3: "C) 7",
+    choice4: "D) 10",
+    answer: 1,
+    explanation: "3 paragraphs × 4 sentences = 12 total sentences."
+  },
+  {
+    question: "Why might the model struggle with 'Write 10 creative titles under 6 words for a technical blog'?",
+    choice1: "A) 6 words is too short",
+    choice2: "B) Creative + technical is a complex balance",
+    choice3: "C) Word count is ignored by default",
+    choice4: "D) AI doesn’t handle blogs",
+    answer: 2,
+    explanation: "Balancing creativity, conciseness, and technical clarity is a complex constraint stack."
+  },
+  {
+    question: "If you specify: 'List 3 pros and 3 cons of nuclear energy, 1 sentence each,' and AI gives 2 pros and 4 cons, what went wrong?",
+    choice1: "A) Prompt was vague",
+    choice2: "B) AI skipped constraints",
+    choice3: "C) Prompt lacked reinforcement like 'exactly' or bullet structure",
+    choice4: "D) AI doesn’t understand pros/cons",
+    answer: 3,
+    explanation: "'Exactly 3' and clearer formatting would increase accuracy."
+  },
+  {
+    question: "Estimate: A prompt produces 2 paragraphs per output. Each paragraph has 5 sentences of 12 words each. What’s the average word count?",
+    choice1: "A) 60",
+    choice2: "B) 100",
+    choice3: "C) 120",
+    choice4: "D) 150",
+    answer: 3,
+    explanation: "2 × 5 × 12 = 120 words."
+  },
+  {
+    question: "What’s the result of poorly scoped tasks like: 'Explain machine learning quickly'?",
+    choice1: "A) Perfect technical summary",
+    choice2: "B) Concise and clear answer",
+    choice3: "C) Ambiguity — 'quickly' isn’t defined",
+    choice4: "D) Humor instead of information",
+    answer: 3,
+    explanation: "Terms like 'quickly' are subjective — a clear constraint like 'in 2 sentences' is better."
+  },
+  {
+    question: "If you request: 'Give a numbered list of 5 steps, each under 10 words,' how many total words maximum should the output have?",
+    choice1: "A) 45",
+    choice2: "B) 50",
+    choice3: "C) 55",
+    choice4: "D) 60",
+    answer: 2,
+    explanation: "5 steps × 10 words = 50-word maximum."
+  },
+  {
+    question: "What technique improves compliance for multi-step prompts?",
+    choice1: "A) Lengthen your prompt",
+    choice2: "B) Use vague verbs",
+    choice3: "C) Use step-by-step formatting or bullet points",
+    choice4: "D) Include jokes",
+    answer: 3,
+    explanation: "Visually structured prompts improve execution of multiple tasks."
+  }
+];
+
+//qsn part
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='prolevel8.html'">Go to Level 8 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'prolevel7.html'; // Redirect to Level 2 directly
+}
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Prompt Engineering Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 1</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+    const questions = [
+
+  {
+    question: "What does “clear” mean in prompt engineering?",
+    choice1: "Using big words",
+    choice2: "Being specific and understandable",
+    choice3: "Being vague",
+    choice4: "Using slang",
+    answer: 2,
+    explanation: "Clarity ensures the model understands exactly what is asked."
+  },
+  {
+    question: "A prompt like “Tell me about dogs” is considered:",
+    choice1: "Vague",
+    choice2: "Specific",
+    choice3: "Mathematical",
+    choice4: "Technical",
+    answer: 1,
+    explanation: "It's broad and lacks focus or specific context."
+  },
+  {
+    question: "Which of the following prompts is the most clear and specific?",
+    choice1: "What do you know?",
+    choice2: "Write a 3-sentence summary about the French Revolution for a 5th grader.",
+    choice3: "Say something smart.",
+    choice4: "History, go!",
+    answer: 2,
+    explanation: "It specifies content, tone, length, and audience."
+  },
+  {
+    question: "Why is specificity important in prompts?",
+    choice1: "It makes responses shorter",
+    choice2: "It reduces processing time",
+    choice3: "It helps get more relevant responses",
+    choice4: "It limits the AI’s creativity",
+    answer: 3,
+    explanation: "Specificity reduces ambiguity and guides the model."
+  },
+  {
+    question: "What does a vague prompt often result in?",
+    choice1: "A perfectly accurate answer",
+    choice2: "A response based on random chance",
+    choice3: "An overly general or unrelated answer",
+    choice4: "A technical error",
+    answer: 3,
+    explanation: "Vague prompts leave the model guessing."
+  },
+  {
+    question: "Which is NOT a quality of a clear prompt?",
+    choice1: "Concise",
+    choice2: "Structured",
+    choice3: "Ambiguous",
+    choice4: "Task-specific",
+    answer: 3,
+    explanation: "Ambiguity leads to unclear outputs."
+  },
+  {
+    question: "Which prompt is clearer?",
+    choice1: "List facts.",
+    choice2: "List 5 facts about penguins’ adaptations to cold weather.",
+    choice3: "",
+    choice4: "",
+    answer: 2,
+    explanation: "It includes the number of items and the topic."
+  },
+  {
+    question: "In clear prompts, what should be avoided?",
+    choice1: "Exact instructions",
+    choice2: "Vague pronouns like “it” or “they” without context",
+    choice3: "Task description",
+    choice4: "Word count suggestions",
+    answer: 2,
+    explanation: "Unclear references confuse the model."
+  },
+  {
+    question: "What makes a prompt “specific”?",
+    choice1: "It includes general themes",
+    choice2: "It defines clear goals and constraints",
+    choice3: "It avoids punctuation",
+    choice4: "It repeats itself",
+    answer: 2,
+    explanation: "Specific prompts define exactly what is needed."
+  },
+  {
+    question: "“Write a poem” is an example of:",
+    choice1: "A precise task",
+    choice2: "A vague prompt",
+    choice3: "A programming command",
+    choice4: "A bug",
+    answer: 2,
+    explanation: "It lacks details like theme, length, or tone."
+  }
+
+
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='prolevel2.html'">Go to Level 2 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'prolevel1.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>

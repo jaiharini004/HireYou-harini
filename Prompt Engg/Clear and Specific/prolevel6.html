@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Prompt Engineering Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 6</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [ 
+  {
+    question: "A prompt says: 'Explain the water cycle in exactly 4 sentences for a child.' What would improve clarity further?",
+    choice1: "A) Add a word count",
+    choice2: "B) Define the child’s age or grade level",
+    choice3: "C) Use a different topic",
+    choice4: "D) Remove sentence limits",
+    answer: 2,
+    explanation: "The term 'child' is too broad. Defining the age or grade level will help tailor the explanation to the child's understanding."
+  },
+  {
+    question: "The phrase 'Provide a concise response' is:",
+    choice1: "A) Quantitatively clear",
+    choice2: "B) Ambiguous unless word/sentence limit is specified",
+    choice3: "C) The same as ‘write long’",
+    choice4: "D) A formatting instruction",
+    answer: 2,
+    explanation: "'Concise' is subjective, so adding a specific word or sentence limit makes the instruction clearer."
+  },
+  {
+    question: "How many constraints are in: 'List 5 reasons to recycle. Use bullet points. Limit to 1 line each.'",
+    choice1: "A) 1",
+    choice2: "B) 2",
+    choice3: "C) 3",
+    choice4: "D) 4",
+    answer: 3,
+    explanation: "The constraints are: number (5), format (bullet), and length (1 line each)."
+  },
+  {
+    question: "Which of the following will most help generate consistent output across multiple prompts?",
+    choice1: "A) Using informal tone",
+    choice2: "B) Standardizing instructions and formatting",
+    choice3: "C) Making prompts longer",
+    choice4: "D) Asking open-ended questions",
+    answer: 2,
+    explanation: "Standardized instructions and formatting help the AI recognize patterns and follow them more consistently."
+  },
+  {
+    question: "If a user needs a structured response with multiple fields (name, age, skill), what format should be used?",
+    choice1: "A) Poem",
+    choice2: "B) CSV or JSON",
+    choice3: "C) Bullet list only",
+    choice4: "D) Paragraph",
+    answer: 2,
+    explanation: "Structured formats like CSV or JSON are ideal for organizing data and ensuring proper extraction."
+  },
+  {
+    question: "Why should you avoid soft phrases like 'try to' or 'maybe' in prompts?",
+    choice1: "A) They slow the AI down",
+    choice2: "B) They make instructions less assertive and more vague",
+    choice3: "C) They confuse humans",
+    choice4: "D) They break formatting",
+    answer: 2,
+    explanation: "Uncertain language weakens the clarity of the prompt, leading to less reliable results from the AI."
+  },
+  {
+    question: "You want 5 definitions with exactly 15 words each. How many total words should the response have?",
+    choice1: "A) 50",
+    choice2: "B) 75",
+    choice3: "C) 100",
+    choice4: "D) 75",
+    answer: 3,
+    explanation: "5 × 15 = 75 words. This is a test of how word count works with given constraints."
+  },
+  {
+    question: "A prompt says: 'List 3 causes and 3 effects of global warming in two columns.' What is this prompt emphasizing?",
+    choice1: "A) Opinion",
+    choice2: "B) Visual layout",
+    choice3: "C) Clear structure and balance",
+    choice4: "D) Humor",
+    answer: 3,
+    explanation: "The use of equal numbers (3 causes and 3 effects) and columns emphasizes structure and balance."
+  },
+  {
+    question: "What’s the best way to ensure the model responds with a specific number of outputs?",
+    choice1: "A) Use vague instructions",
+    choice2: "B) Ask indirectly",
+    choice3: "C) Say 'List exactly X items' and use numbering",
+    choice4: "D) Add emojis",
+    answer: 3,
+    explanation: "Using precise instructions like 'exactly X items' and numbering ensures the AI provides the correct number of outputs."
+  },
+  {
+    question: "A good prompt says: 'Write a 100-word article about the benefits of journaling, for beginners.' What part could make it even more specific?",
+    choice1: "A) Specify tone (e.g., motivational, informative)",
+    choice2: "B) Use the word 'article' again",
+    choice3: "C) Ask for images",
+    choice4: "D) Remove word count",
+    answer: 1,
+    explanation: "Specifying the tone (motivational or informative) would help guide the writing style and emotional tone."
+  }
+];
+
+
+//qsn part
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='prolevel7.html'">Go to Level 7 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'prolevel6.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
