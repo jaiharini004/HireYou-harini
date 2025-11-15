@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Power BI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 5</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "What does this matplotlib code do? plt.plot(x, y, color='red', linewidth=2, linestyle='--')",
+    choice1: "A) Draws a solid red line",
+    choice2: "B) Draws a dotted black line",
+    choice3: "C) Draws a dashed red line",
+    choice4: "D) Draws a red bar chart",
+    answer: 3,
+    explanation: "linestyle='--' makes the line dashed, color='red', and linewidth=2."
+  },
+  {
+    question: "In Power BI, which visual would best show cumulative values over time?",
+    choice1: "A) Donut chart",
+    choice2: "B) Line chart",
+    choice3: "C) KPI",
+    choice4: "D) Stacked area chart",
+    answer: 4,
+    explanation: "Stacked area charts show cumulative trends across categories."
+  },
+  {
+    question: "What does this seaborn code do? sns.boxplot(data=df, x='department', y='salary')",
+    choice1: "A) Plots salary distribution by department",
+    choice2: "B) Plots mean salary",
+    choice3: "C) Plots a histogram",
+    choice4: "D) Plots a pie chart",
+    answer: 1,
+    explanation: "Boxplots show distribution and outliers across categories."
+  },
+  {
+    question: "In Power BI, what does this DAX do? Sales YTD = TOTALYTD(SUM(Sales[Amount]), 'Date'[Date])",
+    choice1: "A) Calculates total sales",
+    choice2: "B) Calculates sales for current month",
+    choice3: "C) Calculates year-to-date sales",
+    choice4: "D) Filters by date",
+    answer: 3,
+    explanation: "TOTALYTD() calculates the cumulative value of a measure up to the current date."
+  },
+  {
+    question: "Which visualization is ideal for showing ranked parts of a whole?",
+    choice1: "A) Scatter plot",
+    choice2: "B) Treemap",
+    choice3: "C) Line chart",
+    choice4: "D) Radar chart",
+    answer: 2,
+    explanation: "Treemaps are space-efficient visuals that display data hierarchically as parts of a whole."
+  },
+  {
+    question: "Which function in seaborn creates a correlation heatmap? sns.heatmap(df.corr(), annot=True)",
+    choice1: "A) Shows distribution",
+    choice2: "B) Shows outliers",
+    choice3: "C) Visualizes correlation between numeric variables",
+    choice4: "D) Displays null values",
+    answer: 3,
+    explanation: "heatmap(df.corr()) helps visualize relationships between numeric features."
+  },
+  {
+    question: "In Tableau, which of these can be used to create a new column?",
+    choice1: "A) Dimension",
+    choice2: "B) Calculated field",
+    choice3: "C) Sheet",
+    choice4: "D) Dashboard",
+    answer: 2,
+    explanation: "A calculated field in Tableau allows custom logic like IF, AVG, etc."
+  },
+  {
+    question: "What does this DAX expression return? Profit Margin = DIVIDE([Profit], [Sales])",
+    choice1: "A) Total sales",
+    choice2: "B) Sales minus profit",
+    choice3: "C) Profit as a percentage of sales",
+    choice4: "D) Profit + Sales",
+    answer: 3,
+    explanation: "DIVIDE() is used to avoid divide-by-zero errors. It returns Profit ÷ Sales."
+  },
+  {
+    question: "What does this Python code do? sns.barplot(x='region', y='revenue', data=df, ci=None)",
+    choice1: "A) Plots scatter",
+    choice2: "B) Shows bar chart without confidence interval",
+    choice3: "C) Stacks bars",
+    choice4: "D) Plots a pie chart",
+    answer: 2,
+    explanation: "ci=None disables error bars (confidence intervals)."
+  },
+  {
+    question: "In Power BI, what is the purpose of bookmarks?",
+    choice1: "A) Create charts",
+    choice2: "B) Automate refresh",
+    choice3: "C) Save report views for interactivity",
+    choice4: "D) Export dashboards",
+    answer: 3,
+    explanation: "Bookmarks let you save and switch between report states or views."
+  }
+];
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='bilev6.html'">Go to Level 6 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'bilev5.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

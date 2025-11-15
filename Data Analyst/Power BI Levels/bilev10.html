@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Power BI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "In Tableau, what is a 'Parameter' used for?",
+    choice1: "A) Static calculation",
+    choice2: "B) Dynamic filter input or calculation variable",
+    choice3: "C) Dataset duplication",
+    choice4: "D) Axis formatting",
+    answer: 2,
+    explanation: "Parameters are dynamic values users can input to control calculations, filters, or visual logic."
+  },
+  {
+    question: "Which matplotlib function allows manual color mapping for a categorical variable?",
+    choice1: "A) colormap()",
+    choice2: "B) color_dict()",
+    choice3: "C) color_palette()",
+    choice4: "D) set_color_map()",
+    answer: 3,
+    explanation: "color_palette() in seaborn or matplotlib helps map specific colors to categories."
+  },
+  {
+    question: "What’s the purpose of FILTER(ALL('Date'), 'Date'[Date] <= MAX('Date'[Date])) in DAX?",
+    choice1: "A) Slicing data",
+    choice2: "B) Generating YTD logic",
+    choice3: "C) Creating histogram",
+    choice4: "D) Adding measures",
+    answer: 2,
+    explanation: "This filter is used to iterate over all dates up to the current one — essential for YTD or running totals."
+  },
+  {
+    question: "In Power BI, what does the 'Page Navigation' button control?",
+    choice1: "A) Slicer layout",
+    choice2: "B) Filter view",
+    choice3: "C) Navigation between report tabs",
+    choice4: "D) Measure formatting",
+    answer: 3,
+    explanation: "Page Navigation allows users to jump between report pages via buttons."
+  },
+  {
+    question: "What does this Seaborn line generate? \nsns.set_context('talk', font_scale=1.2)",
+    choice1: "A) Sets plot resolution",
+    choice2: "B) Enlarges labels and context for presentation",
+    choice3: "C) Rotates axes",
+    choice4: "D) Highlights titles",
+    answer: 2,
+    explanation: "set_context() adjusts font and element sizes for presentation contexts."
+  },
+  {
+    question: "In Tableau, which function returns the most recent date in a dataset?",
+    choice1: "A) LAST()",
+    choice2: "B) MAX([Date])",
+    choice3: "C) FIRST()",
+    choice4: "D) INDEX()",
+    answer: 2,
+    explanation: "MAX([Date]) provides the latest date in a data field."
+  },
+  {
+    question: "What does this DAX logic return? \n% Sales = DIVIDE([Sales], CALCULATE([Sales], ALL('Product')))",
+    choice1: "A) Running total",
+    choice2: "B) Row-wise sales",
+    choice3: "C) Sales as % of total sales",
+    choice4: "D) Filtered sales",
+    answer: 3,
+    explanation: "This returns sales percentage out of the total, using ALL() to remove filters."
+  },
+  {
+    question: "In Power BI, which feature allows showing different visuals based on slicer value?",
+    choice1: "A) Measures",
+    choice2: "B) Conditional formatting",
+    choice3: "C) Bookmarks + Buttons",
+    choice4: "D) Drillthrough",
+    answer: 3,
+    explanation: "Combined use of bookmarks, buttons, and selection logic makes dynamic views possible."
+  },
+  {
+    question: "What does seaborn’s FacetGrid() enable?",
+    choice1: "A) Export to Excel",
+    choice2: "B) Multiple plots for subsets of data",
+    choice3: "C) Adjust axes automatically",
+    choice4: "D) Rotate colors",
+    answer: 2,
+    explanation: "FacetGrid() allows grid-based plots split by categories (like small multiples)."
+  },
+  {
+    question: "In Power BI, what is the use of DAX’s SELECTEDVALUE()?",
+    choice1: "A) Always returns max value",
+    choice2: "B) Used in relationships",
+    choice3: "C) Returns a single selected value or blank",
+    choice4: "D) Replaces slicers",
+    answer: 3,
+    explanation: "SELECTEDVALUE() retrieves the selected item from slicers or visuals — useful for dynamic titles or logic."
+  }
+];
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='data_analyst.html'">Hureyyy! You Aced it🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'bilev10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

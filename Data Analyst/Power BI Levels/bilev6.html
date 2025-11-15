@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Power BI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 6</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "What will this seaborn code return? sns.lineplot(x='month', y='sales', hue='region', data=df)",
+    choice1: "A) Multiple line plots grouped by region",
+    choice2: "B) One line per region",
+    choice3: "C) Pie chart",
+    choice4: "D) Histogram",
+    answer: 1,
+    explanation: "hue='region' creates separate lines for each region."
+  },
+  {
+    question: "What does plt.xticks(rotation=45) do?",
+    choice1: "A) Rotates Y labels",
+    choice2: "B) Rotates X-axis ticks 45°",
+    choice3: "C) Changes font size",
+    choice4: "D) Filters data",
+    answer: 2,
+    explanation: "Makes long X-axis labels more readable by tilting them."
+  },
+  {
+    question: "What’s the use of Tableau’s 'Calculated Field'?",
+    choice1: "A) Creates sheets",
+    choice2: "B) Imports data",
+    choice3: "C) Defines custom logic (e.g., IF [Sales] > 5000)",
+    choice4: "D) Creates dashboards",
+    answer: 3,
+    explanation: "Used to add new calculated columns like conditional metrics."
+  },
+  {
+    question: "Which visual type is best for comparing many variables side-by-side?",
+    choice1: "A) Stacked column chart",
+    choice2: "B) Scatter plot",
+    choice3: "C) Heatmap",
+    choice4: "D) KPI",
+    answer: 3,
+    explanation: "Heatmaps let you compare values across two dimensions using color gradients."
+  },
+  {
+    question: "What does this DAX return? Running Total = CALCULATE(SUM(Sales[Amount]), FILTER(ALL('Date'), 'Date'[Date] <= MAX('Date'[Date])))",
+    choice1: "A) Weekly total",
+    choice2: "B) Fixed value",
+    choice3: "C) Running total (cumulative sum)",
+    choice4: "D) Rank",
+    answer: 3,
+    explanation: "Uses FILTER to apply logic across dates → computes running total."
+  },
+  {
+    question: "In Seaborn, how to set a theme?",
+    choice1: "A) sns.graph()",
+    choice2: "B) sns.set_theme(style='darkgrid')",
+    choice3: "C) sns.theme('light')",
+    choice4: "D) sns.background()",
+    answer: 2,
+    explanation: "set_theme() customizes global style (like background, grid)."
+  },
+  {
+    question: "What does this create? df['sales_per_person'] = df['sales'] / df['employees']",
+    choice1: "A) Percentage",
+    choice2: "B) New calculated column",
+    choice3: "C) Dashboard",
+    choice4: "D) Aggregated value",
+    answer: 2,
+    explanation: "Creates a new column based on row-wise division."
+  },
+  {
+    question: "What’s the purpose of sns.pairplot(df)?",
+    choice1: "A) Single bar chart",
+    choice2: "B) Creates a grid of plots showing relationships between all variables",
+    choice3: "C) Plots histogram",
+    choice4: "D) Heatmap",
+    answer: 2,
+    explanation: "pairplot() creates a matrix of scatter plots between all numeric columns."
+  },
+  {
+    question: "In Power BI, what is a tooltip used for?",
+    choice1: "A) Data transformation",
+    choice2: "B) Exporting",
+    choice3: "C) Displaying hover-over detail",
+    choice4: "D) DAX writing",
+    answer: 3,
+    explanation: "Tooltips provide contextual data on hover, e.g., values, categories, trends."
+  },
+  {
+    question: "What does df.plot(kind='bar', stacked=True) do?",
+    choice1: "A) Histogram",
+    choice2: "B) Simple bar chart",
+    choice3: "C) Stacked bar chart",
+    choice4: "D) Line chart",
+    answer: 3,
+    explanation: "stacked=True stacks categories on top of each other."
+  }
+];
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='bilev7.html'">Go to Level 7 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'bilev6.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

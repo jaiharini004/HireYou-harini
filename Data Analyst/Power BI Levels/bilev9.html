@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Power BI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "Which advanced DAX function returns a running total with date context filtering preserved?",
+    choice1: "A) SUM()",
+    choice2: "B) CALCULATE()",
+    choice3: "C) TOTALYTD()",
+    choice4: "D) DATESYTD()",
+    answer: 3,
+    explanation: "TOTALYTD() calculates cumulative totals while respecting the date context."
+  },
+  {
+    question: "In Power BI, what enables users to switch between chart views dynamically on a single page?",
+    choice1: "A) Bookmarks",
+    choice2: "B) Field parameters",
+    choice3: "C) Data model",
+    choice4: "D) Slicers",
+    answer: 2,
+    explanation: "Field parameters allow users to dynamically toggle visuals or fields."
+  },
+  {
+    question: "What does plt.style.use('ggplot') in matplotlib do?",
+    choice1: "A) Applies 3D visuals",
+    choice2: "B) Switches to R-style visual theme",
+    choice3: "C) Displays tooltip",
+    choice4: "D) Adds annotations",
+    answer: 2,
+    explanation: "It changes the plot theme to a ggplot-style for aesthetics."
+  },
+  {
+    question: "In Tableau, which feature allows blending two data sources on a common field?",
+    choice1: "A) Relationships",
+    choice2: "B) Joins",
+    choice3: "C) Data Blending",
+    choice4: "D) Filters",
+    answer: 3,
+    explanation: "Data blending allows integrating two separate data sources with a linking field (primary/secondary)."
+  },
+  {
+    question: "In Power BI, what does the DAX expression below return? \nSales MTD = TOTALMTD(SUM(Sales[Amount]), 'Date'[Date])",
+    choice1: "A) Monthly average",
+    choice2: "B) Yearly sum",
+    choice3: "C) Cumulative monthly sales",
+    choice4: "D) Total sales",
+    answer: 3,
+    explanation: "TOTALMTD() returns a month-to-date cumulative sum."
+  },
+  {
+    question: "What is the purpose of a dual-axis chart in Tableau?",
+    choice1: "A) Export multiple visuals",
+    choice2: "B) Split filter logic",
+    choice3: "C) Overlay two metrics with different scales",
+    choice4: "D) Add interactivity",
+    answer: 3,
+    explanation: "Dual-axis charts help compare two different measures with separate axes."
+  },
+  {
+    question: "Which seaborn function is ideal to explore linear trend across multiple categorical variables?",
+    choice1: "A) scatterplot()",
+    choice2: "B) lineplot()",
+    choice3: "C) catplot(kind='point')",
+    choice4: "D) heatmap()",
+    answer: 3,
+    explanation: "catplot(kind='point') summarizes data points and shows trend across categories."
+  },
+  {
+    question: "What does the following DAX do in Power BI? \nCustomer Rank = RANKX(ALL(Customer[Name]), [Total Sales])",
+    choice1: "A) Filters top customers",
+    choice2: "B) Creates row number",
+    choice3: "C) Ranks customers by total sales",
+    choice4: "D) Generates unique IDs",
+    answer: 3,
+    explanation: "RANKX() ranks each customer by total sales, ignoring filters."
+  },
+  {
+    question: "What feature in Power BI allows customizing visibility of visuals based on user selection?",
+    choice1: "A) Tooltips",
+    choice2: "B) Drillthrough",
+    choice3: "C) Selection pane with bookmarks",
+    choice4: "D) Axis filters",
+    answer: 3,
+    explanation: "Bookmarks + Selection pane enable dynamic storytelling by hiding/showing visuals."
+  },
+  {
+    question: "Which seaborn parameter improves transparency in scatter plots with overlapping data?",
+    choice1: "A) alpha",
+    choice2: "B) color",
+    choice3: "C) label",
+    choice4: "D) linestyle",
+    answer: 1,
+    explanation: "alpha controls transparency — useful for overlapping points."
+  }
+];
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='bilev10.html'">Go to Level 10 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'bilev9.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

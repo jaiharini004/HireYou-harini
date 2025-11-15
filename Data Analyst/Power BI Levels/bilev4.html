@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Power BI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 4</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "What is the result of this Power BI DAX expression? Total Sales = SUM(Sales[Amount])",
+    choice1: "A) Multiplies all amounts",
+    choice2: "B) Returns unique values",
+    choice3: "C) Returns sum of the Amount column",
+    choice4: "D) Returns average",
+    answer: 3,
+    explanation: "This is a DAX measure that calculates the total sales using SUM()."
+  },
+  {
+    question: "What’s the best visual for displaying hierarchical data in Power BI?",
+    choice1: "A) Pie chart",
+    choice2: "B) Bar chart",
+    choice3: "C) Tree Map",
+    choice4: "D) Line chart",
+    answer: 3,
+    explanation: "Tree Maps show nested hierarchical relationships using size and color."
+  },
+  {
+    question: "In matplotlib, which parameter changes the line style?",
+    choice1: "A) linestyle",
+    choice2: "B) label",
+    choice3: "C) linewidth",
+    choice4: "D) color",
+    answer: 1,
+    explanation: "linestyle='--' or '-.' changes the pattern of the plotted line."
+  },
+  {
+    question: "What is the use of filters pane in Power BI?",
+    choice1: "A) Creating reports",
+    choice2: "B) Modifying visuals",
+    choice3: "C) Applying visual-, page-, or report-level filters",
+    choice4: "D) Refreshing data",
+    answer: 3,
+    explanation: "The filters pane lets you filter data at various levels."
+  },
+  {
+    question: "In Tableau, which field types are shown as blue pills?",
+    choice1: "A) Dimensions",
+    choice2: "B) Measures",
+    choice3: "C) Strings",
+    choice4: "D) Discrete fields",
+    answer: 4,
+    explanation: "Discrete fields (blue pills) create headers — not axes."
+  },
+  {
+    question: "What is the purpose of plt.legend() in a plot?",
+    choice1: "A) Sets background color",
+    choice2: "B) Changes axis",
+    choice3: "C) Displays series labels",
+    choice4: "D) Adds filters",
+    answer: 3,
+    explanation: "The legend explains what each color or marker represents."
+  },
+  {
+    question: "What does this line do in seaborn? sns.histplot(data=df, x='salary', bins=10)",
+    choice1: "A) Plots a bar chart",
+    choice2: "B) Plots salary trend",
+    choice3: "C) Plots a histogram with 10 bins",
+    choice4: "D) Summarizes data",
+    answer: 3,
+    explanation: "Plots a histogram of 'salary' values grouped into 10 bins."
+  },
+  {
+    question: "Which Power BI feature allows linking multiple datasets?",
+    choice1: "A) Fields pane",
+    choice2: "B) Data model",
+    choice3: "C) Visual pane",
+    choice4: "D) KPI visual",
+    answer: 2,
+    explanation: "Power BI’s data model supports relationships between tables (like SQL joins)."
+  },
+  {
+    question: "What does Tableau’s dual-axis feature enable?",
+    choice1: "A) Filters",
+    choice2: "B) Exporting charts",
+    choice3: "C) Two different scales in one chart",
+    choice4: "D) Page transitions",
+    answer: 3,
+    explanation: "Dual-axis lets you plot two different variables with separate scales."
+  },
+  {
+    question: "What is sns.scatterplot(x='age', y='income', data=df) used for?",
+    choice1: "A) Bar chart",
+    choice2: "B) Line chart",
+    choice3: "C) Scatter plot of age vs. income",
+    choice4: "D) Histogram",
+    answer: 3,
+    explanation: "Seaborn's scatterplot() shows the relationship between two numeric variables."
+  }
+];
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='bilev5.html'">Go to Level 5 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'bilev4.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

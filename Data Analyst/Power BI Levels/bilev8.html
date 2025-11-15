@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Power BI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 8</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [ { question: "In Power BI, when should you use a Waterfall Chart?", choice1: "A) To compare categories", choice2: "B) To analyze the cumulative effect of sequential positive/negative values", choice3: "C) To show correlation", choice4: "D) To display distribution", answer: 2, explanation: "Waterfall charts show additive/subtractive changes to a starting value." }, { question: "What does sns.violinplot() visualize?", choice1: "A) Cumulative frequency", choice2: "B) Mean and standard deviation", choice3: "C) Distribution and density", choice4: "D) Confidence interval", answer: 3, explanation: "violinplot combines boxplot with a kernel density plot." }, { question: "In Power BI, what does the 'Sync Slicers' feature do?", choice1: "A) Enables slicers to affect visuals across pages", choice2: "B) Disables page-level filters", choice3: "C) Syncs column data types", choice4: "D) Links queries", answer: 1, explanation: "Sync Slicers maintain consistent filters across multiple report pages." }, { question: "What does plt.tight_layout() achieve?", choice1: "A) Removes margins", choice2: "B) Automatically adjusts subplot spacing to fit neatly", choice3: "C) Increases font size", choice4: "D) Normalizes axis", answer: 2, explanation: "Prevents overlapping of plot elements by adjusting spacing." }, { question: "What is the key use of a 'Highlight Table' in Tableau?", choice1: "A) Calculating totals", choice2: "B) Filtering views", choice3: "C) Displaying values with color intensity", choice4: "D) Generating dashboards", answer: 3, explanation: "Highlight tables show color-coded cells to indicate value magnitude." }, { question: "In seaborn, what is the main purpose of sns.catplot()?", choice1: "A) Numerical regression", choice2: "B) Categorical plot wrapper", choice3: "C) Grid layout for line plots", choice4: "D) Plotting null values", answer: 2, explanation: "catplot is a high-level function to plot categorical variables using various plots." }, { question: "What does a DAX SWITCH() function do in Power BI?", choice1: "A) Filters rows", choice2: "B) Applies dynamic conditional logic", choice3: "C) Creates KPIs", choice4: "D) Joins tables", answer: 2, explanation: "SWITCH() works like a series of IF statements for returning values based on conditions." }, { question: "What does sns.jointplot() show in Seaborn?", choice1: "A) Only scatterplot", choice2: "B) Only bar chart", choice3: "C) Scatterplot + marginal histograms", choice4: "D) Line graph", answer: 3, explanation: "jointplot() displays both the scatterplot and distributions for each axis." }, { question: "In Power BI, which function removes all filters from a table or column?", choice1: "A) REMOVEFILTER()", choice2: "B) IGNORE()", choice3: "C) FILTERCLEAR()", choice4: "D) ALL()", answer: 4, explanation: "ALL() removes filters from a column or table, often used in calculating totals." }, { question: "What does annot=True do in sns.heatmap()?", choice1: "A) Applies filters", choice2: "B) Adds labels to cells", choice3: "C) Changes color palette", choice4: "D) Adds borders", answer: 2, explanation: "annot=True writes numeric values inside the cells of the heatmap." } ];
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='bilev9.html'">Go to Level 9 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'bilev8.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

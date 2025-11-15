@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Power BI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 2</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "What does Power BI use to shape and transform data?",
+    choice1: "A) DAX",
+    choice2: "B) Query Editor",
+    choice3: "C) Excel",
+    choice4: "D) Data Factory",
+    answer: 2,
+    explanation: "Query Editor is used to clean and transform data in Power BI."
+  },
+  {
+    question: "In matplotlib, which function sets the X-axis label?",
+    choice1: "A) plt.labelx()",
+    choice2: "B) plt.xlabel()",
+    choice3: "C) plt.xaxis()",
+    choice4: "D) plt.axis_x()",
+    answer: 2,
+    explanation: "plt.xlabel('Label') adds a label to the X-axis."
+  },
+  {
+    question: "What is a dashboard?",
+    choice1: "A) A dataset",
+    choice2: "B) A text file",
+    choice3: "C) A collection of visualizations",
+    choice4: "D) A single chart",
+    answer: 3,
+    explanation: "A dashboard combines multiple visuals into a single view."
+  },
+  {
+    question: "What does a scatter plot show?",
+    choice1: "A) Distribution",
+    choice2: "B) Correlation between two numeric variables",
+    choice3: "C) Trends over time",
+    choice4: "D) Categorical comparison",
+    answer: 2,
+    explanation: "Scatter plots reveal relationships between numeric variables."
+  },
+  {
+    question: "What is a slicer in Power BI?",
+    choice1: "A) A tool to format visuals",
+    choice2: "B) A button to save data",
+    choice3: "C) A visual filter",
+    choice4: "D) A DAX function",
+    answer: 3,
+    explanation: "A slicer is an interactive filter that controls the data shown in visuals."
+  },
+  {
+    question: "What is the full form of DAX?",
+    choice1: "A) Data Analytics Expression",
+    choice2: "B) Data Analysis Expressions",
+    choice3: "C) Direct Axis Execution",
+    choice4: "D) Dashboard Axis Extension",
+    answer: 2,
+    explanation: "DAX is a formula language used in Power BI for calculations."
+  },
+  {
+    question: "In matplotlib, how do you create a bar chart?",
+    choice1: "A) plt.barchart()",
+    choice2: "B) plt.hist()",
+    choice3: "C) plt.bar()",
+    choice4: "D) plt.plotbar()",
+    answer: 3,
+    explanation: "plt.bar() is the correct function to create a bar chart."
+  },
+  {
+    question: "What is the Y-axis in a chart usually used for?",
+    choice1: "A) Categorical variable",
+    choice2: "B) X-axis labeling",
+    choice3: "C) Quantitative measurement",
+    choice4: "D) Filter",
+    answer: 3,
+    explanation: "The Y-axis typically represents numeric values."
+  },
+  {
+    question: "Which of these is a BI tool?",
+    choice1: "A) Jupyter Notebook",
+    choice2: "B) Visual Studio",
+    choice3: "C) Tableau",
+    choice4: "D) Microsoft Word",
+    answer: 3,
+    explanation: "Tableau is a BI tool used to visualize and analyze data."
+  },
+  {
+    question: "Which plot shows data spread and outliers?",
+    choice1: "A) Line Chart",
+    choice2: "B) Box Plot",
+    choice3: "C) Pie Chart",
+    choice4: "D) Donut Chart",
+    answer: 2,
+    explanation: "Box plots visualize the spread, quartiles, and outliers."
+  }
+];
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='bilev3.html'">Go to Level 3 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'bilev2.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
