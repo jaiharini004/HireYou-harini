@@ -1,1 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 1 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 1</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "What is the dot product of vectors A = [1, 2] and B = [3, 4]?",
+    choice1: "A) 7",
+    choice2: "B) 8",
+    choice3: "C) 11",
+    choice4: "D) 11",
+    answer: 4,
+    explanation: "The dot product is calculated as 1×3 + 2×4 = 3 + 8 = 11."
+  },
+  {
+    question: "What is the determinant of a 2×2 matrix [a b; c d]?",
+    choice1: "A) a + d",
+    choice2: "B) ab − cd",
+    choice3: "C) ad − bc",
+    choice4: "D) a − d",
+    answer: 3,
+    explanation: "For a 2×2 matrix, the determinant is computed as ad − bc."
+  },
+  {
+    question: "Which of the following is a scalar quantity?",
+    choice1: "A) Vector",
+    choice2: "B) Matrix",
+    choice3: "C) Determinant",
+    choice4: "D) Tensor",
+    answer: 3,
+    explanation: "A determinant results in a single number, making it a scalar."
+  },
+  {
+    question: "What is the mean of the dataset: [2, 4, 6, 8, 10]?",
+    choice1: "A) 4",
+    choice2: "B) 6",
+    choice3: "C) 8",
+    choice4: "D) 10",
+    answer: 2,
+    explanation: "Mean = (2 + 4 + 6 + 8 + 10)/5 = 30/5 = 6."
+  },
+  {
+    question: "Which operation is valid between two matrices A (2×3) and B (3×2)?",
+    choice1: "A) A + B",
+    choice2: "B) A × B",
+    choice3: "C) B − A",
+    choice4: "D) B ÷ A",
+    answer: 2,
+    explanation: "Matrix multiplication is valid: A(2×3) × B(3×2) results in a 2×2 matrix."
+  },
+  {
+    question: "What is an eigenvalue?",
+    choice1: "A) A vector that rotates a matrix",
+    choice2: "B) A value such that Ax = λx for some non-zero vector x",
+    choice3: "C) The trace of a matrix",
+    choice4: "D) A matrix inverse",
+    answer: 2,
+    explanation: "An eigenvalue λ satisfies Ax = λx for some non-zero vector x."
+  },
+  {
+    question: "What is the rank of a matrix?",
+    choice1: "A) Number of columns",
+    choice2: "B) Number of non-zero elements",
+    choice3: "C) Number of non-zero rows in row echelon form",
+    choice4: "D) Number of diagonals",
+    answer: 3,
+    explanation: "The rank is the number of linearly independent rows (or columns)."
+  },
+  {
+    question: "Which of the following matrices is symmetric?",
+    choice1: "A) [1 2; 3 4]",
+    choice2: "B) [2 0; 0 2]",
+    choice3: "C) [1 2; 2 1]",
+    choice4: "D) [0 1; 2 0]",
+    answer: 3,
+    explanation: "A symmetric matrix is equal to its transpose: [1 2; 2 1] satisfies this."
+  },
+  {
+    question: "If a matrix has more columns than rows, it is called:",
+    choice1: "A) Square matrix",
+    choice2: "B) Column matrix",
+    choice3: "C) Tall matrix",
+    choice4: "D) Wide matrix",
+    answer: 4,
+    explanation: "A matrix with more columns than rows is known as a wide matrix."
+  },
+  {
+    question: "What does the trace of a square matrix represent?",
+    choice1: "A) Sum of all elements",
+    choice2: "B) Product of all diagonal elements",
+    choice3: "C) Sum of diagonal elements",
+    choice4: "D) Number of non-zero elements",
+    answer: 3,
+    explanation: "The trace is the sum of the elements on the main diagonal."
+  }
+];
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='1l2.html'">Go to Level 2 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '1l1.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
 
