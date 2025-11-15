@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manipulation</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "What is fuzzy matching?",
+    choice1: "A) Strict text comparison",
+    choice2: "B) Approximate string comparison",
+    choice3: "C) Regex replacement",
+    choice4: "D) Removing duplicates",
+    answer: 2,
+    explanation: "Fuzzy matching allows similar but not exact matches, useful in names, typos, etc."
+  },
+  {
+    question: "What Python library supports fuzzy matching?",
+    choice1: "A) fuzzywuzzy",
+    choice2: "B) pandas",
+    choice3: "C) matplotlib",
+    choice4: "D) sklearn",
+    answer: 1,
+    explanation: "fuzzywuzzy compares string similarity using Levenshtein Distance."
+  },
+  {
+    question: "What does pd.get_dummies(df, drop_first=True) do?",
+    choice1: "A) Drops NaNs",
+    choice2: "B) Converts categoricals to one-hot encoding",
+    choice3: "C) Normalizes data",
+    choice4: "D) Filters rows",
+    answer: 2,
+    explanation: "Converts categorical columns into binary dummy/indicator variables."
+  },
+  {
+    question: "How to handle outliers using IQR?\n\nQ1 = df['col'].quantile(0.25)\nQ3 = df['col'].quantile(0.75)\nIQR = Q3 - Q1\ndf = df[~((df['col'] < (Q1 - 1.5 * IQR)) | (df['col'] > (Q3 + 1.5 * IQR)))]",
+    choice1: "A) Keeps only outliers",
+    choice2: "B) Filters out outliers",
+    choice3: "C) Keeps all values",
+    choice4: "D) Rounds values",
+    answer: 2,
+    explanation: "Removes rows where values fall outside IQR bounds."
+  },
+  {
+    question: "What is the purpose of .combine_first() in pandas?",
+    choice1: "A) Joins DataFrames",
+    choice2: "B) Fills missing values in one DataFrame with values from another",
+    choice3: "C) Compares two Series",
+    choice4: "D) Replaces rows",
+    answer: 2,
+    explanation: "combine_first() fills NaNs in the first DataFrame using the second."
+  },
+  {
+    question: "Python: How to set datetime column as index?\ndf.set_index('date', inplace=True)",
+    choice1: "A) Adds date",
+    choice2: "B) Replaces data",
+    choice3: "C) Makes 'date' the DataFrame index",
+    choice4: "D) Converts date to string",
+    answer: 3,
+    explanation: "Sets 'date' as index, useful for time series operations."
+  },
+  {
+    question: "What does .explode() do when used on a column of lists?",
+    choice1: "A) Creates new rows per list element",
+    choice2: "B) Joins values",
+    choice3: "C) Deletes duplicates",
+    choice4: "D) Returns mean",
+    answer: 1,
+    explanation: "Each element in the list becomes its own row — handy for multi-select data."
+  },
+  {
+    question: "Python: Merge with multiple keys.\npd.merge(df1, df2, on=['id', 'name'])",
+    choice1: "A) Single key join",
+    choice2: "B) Joins on two keys",
+    choice3: "C) Drops duplicates",
+    choice4: "D) Fills NaNs",
+    answer: 2,
+    explanation: "This performs a join using multiple matching columns."
+  },
+  {
+    question: "What does this do?\ndf['col'].apply(lambda x: x.strip().lower() if isinstance(x, str) else x)",
+    choice1: "A) Drops rows",
+    choice2: "B) Normalizes string values",
+    choice3: "C) Replaces missing values",
+    choice4: "D) Fills NaNs",
+    answer: 2,
+    explanation: "Cleans whitespace and casing for strings only (avoids crashing on non-strings)."
+  },
+  {
+    question: "What’s the best way to profile a dataset?",
+    choice1: "A) df.shape",
+    choice2: "B) df.describe()",
+    choice3: "C) pandas-profiling or ydata-profiling",
+    choice4: "D) print(df)",
+    answer: 3,
+    explanation: "pandas-profiling (or ydata-profiling) gives a full statistical report, missing counts, distributions, correlation heatmaps, etc."
+  }
+];
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='data_analyst.html'">Hureyyy! You Aced it🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'manlev10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

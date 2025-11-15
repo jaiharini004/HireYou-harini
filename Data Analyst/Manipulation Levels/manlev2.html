@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manipulation</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 2</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "Which command is used to reset index of a DataFrame?",
+    choice1: "A) df.resetIndex()",
+    choice2: "B) df.new_index()",
+    choice3: "C) df.reset_index()",
+    choice4: "D) df.index_reset()",
+    answer: 3,
+    explanation: "reset_index() resets row indexing, often after dropping rows."
+  },
+  {
+    question: "What is the output of df.info()?",
+    choice1: "A) Summary statistics",
+    choice2: "B) Missing values only",
+    choice3: "C) Data types, non-null counts, memory usage",
+    choice4: "D) Correlation matrix",
+    answer: 3,
+    explanation: "info() gives structural overview of the DataFrame."
+  },
+  {
+    question: "How to remove all whitespace in a string column?",
+    choice1: "A) df.strip()",
+    choice2: "B) df['col'].strip()",
+    choice3: "C) df['col'].str.strip()",
+    choice4: "D) df['col'].remove()",
+    answer: 3,
+    explanation: "str.strip() removes leading/trailing whitespace in string fields."
+  },
+  {
+    question: "Which function gives a quick statistical summary?",
+    choice1: "A) df.stats()",
+    choice2: "B) df.describe()",
+    choice3: "C) df.summary()",
+    choice4: "D) df.shape()",
+    answer: 2,
+    explanation: "describe() shows count, mean, std, min, quartiles, max."
+  },
+  {
+    question: "What does df.drop(['col1', 'col2'], axis=1) do?",
+    choice1: "A) Deletes rows",
+    choice2: "B) Drops specified columns",
+    choice3: "C) Drops missing values",
+    choice4: "D) Renames columns",
+    answer: 2,
+    explanation: "axis=1 refers to columns, so specified columns are dropped."
+  },
+  {
+    question: "What does df.shape return?",
+    choice1: "A) Total memory",
+    choice2: "B) Number of columns",
+    choice3: "C) Tuple: (rows, columns)",
+    choice4: "D) Only row count",
+    answer: 3,
+    explanation: "shape returns the dimensions of the DataFrame as a tuple."
+  },
+  {
+    question: "Which value often represents missing data?",
+    choice1: "A) \"none\"",
+    choice2: "B) empty string",
+    choice3: "C) NaN",
+    choice4: "D) 0",
+    answer: 3,
+    explanation: "NaN (Not a Number) is a standard representation of missing values in pandas."
+  },
+  {
+    question: "How can outliers be detected visually?",
+    choice1: "A) Pie chart",
+    choice2: "B) Histogram",
+    choice3: "C) Box plot",
+    choice4: "D) Bar chart",
+    answer: 3,
+    explanation: "Box plots show outliers as dots beyond whiskers."
+  },
+  {
+    question: "What happens if you drop duplicates using df.drop_duplicates()?",
+    choice1: "A) Replaces missing data",
+    choice2: "B) Sorts the DataFrame",
+    choice3: "C) Keeps only the first instance of duplicates",
+    choice4: "D) Converts strings to lowercase",
+    answer: 3,
+    explanation: "It removes all but the first instance of duplicate rows."
+  },
+  {
+    question: "Which method renames columns?",
+    choice1: "A) df.column_names()",
+    choice2: "B) df.rename(columns={'old':'new'})",
+    choice3: "C) df.columns = ['new']",
+    choice4: "D) df.replace_col()",
+    answer: 2,
+    explanation: "rename(columns={...}) is used to rename one or more columns."
+  }
+];
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='manlev3.html'">Go to Level 3 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'manlev2.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

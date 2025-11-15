@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manipulation</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 8</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "How to remove duplicate rows but keep the last occurrence?\ndf.drop_duplicates(keep='last')",
+    choice1: "A) Keeps first occurrence",
+    choice2: "B) Keeps last occurrence",
+    choice3: "C) Keeps none",
+    choice4: "D) Keeps all",
+    answer: 2,
+    explanation: "keep='last' retains the last appearance of duplicated entries."
+  },
+  {
+    question: "What is the result of:\ndf['col'] = df['col'].str.extract(r'(\\d+)')",
+    choice1: "A) Extracts alphabets",
+    choice2: "B) Extracts digits",
+    choice3: "C) Extracts nulls",
+    choice4: "D) Replaces values",
+    answer: 2,
+    explanation: "Extracts digits (numbers) using regex."
+  },
+  {
+    question: "Which is true about df.applymap()?",
+    choice1: "A) Applies function to rows",
+    choice2: "B) Applies function to elements of entire DataFrame",
+    choice3: "C) Only works on Series",
+    choice4: "D) Same as map()",
+    answer: 2,
+    explanation: "applymap() works element-wise on the whole DataFrame (not just a column)."
+  },
+  {
+    question: "Which code fills missing numeric values only with median?\ndf.fillna(df.median(numeric_only=True))",
+    choice1: "A) Fills all nulls",
+    choice2: "B) Fills only text fields",
+    choice3: "C) Fills numeric fields with median",
+    choice4: "D) Drops rows",
+    answer: 3,
+    explanation: "Median is calculated for numeric columns; used to fill missing values."
+  },
+  {
+    question: "What does this code do?\ndf[['first_name', 'last_name']] = df['full_name'].str.split(' ', expand=True)",
+    choice1: "A) Combines names",
+    choice2: "B) Splits full name into two columns",
+    choice3: "C) Removes names",
+    choice4: "D) Creates full name",
+    answer: 2,
+    explanation: "Splits the string by space and expands it into two separate columns."
+  },
+  {
+    question: "What is the best method to clean extra spaces within strings?",
+    choice1: "A) str.strip()",
+    choice2: "B) str.lstrip()",
+    choice3: "C) str.replace(' ', '')",
+    choice4: "D) str.replace(r'\\s+', ' ', regex=True)",
+    answer: 4,
+    explanation: "Replaces multiple whitespace characters with a single space."
+  },
+  {
+    question: "What does errors='ignore' do in astype()?\ndf['col'].astype(int, errors='ignore')",
+    choice1: "A) Converts values to int",
+    choice2: "B) Skips rows with conversion errors",
+    choice3: "C) Fills nulls",
+    choice4: "D) Returns error",
+    answer: 2,
+    explanation: "Ignores values that can't be converted and keeps them unchanged."
+  },
+  {
+    question: "What does this code do?\ndf['month'] = df['date'].dt.month",
+    choice1: "A) Extracts weekday",
+    choice2: "B) Extracts month",
+    choice3: "C) Converts to date",
+    choice4: "D) Parses string",
+    answer: 2,
+    explanation: "dt.month extracts the month component from datetime column."
+  },
+  {
+    question: "What does pd.to_numeric(df['col'], errors='coerce') do?",
+    choice1: "A) Converts column to string",
+    choice2: "B) Converts column to numeric, setting invalids to NaN",
+    choice3: "C) Drops text",
+    choice4: "D) Fills blanks",
+    answer: 2,
+    explanation: "Invalid values are converted to NaN instead of raising errors."
+  },
+  {
+    question: "What does this command do?\ndf = df.loc[:, ~df.columns.duplicated()]",
+    choice1: "A) Drops rows",
+    choice2: "B) Drops columns",
+    choice3: "C) Drops duplicated columns",
+    choice4: "D) Drops duplicated rows",
+    answer: 3,
+    explanation: "This uses ~df.columns.duplicated() to keep only the first occurrence of each column."
+  }
+];
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='manlev9.html'">Go to Level 9 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'manlev8.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manipulation</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 7</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "What does the following code do?\ndf['clean_text'] = df['text'].str.replace(r'[^\w\\s]', '', regex=True)",
+    choice1: "A) Removes spaces",
+    choice2: "B) Replaces empty strings with nulls",
+    choice3: "C) Removes punctuation",
+    choice4: "D) Replaces words",
+    answer: 3,
+    explanation: "The regular expression r'[^\w\\s]' matches non-alphanumeric and non-space characters — i.e., punctuation."
+  },
+  {
+    question: "What is the result of:\ndf[df['email'].str.contains('@gmail.com', na=False)]",
+    choice1: "A) Filters out gmail users",
+    choice2: "B) Replaces gmail with blank",
+    choice3: "C) Selects rows with Gmail addresses",
+    choice4: "D) Returns error on nulls",
+    answer: 3,
+    explanation: "str.contains() checks for Gmail; na=False prevents error on nulls."
+  },
+  {
+    question: "What will this code return?\ndf.groupby(['city', 'gender'])['income'].mean().reset_index()",
+    choice1: "A) Total income by gender",
+    choice2: "B) Mean income by city only",
+    choice3: "C) Mean income grouped by city and gender",
+    choice4: "D) Error",
+    answer: 3,
+    explanation: "Multiple groupings (city & gender) and reset to flat table format."
+  },
+  {
+    question: "What does df['dob'] = pd.to_datetime(df['dob'], errors='coerce') do?",
+    choice1: "A) Converts strings to datetime",
+    choice2: "B) Replaces invalid dates with NaT",
+    choice3: "C) Leaves bad values as-is",
+    choice4: "D) Drops invalid rows",
+    answer: 2,
+    explanation: "errors='coerce' converts invalid formats into NaT (missing datetime)."
+  },
+  {
+    question: "What is the result of this join?\npd.merge(df1, df2, how='outer', on='id')",
+    choice1: "A) Inner join",
+    choice2: "B) Left join",
+    choice3: "C) Right join",
+    choice4: "D) Full outer join",
+    answer: 4,
+    explanation: "how='outer' merges all rows from both DataFrames, filling gaps with NaN."
+  },
+  {
+    question: "What is the result of:\ndf['age_bucket'] = pd.cut(df['age'], bins=[0, 18, 35, 60, 100], labels=['Teen', 'Young Adult', 'Adult', 'Senior'])",
+    choice1: "A) Converts age into numerical labels",
+    choice2: "B) Creates categorical bins",
+    choice3: "C) Deletes age column",
+    choice4: "D) Normalizes age",
+    answer: 2,
+    explanation: "pd.cut() groups continuous values into bins with labels."
+  },
+  {
+    question: "How to count missing values in each row?\ndf.isnull().sum(axis=1)",
+    choice1: "A) Count by column",
+    choice2: "B) Total nulls",
+    choice3: "C) Count by row",
+    choice4: "D) Drop nulls",
+    answer: 3,
+    explanation: "axis=1 calculates across rows."
+  },
+  {
+    question: "What does df.stack() do?",
+    choice1: "A) Flattens the DataFrame",
+    choice2: "B) Converts wide to long format",
+    choice3: "C) Removes index",
+    choice4: "D) Normalizes data",
+    answer: 2,
+    explanation: "stack() pivots columns into rows, resulting in a Series."
+  },
+  {
+    question: "What will be the result of this expression?\ndf['domain'] = df['email'].str.split('@').str[1]",
+    choice1: "A) Extracts usernames",
+    choice2: "B) Extracts domains",
+    choice3: "C) Replaces email",
+    choice4: "D) Joins two strings",
+    answer: 2,
+    explanation: "Splits email into two parts and selects the domain part."
+  },
+  {
+    question: "What does this do?\ndf['flag'] = df.apply(lambda row: 'High' if row['score'] > 80 else 'Low', axis=1)",
+    choice1: "A) Sets score to 0",
+    choice2: "B) Applies condition column-wise",
+    choice3: "C) Applies row-wise condition",
+    choice4: "D) Applies filter",
+    answer: 3,
+    explanation: "apply(..., axis=1) evaluates row-wise conditions."
+  }
+];
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='manlev8.html'">Go to Level 8 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'manlev7.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
