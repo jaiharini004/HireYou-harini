@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Select Role</title>
+  <link rel="stylesheet" href="role.css" />
+</head>
+<body class="role-body">
+  <div class="role-box">
+    <h2>🤠 WHICH ROLE WOULD YOU LIKE TO PREFER ?</h2>
+    <div class="role-options">
+      <button class="role-option" data-role="Student" onclick="navigateToPage('student.html')">STUDENT</button>
+      <button class="role-option" data-role="Graduate" onclick="navigateToPage('student.html')">GRADUATE</button>
+      <button class="role-option" data-role="Experienced" onclick="navigateToPage('student.html')">EXPERIENCED</button>
+    </div>
+  </div>
+
+  <script>
+    // Function to navigate to the specific page based on the selected role
+    function navigateToPage(page) {
+      window.location.href = page;
+    }
+  </script>
+</body>
+</html>

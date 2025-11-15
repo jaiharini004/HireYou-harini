@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: url(videos/bg.png);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  
+
+.container {
+  background:url(videos/bg.png);
+  backdrop-filter: blur(12px);
+  border: 2px solid rgba(75, 145, 43, 0.966);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  border-radius: 1.5rem;
+  padding: 2.5rem;
+  max-width: 64rem;
+  width: 90%;
+  text-align: center;
+  animation: fadeIn 1s ease-out forwards;
+}
+
+.container h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #0f6040; /* purple-700 */
+  margin-bottom: 1rem;
+  animation: bounce 1.5s infinite;
+}
+
+.container p {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #19532f;
+  margin-bottom: 2.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.card {
+  background:url(videos/grid.png);
+  border-radius: 1rem;
+  padding: 1rem;
+  cursor: pointer;
+  border-top: 4px solid;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-0.5rem);
+  box-shadow: 0 10px 25px rgba(16, 134, 85, 0.975);
+}
+
+.card-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.card-desc {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+.aptitude { border-color: #0a4534; } /* purple-400 */
+.syllabus { border-color: #0a4534; }  /* green-400 */
+.mock     { border-color: #0a4534; }  /* blue-400 */
+.card-title.aptitude { color: #097361; }
+.card-title.syllabus { color: #097361; }
+.card-title.mock     { color: #097361; }
+
+/* Animations */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}

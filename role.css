@@ -1,0 +1,84 @@
+/* Full-screen background */
+body.role-body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: url(videos/bg.png) no-repeat center center fixed ;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Center box with animated border */
+.role-box {
+  padding: 30px 40px;
+  text-align: center;
+  border: 6px solid;
+  border-image: linear-gradient(45deg, #288f98, #208e74, ) ;
+  border-radius: 25px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  animation: borderPulse 5s linear infinite;
+}
+
+/* Heading styling */
+.role-box h2 {
+  font-family: garamond bold;
+  font-size: 24px;
+  color: #064326;
+  margin-bottom: 20px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* Buttons as role options */
+.role-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.role-option {
+  padding: 12px;
+  font-size: 18px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #44c05f, #438e5d);
+  color: rgb(31, 68, 14);
+  font-family: garamond bolder;
+  font-weight: 900; 
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.role-option:hover {
+  background: linear-gradient(135deg, #24785c, #41bc58);
+  transform: scale(1.05);
+}
+
+.role-option:active {
+  background-color: #32cd32;
+  transform: scale(1.1);
+}
+
+/* Background animation */
+@keyframes bgMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Border shine animation */
+@keyframes borderPulse {
+  0% {
+    border-image: linear-gradient(45deg, #1f5758, #246b34) 1;
+  }
+  50% {
+    border-image: linear-gradient(45deg, #246d3d, #32783a) 1;
+  }
+  100% {
+    border-image: linear-gradient(45deg, #193f38, #1f4b38) 1;
+  }
+}
