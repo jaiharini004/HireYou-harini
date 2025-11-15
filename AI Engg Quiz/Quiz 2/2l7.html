@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 2 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 7</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+
+const questions = [
+  {
+    question: "What is the main goal of an SVM?",
+    options: [
+      "A) To minimize entropy",
+      "B) To reduce variance",
+      "C) To find the hyperplane that maximizes the margin between classes",
+      "D) To maximize the number of features"
+    ],
+    answer: 2,
+    explanation: "The primary objective of SVM is to find the optimal hyperplane that maximizes the margin between different classes in the dataset."
+  },
+  {
+    question: "What is a hyperplane in the context of SVM?",
+    options: [
+      "A) A decision tree",
+      "B) A decision boundary separating classes",
+      "C) A layer in a neural network",
+      "D) A set of clustered points"
+    ],
+    answer: 1,
+    explanation: "A hyperplane is a flat affine subspace that acts as a decision boundary between classes in SVM."
+  },
+  {
+    question: "What is the margin in SVM?",
+    options: [
+      "A) The distance between the centroid of the classes",
+      "B) The distance between the hyperplane and the closest data points",
+      "C) The error rate of the model",
+      "D) The number of support vectors"
+    ],
+    answer: 1,
+    explanation: "Margin refers to the distance between the separating hyperplane and the nearest data points from each class (support vectors)."
+  },
+  {
+    question: "What are support vectors?",
+    options: [
+      "A) Random points in the dataset",
+      "B) Data points closest to the hyperplane that influence its position",
+      "C) Centroids of the clusters",
+      "D) All correctly classified points"
+    ],
+    answer: 1,
+    explanation: "Support vectors are the critical elements of the training set that lie closest to the decision boundary and determine its position."
+  },
+  {
+    question: "What is the function of kernel tricks in SVM?",
+    options: [
+      "A) To transform data into higher dimensions for linear separability",
+      "B) To reduce training time",
+      "C) To compute feature importance",
+      "D) To cluster the data"
+    ],
+    answer: 0,
+    explanation: "Kernels enable SVM to operate in a higher-dimensional space without explicitly computing the transformation, allowing non-linear separation."
+  },
+  {
+    question: "Which of the following is a commonly used kernel function in SVM?",
+    options: [
+      "A) Cosine kernel",
+      "B) Radial Basis Function (RBF)",
+      "C) Manhattan kernel",
+      "D) Laplace transform"
+    ],
+    answer: 1,
+    explanation: "RBF is a popular kernel used in SVM to handle non-linear classification by mapping data to higher dimensions."
+  },
+  {
+    question: "What happens when you choose a very high value for C in SVM?",
+    options: [
+      "A) The model focuses on minimizing classification error, possibly overfitting",
+      "B) The margin becomes wider",
+      "C) The model becomes more regularized",
+      "D) The kernel function is ignored"
+    ],
+    answer: 0,
+    explanation: "A high value of C reduces the margin and aims to classify all training examples correctly, which may lead to overfitting."
+  },
+  {
+    question: "In SVM, a soft margin allows:",
+    options: [
+      "A) Some misclassifications to improve generalization",
+      "B) A hard decision boundary with no errors",
+      "C) Faster convergence",
+      "D) Removal of support vectors"
+    ],
+    answer: 0,
+    explanation: "Soft margin SVM allows a few misclassifications in order to prevent overfitting and improve generalization to new data."
+  },
+  {
+    question: "Which of the following is true about linear SVM?",
+    options: [
+      "A) It uses polynomial kernels",
+      "B) It can only separate linearly separable data",
+      "C) It cannot be used for binary classification",
+      "D) It is not scalable to large datasets"
+    ],
+    answer: 1,
+    explanation: "Linear SVM can only classify data that is linearly separable, i.e., data that can be separated using a straight line or plane."
+  },
+  {
+    question: "When is it better to use non-linear SVM?",
+    options: [
+      "A) When features are highly correlated",
+      "B) When data is not linearly separable",
+      "C) When training data is very large",
+      "D) When there are no outliers"
+    ],
+    answer: 1,
+    explanation: "Non-linear SVM is used when classes cannot be separated by a straight line, and kernel functions can help map data to a higher dimension for separation."
+  }
+];
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    
+  function loadQuestion() {
+    const q = questions[current];
+    document.getElementById('question').textContent = q.question;
+    const choicesDiv = document.getElementById('choices');
+    choicesDiv.innerHTML = '';
+    document.getElementById('explanation').textContent = '';
+
+    q.options.forEach((option, index) => {
+      const btn = document.createElement('div');
+      btn.className = 'choice';
+      btn.textContent = option;
+      btn.onclick = () => checkAnswer(index, btn);
+      choicesDiv.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, element) {
+    const q = questions[current];
+    const allChoices = document.querySelectorAll('.choice');
+
+    allChoices.forEach(c => c.onclick = null);
+
+    if (selected === q.answer) {
+      element.classList.add('correct');
+      score++;
+    } else {
+      element.classList.add('wrong');
+      allChoices[q.answer].classList.add('correct');
+    }
+
+    document.getElementById('explanation').textContent = "📝 " + q.explanation;
+  }
+
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='2l8.html'">Go to Level 8 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '2l7.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

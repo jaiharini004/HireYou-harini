@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 2 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 6</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "What is the basic idea behind a decision tree?",
+    options: [
+      "A) To create a single neural network for predictions",
+      "B) To split data into subsets based on feature values",
+      "C) To transform data using PCA",
+      "D) To cluster data points into groups"
+    ],
+    answer: 1,
+    explanation: "A decision tree works by splitting data into subsets based on the value of input features, creating a tree-like model of decisions."
+  },
+  {
+    question: "Which of the following is a disadvantage of decision trees?",
+    options: [
+      "A) They are hard to interpret",
+      "B) They are computationally expensive",
+      "C) They are prone to overfitting",
+      "D) They can't handle categorical data"
+    ],
+    answer: 2,
+    explanation: "Decision trees tend to overfit training data, especially when they become very deep and complex."
+  },
+  {
+    question: "What is the purpose of pruning in decision trees?",
+    options: [
+      "A) To speed up training time",
+      "B) To balance the dataset",
+      "C) To reduce overfitting by removing branches",
+      "D) To convert the model to a linear one"
+    ],
+    answer: 2,
+    explanation: "Pruning involves removing unnecessary nodes or branches from the tree to improve generalization and reduce overfitting."
+  },
+  {
+    question: "Which of the following techniques reduces overfitting in decision trees?",
+    options: [
+      "A) Increasing the tree depth",
+      "B) Using ensemble methods like Random Forest",
+      "C) Ignoring feature importance",
+      "D) Choosing more complex features"
+    ],
+    answer: 1,
+    explanation: "Ensemble methods like Random Forest combine multiple trees and reduce the risk of overfitting by averaging predictions."
+  },
+  {
+    question: "What is the role of Gini Impurity or Information Gain in decision trees?",
+    options: [
+      "A) To handle missing values",
+      "B) To prune the tree",
+      "C) To decide the best feature for splitting",
+      "D) To evaluate model performance"
+    ],
+    answer: 2,
+    explanation: "Gini Impurity and Information Gain are used to evaluate how good a feature is at splitting the dataset, helping the tree decide where to branch."
+  },
+  {
+    question: "A deep decision tree that performs well on training data but poorly on new data is likely:",
+    options: [
+      "A) Underfitting",
+      "B) Overfitting",
+      "C) Optimized",
+      "D) Regularized"
+    ],
+    answer: 1,
+    explanation: "Overfitting occurs when the model learns the training data too well, including noise and details that don’t generalize."
+  },
+  {
+    question: "What is the main idea of a Random Forest?",
+    options: [
+      "A) A linear stack of trees",
+      "B) An ensemble of multiple decision trees using bagging",
+      "C) A combination of SVMs and trees",
+      "D) A single large tree with no pruning"
+    ],
+    answer: 1,
+    explanation: "Random Forest builds many decision trees using bootstrapped samples and averages their predictions to improve accuracy and reduce overfitting."
+  },
+  {
+    question: "Which parameter in decision trees limits the depth of the tree?",
+    options: [
+      "A) min_samples_split",
+      "B) max_depth",
+      "C) criterion",
+      "D) bootstrap"
+    ],
+    answer: 1,
+    explanation: "The max_depth parameter controls how deep the tree can grow, helping prevent overfitting by limiting complexity."
+  },
+  {
+    question: "What is the benefit of feature importance scores in decision trees?",
+    options: [
+      "A) They help interpret which features are most useful for predictions",
+      "B) They increase accuracy",
+      "C) They reduce training time",
+      "D) They remove redundant data"
+    ],
+    answer: 0,
+    explanation: "Decision trees naturally provide feature importance scores, which indicate which features are most influential in the model."
+  },
+  {
+    question: "Which situation is most likely to cause underfitting in decision trees?",
+    options: [
+      "A) Large tree depth",
+      "B) Pruning too little",
+      "C) Setting a very low max depth",
+      "D) Using all features"
+    ],
+    answer: 2,
+    explanation: "If the max depth is too shallow, the tree won’t capture enough patterns in the data, leading to underfitting."
+  }
+];
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+
+    function loadQuestion() {
+    const q = questions[current];
+    document.getElementById('question').textContent = q.question;
+    const choicesDiv = document.getElementById('choices');
+    choicesDiv.innerHTML = '';
+    document.getElementById('explanation').textContent = '';
+
+    q.options.forEach((option, index) => {
+      const btn = document.createElement('div');
+      btn.className = 'choice';
+      btn.textContent = option;
+      btn.onclick = () => checkAnswer(index, btn);
+      choicesDiv.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, element) {
+    const q = questions[current];
+    const allChoices = document.querySelectorAll('.choice');
+
+    allChoices.forEach(c => c.onclick = null);
+
+    if (selected === q.answer) {
+      element.classList.add('correct');
+      score++;
+    } else {
+      element.classList.add('wrong');
+      allChoices[q.answer].classList.add('correct');
+    }
+
+    document.getElementById('explanation').textContent = "📝 " + q.explanation;
+  }
+
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='2l7.html'">Go to Level 7 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '2l6.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

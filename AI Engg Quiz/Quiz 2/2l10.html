@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 2 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "What is overfitting in machine learning?",
+    options: [
+      "A) The model performs well on both training and test data",
+      "B) The model underestimates the training data",
+      "C) The model performs well on training data but poorly on test data",
+      "D) The model ignores the training data"
+    ],
+    answer: 2,
+    explanation: "Overfitting happens when the model learns noise and performs poorly on unseen data."
+  },
+  {
+    question: "What is the primary goal of regularization in machine learning?",
+    options: [
+      "A) Prevent overfitting",
+      "B) Improve data preprocessing",
+      "C) Increase model complexity",
+      "D) Speed up training"
+    ],
+    answer: 0,
+    explanation: "Regularization adds a penalty term to the loss function to discourage overly complex models, helping to prevent overfitting."
+  },
+  {
+    question: "Which of the following is a type of L1 regularization?",
+    options: [
+      "A) Ridge Regression",
+      "B) Lasso Regression",
+      "C) Elastic Net",
+      "D) Polynomial Regression"
+    ],
+    answer: 1,
+    explanation: "Lasso (Least Absolute Shrinkage and Selection Operator) uses L1 regularization to shrink some coefficients to zero."
+  },
+  {
+    question: "What does L2 regularization do to model coefficients?",
+    options: [
+      "A) Sets some coefficients to zero",
+      "B) Penalizes large coefficients without setting them to zero",
+      "C) Increases model variance",
+      "D) Decreases the bias"
+    ],
+    answer: 1,
+    explanation: "L2 regularization (Ridge) discourages large coefficients by adding the square of them to the loss function."
+  },
+  {
+    question: "What is a sign of underfitting in a model?",
+    options: [
+      "A) High training and high test error",
+      "B) Low training error but high test error",
+      "C) Low training and low test error",
+      "D) High training but low test error"
+    ],
+    answer: 0,
+    explanation: "Underfitting occurs when a model is too simple and can't capture patterns in the data, resulting in high error on both training and test sets."
+  },
+  {
+    question: "What is the role of dropout in deep learning?",
+    options: [
+      "A) Increase training time",
+      "B) Reduce learning rate",
+      "C) Prevent overfitting by randomly deactivating neurons during training",
+      "D) Improve model interpretability"
+    ],
+    answer: 2,
+    explanation: "Dropout randomly turns off neurons during training, forcing the network to not rely on any single node and reducing overfitting."
+  },
+  {
+    question: "In cross-validation, what is the purpose of a validation set?",
+    options: [
+      "A) To test the final model",
+      "B) To tune model hyperparameters",
+      "C) To clean the data",
+      "D) To increase model complexity"
+    ],
+    answer: 1,
+    explanation: "The validation set is used to evaluate model performance during training and tune hyperparameters to avoid overfitting."
+  },
+  {
+    question: "Which regularization method combines both L1 and L2 penalties?",
+    options: [
+      "A) Ridge",
+      "B) Lasso",
+      "C) Elastic Net",
+      "D) Linear Regression"
+    ],
+    answer: 2,
+    explanation: "Elastic Net combines L1 and L2 regularization to balance feature selection and coefficient shrinkage."
+  },
+  {
+    question: "If a model is too complex, which of the following is likely?",
+    options: [
+      "A) Underfitting",
+      "B) Overfitting",
+      "C) Linear behavior",
+      "D) Low training error and low test error"
+    ],
+    answer: 1,
+    explanation: "A model that's too complex may memorize training data and perform poorly on new, unseen data."
+  },
+  {
+    question: "Which of the following strategies can help reduce overfitting?",
+    options: [
+      "A) Increase the number of features",
+      "B) Train for more epochs",
+      "C) Use dropout or regularization",
+      "D) Use a simpler validation strategy"
+    ],
+    answer: 2,
+    explanation: "Dropout, L1/L2 regularization, and proper cross-validation are commonly used to reduce overfitting."
+  }
+];
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    
+  function loadQuestion() {
+    const q = questions[current];
+    document.getElementById('question').textContent = q.question;
+    const choicesDiv = document.getElementById('choices');
+    choicesDiv.innerHTML = '';
+    document.getElementById('explanation').textContent = '';
+
+    q.options.forEach((option, index) => {
+      const btn = document.createElement('div');
+      btn.className = 'choice';
+      btn.textContent = option;
+      btn.onclick = () => checkAnswer(index, btn);
+      choicesDiv.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, element) {
+    const q = questions[current];
+    const allChoices = document.querySelectorAll('.choice');
+
+    allChoices.forEach(c => c.onclick = null);
+
+    if (selected === q.answer) {
+      element.classList.add('correct');
+      score++;
+    } else {
+      element.classList.add('wrong');
+      allChoices[q.answer].classList.add('correct');
+    }
+
+    document.getElementById('explanation').textContent = "📝 " + q.explanation;
+  }
+
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='ai_engineer.html'">Hurreyy ! You Aced it 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '2l10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

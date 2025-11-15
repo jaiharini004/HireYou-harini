@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 2 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 3</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "What is the main purpose of One-Hot Encoding?",
+    options: [
+      "A) Reduce dataset size",
+      "B) Normalize data",
+      "C) Convert categorical variables into numeric format",
+      "D) Remove duplicate features"
+    ],
+    answer: 2,
+    explanation: "One-hot encoding transforms categorical variables into a binary matrix so that machine learning models can process them."
+  },
+  {
+    question: "What does Normalization typically do to a feature?",
+    options: [
+      "A) Removes missing values",
+      "B) Scales it to a 0–1 range",
+      "C) Converts it to a binary value",
+      "D) Applies PCA"
+    ],
+    answer: 1,
+    explanation: "Normalization rescales features to a fixed range (often 0 to 1), improving model performance and training stability."
+  },
+  {
+    question: "Which technique is used for reducing the number of input features while preserving variance?",
+    options: [
+      "A) Feature hashing",
+      "B) One-hot encoding",
+      "C) Principal Component Analysis (PCA)",
+      "D) Min-max scaling"
+    ],
+    answer: 2,
+    explanation: "PCA reduces dimensionality by creating new components that retain most of the dataset's variability."
+  },
+  {
+    question: "Which of the following is NOT a feature scaling technique?",
+    options: [
+      "A) Standardization",
+      "B) Normalization",
+      "C) One-hot encoding",
+      "D) Min-max scaling"
+    ],
+    answer: 2,
+    explanation: "One-hot encoding is used for categorical variables, not for scaling numerical data."
+  },
+  {
+    question: "In standardization, data is:",
+    options: [
+      "A) Scaled to [0, 1]",
+      "B) Transformed to have mean 0 and standard deviation 1",
+      "C) Converted to integers",
+      "D) Encoded with labels"
+    ],
+    answer: 1,
+    explanation: "Standardization centers data around 0 with unit variance, which is useful for models that assume a normal distribution."
+  },
+  {
+    question: "What does feature selection aim to do?",
+    options: [
+      "A) Keep only the most relevant features",
+      "B) Scale all the features",
+      "C) Create new features from existing ones",
+      "D) Normalize all features"
+    ],
+    answer: 0,
+    explanation: "Feature selection involves identifying and retaining the most impactful variables, improving model performance and reducing overfitting."
+  },
+  {
+    question: "Which method is commonly used to handle categorical features?",
+    options: [
+      "A) Normalization",
+      "B) Label Encoding",
+      "C) PCA",
+      "D) Z-score scaling"
+    ],
+    answer: 1,
+    explanation: "Label Encoding assigns a unique integer to each category and is often used for ordinal categorical variables."
+  },
+  {
+    question: "What is a downside of One-Hot Encoding?",
+    options: [
+      "A) Reduces model accuracy",
+      "B) Causes data leakage",
+      "C) Increases dimensionality",
+      "D) Removes important features"
+    ],
+    answer: 2,
+    explanation: "One-hot encoding can lead to high dimensionality, especially with categorical variables having many levels."
+  },
+  {
+    question: "Which of the following creates new features from existing ones?",
+    options: [
+      "A) Feature extraction",
+      "B) Feature selection",
+      "C) Normalization",
+      "D) Missing value imputation"
+    ],
+    answer: 0,
+    explanation: "Feature extraction involves deriving new features (e.g., aggregations, ratios) to better represent the data."
+  },
+  {
+    question: "What is the purpose of Polynomial Features in feature engineering?",
+    options: [
+      "A) Reduces variance",
+      "B) Adds interaction and higher-order terms",
+      "C) Normalizes the dataset",
+      "D) Removes redundant variables"
+    ],
+    answer: 1,
+    explanation: "Polynomial features expand the feature space by including powers and combinations of existing features, capturing non-linear relationships."
+  }
+];
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    
+  
+    function loadQuestion() {
+    const q = questions[current];
+    document.getElementById('question').textContent = q.question;
+    const choicesDiv = document.getElementById('choices');
+    choicesDiv.innerHTML = '';
+    document.getElementById('explanation').textContent = '';
+
+    q.options.forEach((option, index) => {
+      const btn = document.createElement('div');
+      btn.className = 'choice';
+      btn.textContent = option;
+      btn.onclick = () => checkAnswer(index, btn);
+      choicesDiv.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, element) {
+    const q = questions[current];
+    const allChoices = document.querySelectorAll('.choice');
+
+    allChoices.forEach(c => c.onclick = null);
+
+    if (selected === q.answer) {
+      element.classList.add('correct');
+      score++;
+    } else {
+      element.classList.add('wrong');
+      allChoices[q.answer].classList.add('correct');
+    }
+
+    document.getElementById('explanation').textContent = "📝 " + q.explanation;
+  }
+
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='2l4.html'">Go to Level 4 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '2l3.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

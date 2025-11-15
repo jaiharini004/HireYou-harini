@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 2 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 8</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+
+const questions = [
+  {
+    question: "What is the main idea behind the K-Nearest Neighbors algorithm?",
+    options: [
+      "A) Build a decision tree from data",
+      "B) Use probabilistic inference",
+      "C) Predict the output based on the majority label of the nearest data points",
+      "D) Train a linear model"
+    ],
+    answer: 2,
+    explanation: "KNN predicts the class of a sample based on the majority class among its k nearest neighbors in the training set."
+  },
+  {
+    question: "What is the role of the parameter k in KNN?",
+    options: [
+      "A) Defines the number of trees",
+      "B) Determines how many neighbors to consider when making a prediction",
+      "C) Determines the depth of the decision boundary",
+      "D) Sets the learning rate"
+    ],
+    answer: 1,
+    explanation: "The k in KNN specifies how many closest training samples should be considered to make predictions."
+  },
+  {
+    question: "What happens if the value of k is too low (e.g., 1)?",
+    options: [
+      "A) The model becomes too general",
+      "B) The model may overfit the noise in the data",
+      "C) Accuracy will always increase",
+      "D) All data points will be classified to the same class"
+    ],
+    answer: 1,
+    explanation: "A small k makes the model sensitive to noise and outliers, leading to overfitting."
+  },
+  {
+    question: "What happens if the value of k is too high?",
+    options: [
+      "A) Overfitting increases",
+      "B) Prediction speed increases",
+      "C) The model may underfit and become too simple",
+      "D) Accuracy always improves"
+    ],
+    answer: 2,
+    explanation: "A large k smooths out the decision boundary too much and can lead to underfitting."
+  },
+  {
+    question: "Which of the following is a common distance metric used in KNN?",
+    options: [
+      "A) Gini Index",
+      "B) Euclidean Distance",
+      "C) Entropy",
+      "D) Cosine Similarity Tree"
+    ],
+    answer: 1,
+    explanation: "Euclidean distance is one of the most commonly used metrics in KNN to measure similarity between points."
+  },
+  {
+    question: "Which of the following situations might cause KNN to perform poorly?",
+    options: [
+      "A) Very high-dimensional feature space",
+      "B) Binary classification problems",
+      "C) When k is an odd number",
+      "D) When data is normalized"
+    ],
+    answer: 0,
+    explanation: "In high-dimensional spaces, distance measures lose meaning due to the 'curse of dimensionality,' which can harm KNN's performance."
+  },
+  {
+    question: "What kind of learning algorithm is KNN?",
+    options: [
+      "A) Lazy learning algorithm",
+      "B) Eager learning algorithm",
+      "C) Online learning algorithm",
+      "D) Reinforcement learning algorithm"
+    ],
+    answer: 0,
+    explanation: "KNN is a lazy learning algorithm because it doesn't learn from the training data immediately—it stores it and computes predictions during inference."
+  },
+  {
+    question: "Which of the following steps is important before applying KNN?",
+    options: [
+      "A) One-hot encoding",
+      "B) Feature scaling or normalization",
+      "C) Dimensionality reduction using LSTM",
+      "D) Regularization"
+    ],
+    answer: 1,
+    explanation: "Since KNN relies on distance calculations, features should be scaled (e.g., using normalization or standardization) to avoid bias."
+  },
+  {
+    question: "What is a weighted KNN?",
+    options: [
+      "A) A KNN that uses weights to update model parameters",
+      "B) A version where closer neighbors have more influence than farther ones",
+      "C) A KNN with regularization",
+      "D) A KNN that uses unsupervised learning"
+    ],
+    answer: 1,
+    explanation: "In weighted KNN, each neighbor's vote is weighted by its distance—closer neighbors contribute more to the prediction."
+  },
+  {
+    question: "Which of the following is a disadvantage of KNN?",
+    options: [
+      "A) It can’t be used for classification",
+      "B) It is computationally expensive at prediction time",
+      "C) It doesn’t require distance metrics",
+      "D) It cannot handle continuous data"
+    ],
+    answer: 1,
+    explanation: "KNN stores all training data and computes distances during prediction, making it slow for large datasets."
+  }
+];
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    
+  function loadQuestion() {
+    const q = questions[current];
+    document.getElementById('question').textContent = q.question;
+    const choicesDiv = document.getElementById('choices');
+    choicesDiv.innerHTML = '';
+    document.getElementById('explanation').textContent = '';
+
+    q.options.forEach((option, index) => {
+      const btn = document.createElement('div');
+      btn.className = 'choice';
+      btn.textContent = option;
+      btn.onclick = () => checkAnswer(index, btn);
+      choicesDiv.appendChild(btn);
+    });
+  }
+
+  function checkAnswer(selected, element) {
+    const q = questions[current];
+    const allChoices = document.querySelectorAll('.choice');
+
+    allChoices.forEach(c => c.onclick = null);
+
+    if (selected === q.answer) {
+      element.classList.add('correct');
+      score++;
+    } else {
+      element.classList.add('wrong');
+      allChoices[q.answer].classList.add('correct');
+    }
+
+    document.getElementById('explanation').textContent = "📝 " + q.explanation;
+  }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='2l9.html'">Go to Level 9 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '2l8.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
