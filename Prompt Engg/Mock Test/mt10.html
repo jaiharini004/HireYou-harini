@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test - Level 9</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 9 (Calculation)</h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNext()">Finish 🏁</button>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "1. You want a prompt to output data in CSV format. Which of these is the best instruction?", options: ["A) \"Give data\"", "B) \"Write neatly\"", "C) \"Output data as comma-separated values with headers\"", "D) \"Say something about this data\""], answer: 2, explanation: "Specific format instructions (CSV with headers) direct the model clearly." },      
+      { question: "2. Which model behavior indicates “prompt overfitting”?", options: ["A) Output follows example structure but fails on similar variants", "B) Output is random", "C) Output ignores prompt", "D) Model refuses to answer"], answer: 0, explanation: "Overfitting = model sticks too closely to few-shot examples, failing to generalize." },
+      { question: "3. A prompt outputs 10 items but you only want 5. What’s an effective fix?", options: ["A) Reduce temperature", "B) Add word limit", "C) Add instruction: “List only 5 items”", "D) Add examples"], answer: 2, explanation: "Direct instruction like “List only 5 items” constrains output correctly." },
+      { question: "4. What’s a major risk of allowing user-editable system prompts?", options: ["A) More creativity", "B) Reduced token cost", "C) Prompt injection", "D) Higher throughput"], answer: 2, explanation: "Users may insert harmful instructions via prompt injection attacks." },
+      { question: "5. Which evaluation method is quantitative in nature?", options: ["A) User feedback", "B) BLEU / ROUGE scores", "C) Reading model outputs", "D) Heuristic review"], answer: 1, explanation: "BLEU/ROUGE scores quantify similarity to reference outputs." },
+      { question: "6. If token limit is exceeded, how might the model behave?", options: ["A) Outputs everything as expected", "B) Truncates either prompt or completion", "C) Speeds up", "D) Returns higher accuracy"], answer: 1, explanation: "Outputs will be truncated to fit token cap—can break prompt logic." },
+      { question: "7. Which approach best improves model factual grounding?", options: ["A) Boost temperature", "B) Add retrieval context (RAG)", "C) Make prompt more poetic", "D) Use old data"], answer: 1, explanation: "Retrieval-Augmented Generation gives the model current, verifiable information." },
+      { question: "8. You want consistent answers across reruns. Which setting helps?", options: ["A) Temperature = 1.0", "B) Temperature = 0", "C) Remove prompt constraints", "D) Enable beam search"], answer: 1, explanation: "Temperature = 0 disables randomness, making output deterministic." },
+      { question: "9. Your model outputs a hallucinated citation. Why?", options: ["A) Prompt too short", "B) Model prefers factual output", "C) Prompt asked for sources without providing any", "D) Low max tokens"], answer: 2, explanation: "Without a knowledge base or source retrieval, the model may invent citations to appear helpful." },
+      { question: "10. You reduce a prompt from 600 to 400 tokens, and model performance stays the same. What did you gain?", options: ["A) Factual accuracy", "B) Token efficiency → lower cost", "C) Creativity", "D) Bias"], answer: 1, explanation: "Reducing tokens while preserving quality improves efficiency and reduces cost." }
+    ];
+
+    let score = 0;
+
+    function renderQuiz() {
+      const quiz = document.getElementById("quiz");
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+
+        const qTitle = document.createElement("h3");
+        qTitle.textContent = q.question;
+        qDiv.appendChild(qTitle);
+
+        const opts = document.createElement("div");
+        opts.className = "options";
+
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.textContent = opt;
+          btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+          opts.appendChild(btn);
+        });
+
+        const exp = document.createElement("div");
+        exp.className = "explanation";
+        exp.id = `exp${index}`;
+
+        qDiv.appendChild(opts);
+        qDiv.appendChild(exp);
+        quiz.appendChild(qDiv);
+      });
+    }
+
+    function handleAnswer(qDiv, selected, correct, explanation) {
+      const explanationEl = qDiv.querySelector(".explanation");
+      if (selected === correct) {
+        score += 2;
+        explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+      } else {
+        explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+      }
+      explanationEl.style.display = 'block';
+      qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+      const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+      if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+    }
+
+    function showFinalScore() {
+      document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+      document.getElementById("submitBtn").style.display = 'none';
+      document.getElementById("nextBtn").style.display = 'block';
+    }
+
+    function goToNext() {
+      window.location.href = "prompt.html";
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>

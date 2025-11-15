@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test - Level 6</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Mock Test - Level 6 (Expert)</h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNext()">Next ➡️</button>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "1. What is one reason why large prompts might fail?", options: ["A) They are more creative", "B) They always improve quality", "C) They may exceed context window limits", "D) They use less memory"], answer: 2, explanation: "LLMs have a token limit; exceeding it results in truncated or failed responses." },
+      { question: "2. Prompt engineering helps assess what aspect of LLMs?", options: ["A) Physical architecture", "B) Data pipeline capacity", "C) Behavioral and reasoning capabilities", "D) Batch sizes"], answer: 2, explanation: "Prompting is a window into how LLMs 'reason' and respond under different constraints." },
+      { question: "3. A well-engineered prompt for a classification task should include:", options: ["A) Labels and definitions of categories", "B) Random keywords", "C) Ambiguous commands", "D) Output examples only"], answer: 0, explanation: "Clearly defining categories and labels guides classification performance." },
+      { question: "4. Why are role-based prompts effective?", options: ["A) They reduce memory usage", "B) They boost randomness", "C) They help AI adopt a persona or context for more relevant answers", "D) They add hardware speed"], answer: 2, explanation: "Assigning a role (e.g., 'You are a lawyer...') helps LLMs shape outputs contextually." },
+      { question: "5. What does “prompt injection” typically refer to?", options: ["A) Prompt optimization for reasoning", "B) Inserting malicious or manipulative instructions into a prompt", "C) Enhancing prompt performance", "D) Making prompts shorter"], answer: 1, explanation: "Prompt injection involves hidden or malicious commands that alter AI behavior." },
+      { question: "6. Which of the following increases reliability in prompt output?", options: ["A) Asking open-ended creative tasks with no direction", "B) Requesting outputs in a fixed format", "C) Using model randomness", "D) Changing output languages at random"], answer: 1, explanation: "Fixed formats create constraints that improve repeatability and reliability." },
+      { question: "7. When might few-shot prompting outperform zero-shot?", options: ["A) On trivia tasks", "B) On simple arithmetic", "C) On complex tasks that benefit from seeing examples", "D) Always"], answer: 2, explanation: "Complex tasks often require demonstration for better comprehension by the model." },
+      { question: "8. Which design practice increases prompt robustness?", options: ["A) Using default model settings", "B) Ignoring failure cases", "C) Including counterexamples", "D) Reducing temperature to zero"], answer: 2, explanation: "Counterexamples teach the model what not to do, improving learning boundaries." },
+      { question: "9. What can be a risk when crafting prompts for public-facing AI applications?", options: ["A) Lack of emojis", "B) Prompt overfitting", "C) User-led prompt injection or exploitation", "D) Too much context"], answer: 2, explanation: "Users can attempt to manipulate prompts to produce harmful or unintended content." },
+      { question: "10. How does prompt engineering contribute to AI alignment?", options: ["A) Removes training", "B) Directs outputs toward human values and goals", "C) Limits AI size", "D) Reduces token usage"], answer: 1, explanation: "Prompt engineering helps align AI outputs with intended ethical and practical goals." }
+    ];
+
+    let score = 0;
+
+    function renderQuiz() {
+      const quiz = document.getElementById("quiz");
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+
+        const qTitle = document.createElement("h3");
+        qTitle.textContent = q.question;
+        qDiv.appendChild(qTitle);
+
+        const opts = document.createElement("div");
+        opts.className = "options";
+
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.textContent = opt;
+          btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+          opts.appendChild(btn);
+        });
+
+        const exp = document.createElement("div");
+        exp.className = "explanation";
+        exp.id = `exp${index}`;
+
+        qDiv.appendChild(opts);
+        qDiv.appendChild(exp);
+        quiz.appendChild(qDiv);
+      });
+    }
+
+    function handleAnswer(qDiv, selected, correct, explanation) {
+      const explanationEl = qDiv.querySelector(".explanation");
+      if (selected === correct) {
+        score += 2;
+        explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+      } else {
+        explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+      }
+      explanationEl.style.display = 'block';
+      qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+      const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+      if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+    }
+
+    function showFinalScore() {
+      document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+      document.getElementById("submitBtn").style.display = 'none';
+      document.getElementById("nextBtn").style.display = 'block';
+    }
+
+    function goToNext() {
+      window.location.href = "mt7.html"; // Change to your final or next page
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>

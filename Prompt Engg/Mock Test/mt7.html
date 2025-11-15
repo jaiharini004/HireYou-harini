@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test - Level 7</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 7 (Expert+)</h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNext()">Next ➡️</button>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "1. What is one challenge of using chain-of-thought (CoT) prompting in production systems?", options: ["A) It decreases explainability", "B) It shortens responses", "C) It can lead to longer, more expensive outputs due to token usage", "D) It hides reasoning steps"], answer: 2, explanation: "CoT generates intermediate reasoning steps, which consume more tokens and increase cost." },
+      { question: "2. Which prompt issue is most likely to cause the model to ignore parts of your request?", options: ["A) Too much structure", "B) Random examples", "C) Overloaded prompt with multiple tasks", "D) Including JSON format"], answer: 2, explanation: "If too many instructions are given at once, the model might prioritize only some and ignore others." },
+      { question: "3. How does RAG (Retrieval-Augmented Generation) improve factual accuracy?", options: ["A) Reduces prompt size", "B) Removes hallucinations entirely", "C) Retrieves external data during generation", "D) Increases randomness"], answer: 2, explanation: "RAG pulls relevant data from external sources to ground responses in facts." },
+      { question: "4. In a prompt: 'Translate this sentence and explain the grammar rules used,' what makes it more complex?", options: ["A) It uses only one language", "B) It involves a multi-step task", "C) It has short length", "D) It is a declarative sentence"], answer: 1, explanation: "Multi-step reasoning adds cognitive complexity for the model." },
+      { question: "5. Which technique can both boost accuracy and reduce hallucination in LLM outputs?", options: ["A) Creative storytelling", "B) Few-shot with verified examples", "C) Higher temperature", "D) Random prompts"], answer: 1, explanation: "Verified few-shot examples give accurate reference patterns for the model to follow." },
+      { question: "6. Prompt engineering can simulate multi-agent collaboration by:", options: ["A) Randomizing roles", "B) Assigning the AI multiple personas via prompt structuring", "C) Disabling memory", "D) Reducing token size"], answer: 1, explanation: "Multiple AI 'roles' can interact in turn, simulating agent collaboration." },
+      { question: "7. What makes evaluation of prompt effectiveness non-trivial?", options: ["A) No metrics exist", "B) Prompts work only once", "C) Outputs can vary based on model randomness, making evaluation subjective", "D) Model refuses responses"], answer: 2, explanation: "Subjective or probabilistic outputs make it hard to objectively assess prompt quality." },
+      { question: "8. Which of the following most directly improves deterministic behavior?", options: ["A) Adding examples", "B) Using temperature = 0", "C) Increasing max tokens", "D) Removing constraints"], answer: 1, explanation: "Temperature = 0 makes the model behave deterministically—same input → same output." },
+      { question: "9. Prompt overfitting can be described as:", options: ["A) Prompt working only in specific phrasing or inputs", "B) Overuse of creative instructions", "C) Model training collapse", "D) Underuse of tokens"], answer: 0, explanation: "If a prompt works only in one narrow context, it lacks generalization—this is overfitting." },
+      { question: "10. In prompt chaining, how can context integrity be lost?", options: ["A) Chain steps are too short", "B) Token limit truncates earlier output passed as input", "C) Too many random outputs", "D) Using the same prompt repeatedly"], answer: 1, explanation: "When chaining, earlier steps may be truncated due to token limits, breaking the logical flow." }
+    ];
+
+    let score = 0;
+
+    function renderQuiz() {
+      const quiz = document.getElementById("quiz");
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+
+        const qTitle = document.createElement("h3");
+        qTitle.textContent = q.question;
+        qDiv.appendChild(qTitle);
+
+        const opts = document.createElement("div");
+        opts.className = "options";
+
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.textContent = opt;
+          btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+          opts.appendChild(btn);
+        });
+
+        const exp = document.createElement("div");
+        exp.className = "explanation";
+        exp.id = `exp${index}`;
+
+        qDiv.appendChild(opts);
+        qDiv.appendChild(exp);
+        quiz.appendChild(qDiv);
+      });
+    }
+
+    function handleAnswer(qDiv, selected, correct, explanation) {
+      const explanationEl = qDiv.querySelector(".explanation");
+      if (selected === correct) {
+        score += 2;
+        explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+      } else {
+        explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+      }
+      explanationEl.style.display = 'block';
+      qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+      const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+      if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+    }
+
+    function showFinalScore() {
+      document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+      document.getElementById("submitBtn").style.display = 'none';
+      document.getElementById("nextBtn").style.display = 'block';
+    }
+
+    function goToNext() {
+      window.location.href = "mt8.html"; // Update as needed
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mock Test - Level 2</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 2 (Easy)</h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "1. What is one responsibility of a prompt engineer?", options: ["A) Hardware installation", "B) Designing task-specific prompts", "C) Customer billing", "D) Network security"], answer: 1, explanation: "Prompt engineers create prompts tailored to specific tasks to optimize AI outputs." },
+      { question: "2. How can prompt engineers address bias in AI outputs?", options: ["A) Ignore it", "B) Refine prompts to be neutral and inclusive", "C) Use biased language", "D) Avoid testing"], answer: 1, explanation: "Carefully crafted prompts can minimize bias in AI-generated responses." },
+      { question: "3. What is a common application of prompt engineering?", options: ["A) Cooking recipes", "B) Manual data entry", "C) AI-driven content generation", "D) Physical training"], answer: 2, explanation: "Prompt engineering is widely used in generating content through AI models." },
+      { question: "4. Why is specificity important in prompts?", options: ["A) To confuse the AI", "B) To ensure the AI understands the exact task", "C) To make prompts longer", "D) To reduce AI capabilities"], answer: 1, explanation: "Specific prompts guide the AI to produce precise and relevant outputs." },
+      { question: "5. What does refining a prompt involve?", options: ["A) Making it more ambiguous", "B) Adjusting language for clarity and effectiveness", "C) Adding irrelevant information", "D) Shortening it excessively"], answer: 1, explanation: "Refining involves modifying prompts to enhance clarity and achieve desired AI responses." },
+      { question: "6. What is the benefit of testing multiple prompt variations?", options: ["A) Wastes time", "B) Identifies the most effective prompt", "C) Confuses the AI", "D) Reduces accuracy"], answer: 1, explanation: "Testing different prompts helps in selecting the one that yields the best AI output." },
+      { question: "7. What is a potential issue with poorly designed prompts?", options: ["A) Enhanced AI performance", "B) Irrelevant or ambiguous AI responses", "C) Faster processing", "D) Improved accuracy"], answer: 1, explanation: "Poorly crafted prompts can lead to unclear or off-topic AI outputs." },
+      { question: "8. What is the expected outcome of using prompt engineering in AI models?", options: ["A) To create random responses.", "B) To improve the quality and relevance of the AI’s output.", "C) To confuse the AI.", "D) To increase the processing time of the model."], answer: 1, explanation: "The goal of prompt engineering is to guide the model to generate responses that are accurate, relevant, and tailored to the user's needs." },
+      { question: "9. Which of the following is a characteristic of a good prompt in prompt engineering?", options: ["A) It is vague and open-ended.", "B) It is clear, specific, and concise.", "C) It is overly complex with lots of details.", "D) It uses random words to test the model’s creativity."], answer: 1, explanation: "A good prompt is straightforward, with enough detail to guide the AI in providing a relevant and accurate response without unnecessary complexity." },
+      { question: "10. What does it mean when a prompt is 'vague'?", options: ["A) It provides too many details.", "B) It is unclear and doesn't specify what the AI should do.", "C) It is overly complex.", "D) It contains many instructions for the model to follow."], answer: 1, explanation: "A vague prompt leaves room for interpretation and could result in an irrelevant or unhelpful response from the model." }
+    ];
+
+    let score = 0;
+
+    function renderQuiz() {
+      const quiz = document.getElementById("quiz");
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+
+        const qTitle = document.createElement("h3");
+        qTitle.textContent = q.question;
+        qDiv.appendChild(qTitle);
+
+        const opts = document.createElement("div");
+        opts.className = "options";
+
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.textContent = opt;
+          btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+          opts.appendChild(btn);
+        });
+
+        const exp = document.createElement("div");
+        exp.className = "explanation";
+        exp.id = `exp${index}`;
+
+        qDiv.appendChild(opts);
+        qDiv.appendChild(exp);
+        quiz.appendChild(qDiv);
+      });
+    }
+
+    function handleAnswer(qDiv, selected, correct, explanation) {
+      const explanationEl = qDiv.querySelector(".explanation");
+      if (selected === correct) {
+        score += 2;
+        explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+      } else {
+        explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+      }
+      explanationEl.style.display = 'block';
+      qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+      const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+      if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+    }
+
+    function showFinalScore() {
+      document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+      document.getElementById("submitBtn").style.display = 'none';
+      document.getElementById("nextBtn").style.display = 'block';
+    }
+
+    function goToNextLevel() {
+      window.location.href = "mt3.html";
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>

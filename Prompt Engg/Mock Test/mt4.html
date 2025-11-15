@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mock Test - Level 4</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 4 (Advanced)</h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "1. In prompt tuning, what is adjusted?", options: ["A) Model weights", "B) Hardware", "C) Prompt structure and embeddings", "D) API rate limits"], answer: 2, explanation: "Prompt tuning involves modifying prompt embeddings rather than model weights." },
+      { question: "2. What can help improve consistency of responses?", options: ["A) Random instructions", "B) Providing temperature = 1.5", "C) Setting fixed patterns and examples", "D) Using emojis"], answer: 2, explanation: "Fixed patterns help models generalize and respond consistently." },
+      { question: "3. Which prompt format helps AI choose the correct answer?", options: ["A) “What do you think?”", "B) “Choose A, B, or C: What is 2+2? A) 3 B) 4 C) 5”", "C) “Say something funny.”", "D) “Do something.”"], answer: 1, explanation: "Multiple-choice prompts guide the AI towards specific correct responses." },
+      { question: "4. Which is not a benefit of prompt engineering?", options: ["A) Adapt models to new tasks", "B) Improve outputs without retraining", "C) Reduce data storage", "D) Test model limitations"], answer: 2, explanation: "Prompt engineering doesn’t affect data storage directly." },
+      { question: "5. A good prompt for summarization should include:", options: ["A) Author name", "B) Instructions for word count or length", "C) Model architecture", "D) No context"], answer: 1, explanation: "Summarization prompts are clearer when they include length requirements." },
+      { question: "6. What’s one way to make AI outputs safer?", options: ["A) Use vague prompts", "B) Give contradictory instructions", "C) Frame the prompt with ethical constraints", "D) Increase temperature"], answer: 2, explanation: "Framing prompts with ethical or safety-related constraints helps reduce harmful responses." },
+      { question: "7. What is “prompt chaining”?", options: ["A) Generating multiple prompts at once", "B) Breaking tasks into sub-prompts across stages", "C) Repeating the same prompt", "D) Encrypting prompts"], answer: 1, explanation: "Prompt chaining solves complex tasks step by step with intermediate AI outputs." },
+      { question: "8. What can reduce hallucinations in AI outputs?", options: ["A) Providing real-world context", "B) Increasing temperature", "C) Using vague words", "D) Giving no instructions"], answer: 0, explanation: "Supplying accurate context helps the model avoid making up information." },
+      { question: "9. Why is token limit important?", options: ["A) It makes AI think faster", "B) It affects inference time", "C) Prompts longer than limit get cut off", "D) It increases creativity"], answer: 2, explanation: "Exceeding token limits causes truncation, which may lose critical instructions or context." },
+      { question: "10. How does instruct tuning differ from regular model training?", options: ["A) It changes the tokenizer", "B) It’s not supervised", "C) It trains the model to follow instructions", "D) It disables weights"], answer: 2, explanation: "Instruct tuning teaches models how to respond more effectively to prompts with specific goals." }
+    ];
+
+    let score = 0;
+
+    function renderQuiz() {
+      const quiz = document.getElementById("quiz");
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+
+        const qTitle = document.createElement("h3");
+        qTitle.textContent = q.question;
+        qDiv.appendChild(qTitle);
+
+        const opts = document.createElement("div");
+        opts.className = "options";
+
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.textContent = opt;
+          btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+          opts.appendChild(btn);
+        });
+
+        const exp = document.createElement("div");
+        exp.className = "explanation";
+        exp.id = `exp${index}`;
+
+        qDiv.appendChild(opts);
+        qDiv.appendChild(exp);
+        quiz.appendChild(qDiv);
+      });
+    }
+
+    function handleAnswer(qDiv, selected, correct, explanation) {
+      const explanationEl = qDiv.querySelector(".explanation");
+      if (selected === correct) {
+        score += 2;
+        explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+      } else {
+        explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+      }
+      explanationEl.style.display = 'block';
+      qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+      const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+      if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+    }
+
+    function showFinalScore() {
+      document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+      document.getElementById("submitBtn").style.display = 'none';
+      document.getElementById("nextBtn").style.display = 'block';
+    }
+
+    function goToNextLevel() {
+      window.location.href = "mt5.html";
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test - Level 5</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 5 (Hard)</h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNext()">Next ➡️</button>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "1. What does 'instruction tuning' enable in language models?", options: ["A) Image generation capabilities", "B) The ability to follow human-written instructions more reliably", "C) Compression of tokens", "D) Multi-lingual output"], answer: 1, explanation: "Instruction tuning fine-tunes a model to perform better on tasks by training it to follow diverse instructions." },
+      { question: "2. In prompt engineering, why is controlling verbosity important?", options: ["A) It increases output randomness", "B) It helps match model outputs with the required length and style", "C) It speeds up training", "D) It makes prompts harder to parse"], answer: 1, explanation: "Controlling verbosity helps ensure that outputs are concise or detailed, depending on the use case." },
+      { question: "3. Which prompt would best elicit a structured JSON response from an LLM?", options: ["A) “Tell me something nice.”", "B) “Output the results in plain text.”", "C) “Return the data in this format: {‘name’: ‘’, ‘age’: ‘’}”", "D) “Just respond however you want.”"], answer: 2, explanation: "Explicitly asking for a structured format like JSON helps the model respond accordingly." },
+      { question: "4. What is a major limitation of prompt-based learning?", options: ["A) It can never be creative", "B) It lacks scalability across very different domains", "C) It is faster than fine-tuning", "D) It doesn't work with large language models"], answer: 1, explanation: "Prompt-based learning may struggle when switching tasks across highly diverse domains." },
+      { question: "5. Which technique helps improve factual accuracy in generated responses?", options: ["A) Increasing randomness", "B) Using vague prompts", "C) Retrieval-Augmented Generation (RAG)", "D) Prompt chaining"], answer: 2, explanation: "RAG combines retrieval mechanisms with generation to ground outputs in real data." },
+      { question: "6. What is a tradeoff of using few-shot prompting?", options: ["A) Less context provided", "B) Increased token usage", "C) Slower training times", "D) More hallucination"], answer: 1, explanation: "Few-shot examples increase prompt size, potentially hitting token limits." },
+      { question: "7. When prompting a model for code generation, what helps ensure better accuracy?", options: ["A) Vague tasks", "B) Providing language-specific syntax and requirements", "C) Using natural language only", "D) Asking it to 'try anything'"], answer: 1, explanation: "Including clear requirements and syntax constraints helps guide accurate code generation." },
+      { question: "8. What is a benefit of providing examples with edge cases in a prompt?", options: ["A) Causes confusion", "B) Reduces reliability", "C) Improves generalization and robustness of outputs", "D) Makes prompts shorter"], answer: 2, explanation: "Edge cases in examples prepare the model to handle diverse or tricky inputs more effectively." },
+      { question: "9. Which of these best defines prompt templates?", options: ["A) Final outputs", "B) Fixed response formats", "C) Predefined prompt structures with placeholders for dynamic values", "D) Training data"], answer: 2, explanation: "Templates help reuse and automate prompts for similar tasks by inserting new values." },
+      { question: "10. Which approach combines prompt design with internal memory for better performance?", options: ["A) GPT-2 tuning", "B) Few-shot learning", "C) Memory-augmented prompting", "D) Token collapsing"], answer: 2, explanation: "Memory-augmented models retain useful past data, improving future prompt response quality." }
+    ];
+
+    let score = 0;
+
+    function renderQuiz() {
+      const quiz = document.getElementById("quiz");
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+
+        const qTitle = document.createElement("h3");
+        qTitle.textContent = q.question;
+        qDiv.appendChild(qTitle);
+
+        const opts = document.createElement("div");
+        opts.className = "options";
+
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.textContent = opt;
+          btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+          opts.appendChild(btn);
+        });
+
+        const exp = document.createElement("div");
+        exp.className = "explanation";
+        exp.id = `exp${index}`;
+
+        qDiv.appendChild(opts);
+        qDiv.appendChild(exp);
+        quiz.appendChild(qDiv);
+      });
+    }
+
+    function handleAnswer(qDiv, selected, correct, explanation) {
+      const explanationEl = qDiv.querySelector(".explanation");
+      if (selected === correct) {
+        score += 2;
+        explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+      } else {
+        explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+      }
+      explanationEl.style.display = 'block';
+      qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+      const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+      if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+    }
+
+    function showFinalScore() {
+      document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+      document.getElementById("submitBtn").style.display = 'none';
+      document.getElementById("nextBtn").style.display = 'block';
+    }
+
+    function goToNext() {
+      window.location.href = "mt6.html";
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>

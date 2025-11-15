@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test - Level 9</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 9 (Calculation)</h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNext()">Next ➡️</button>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "1. If a prompt is 200 tokens and you expect a response of 800 tokens, how many total tokens will you consume per call?", options: ["A) 600 tokens", "B) 800 tokens", "C) 1000 tokens", "D) 2000 tokens"], answer: 2, explanation: "Total tokens = Prompt + Completion = 200 + 800 = 1000 tokens." },
+      { question: "2. A prompt uses 350 tokens and costs $0.002 per 1K tokens. What is the cost for one API call?", options: ["A) $0.0007", "B) $0.002", "C) $0.0035", "D) $0.00035"], answer: 0, explanation: "Cost = (350 / 1000) × 0.002 = $0.0007." },
+      { question: "3. You add 3 few-shot examples of 120 tokens each to a prompt. Your max token limit is 4096. What is the remaining token budget for output?", options: ["A) 4096", "B) 3720", "C) 3560", "D) 3740"], answer: 2, explanation: "Few-shot: 3 × 120 = 360 tokens. Assuming prompt is 176 tokens, total used = 536 → 4096 − 536 = 3560." },
+      { question: "4. In prompt chaining, step 1 uses 600 tokens, and step 2 uses 700 tokens. If the model has a 2048-token limit, how many tokens are left for output?", options: ["A) 1450", "B) 748", "C) 2048", "D) 1800"], answer: 1, explanation: "Input = 600 + 700 = 1300. Remaining = 2048 − 1300 = 748 tokens." },
+      { question: "5. You want to evaluate 3 prompt variations, each using 1000 tokens per run, and test them 50 times. If cost per 1K tokens = $0.0015, what’s the total cost?", options: ["A) $0.075", "B) $0.225", "C) $1.50", "D) $0.15"], answer: 1, explanation: "Total tokens = 3 × 50 × 1000 = 150,000. Cost = 150 × 0.0015 = $0.225." },
+      { question: "6. What’s the trade-off of using high-temperature values (e.g., 0.9) in prompts?", options: ["A) Better factuality", "B) Higher determinism", "C) More diverse, but less consistent outputs", "D) Always better results"], answer: 2, explanation: "High temperature increases randomness—good for creativity, but bad for precision." },
+      { question: "7. A model returns unreliable results for math. You try chain-of-thought (CoT) prompting and observe a 30% accuracy gain. What might explain this?", options: ["A) CoT reduces tokens", "B) CoT triggers intermediate reasoning", "C) CoT disables randomness", "D) CoT increases hallucination"], answer: 1, explanation: "CoT helps the model 'think aloud,' improving structured tasks like math by guiding steps." },
+      { question: "8. If your prompt contains 5 instructions, each 80 tokens long, how can you compress it without changing meaning?", options: ["A) Remove all instructions", "B) Combine overlapping ones and reduce redundancy", "C) Add more examples", "D) Add temperature"], answer: 1, explanation: "Reduce verbosity by eliminating redundant instructions." },
+      { question: "9. You observe 70% accuracy with zero-shot prompting, and 90% with few-shot. What's the relative improvement?", options: ["A) 20%", "B) 28.6%", "C) 25%", "D) 30%"], answer: 1, explanation: "Relative gain = (90 − 70)/70 = 28.6%." },
+      { question: "10. A prompt-generated response returns null for a field. You suspect:", options: ["A) Token overflow", "B) Format ambiguity or missing field in prompt", "C) Low temperature", "D) Too few examples"], answer: 1, explanation: "Unclear or missing field formatting can lead to null outputs." }
+    ];
+
+    let score = 0;
+
+    function renderQuiz() {
+      const quiz = document.getElementById("quiz");
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+
+        const qTitle = document.createElement("h3");
+        qTitle.textContent = q.question;
+        qDiv.appendChild(qTitle);
+
+        const opts = document.createElement("div");
+        opts.className = "options";
+
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.textContent = opt;
+          btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+          opts.appendChild(btn);
+        });
+
+        const exp = document.createElement("div");
+        exp.className = "explanation";
+        exp.id = `exp${index}`;
+
+        qDiv.appendChild(opts);
+        qDiv.appendChild(exp);
+        quiz.appendChild(qDiv);
+      });
+    }
+
+    function handleAnswer(qDiv, selected, correct, explanation) {
+      const explanationEl = qDiv.querySelector(".explanation");
+      if (selected === correct) {
+        score += 2;
+        explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+      } else {
+        explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+      }
+      explanationEl.style.display = 'block';
+      qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+      const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+      if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+    }
+
+    function showFinalScore() {
+      document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+      document.getElementById("submitBtn").style.display = 'none';
+      document.getElementById("nextBtn").style.display = 'block';
+    }
+
+    function goToNext() {
+      window.location.href = "mt10.html";
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>
