@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>data Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 6</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+
+const questions = [
+  {
+    question: "Why is imputing with the mean dangerous in skewed data?",
+    choice1: "A) It doesn't change variance",
+    choice2: "B) Mean is affected by outliers",
+    choice3: "C) Mean always works well",
+    choice4: "D) It drops rows",
+    answer: 2,
+    explanation: "Mean is sensitive to extreme values, making it a poor choice in skewed distributions."
+  },
+  {
+    question: "What’s a drawback of label encoding for nominal features?",
+    choice1: "A) Adds too many columns",
+    choice2: "B) Introduces ordinality that doesn't exist",
+    choice3: "C) Increases accuracy",
+    choice4: "D) Removes variance",
+    answer: 2,
+    explanation: "Label encoding can mislead the model into assuming ordinal relationships where none exist."
+  },
+  {
+    question: "Compute: What is the standard score (z-score) for x = 10, μ = 5, σ = 2?",
+    choice1: "A) 2",
+    choice2: "B) 3",
+    choice3: "C) 2.5",
+    choice4: "D) 5",
+    answer: 3,
+    explanation: "z = (10 − 5) / 2 = 2.5"
+  },
+  {
+    question: "What’s the goal of feature binning?",
+    choice1: "A) To remove features",
+    choice2: "B) To create ordinal features from continuous variables",
+    choice3: "C) To add missing values",
+    choice4: "D) To shuffle data",
+    answer: 2,
+    explanation: "Binning discretizes continuous features into intervals, aiding interpretability and models like trees."
+  },
+  {
+    question: "Code Output: What does this return?\n\nimport pandas as pd\ndf = pd.DataFrame({'Age': [15, 45, 33, 67]})\ndf['Group'] = pd.cut(df['Age'], bins=[0, 18, 40, 60, 100], labels=['Teen', 'Adult', 'Middle', 'Senior'])\nprint(df)",
+    choice1: "A) Bins with labels",
+    choice2: "B) Error",
+    choice3: "C) NaN values",
+    choice4: "D) Only ages returned",
+    answer: 1,
+    explanation: "`pd.cut()` divides 'Age' into labeled intervals: Teen, Adult, Middle, Senior."
+  },
+  {
+    question: "When is feature hashing useful?",
+    choice1: "A) For small datasets",
+    choice2: "B) To visualize data",
+    choice3: "C) When the number of features is massive (like in NLP)",
+    choice4: "D) Always",
+    answer: 3,
+    explanation: "Feature hashing compresses high-cardinality features like text tokens into manageable vector spaces."
+  },
+  {
+    question: "What is the purpose of using sklearn.pipeline?",
+    choice1: "A) To split data",
+    choice2: "B) To automate model tuning",
+    choice3: "C) To chain preprocessing and model steps",
+    choice4: "D) To shuffle data",
+    answer: 3,
+    explanation: "Pipeline chains preprocessing and modeling for consistency and cleaner code."
+  },
+  {
+    question: "Compute: What is the mean of [4, 8, 15, 16, 23, 42]?",
+    choice1: "A) 15",
+    choice2: "B) 18",
+    choice3: "C) 16.33",
+    choice4: "D) 17",
+    answer: 2,
+    explanation: "Mean = (4+8+15+16+23+42)/6 = 108/6 = 18"
+  },
+  {
+    question: "Feature scaling is not needed for which model?",
+    choice1: "A) K-Nearest Neighbors",
+    choice2: "B) Logistic Regression",
+    choice3: "C) Decision Tree",
+    choice4: "D) SVM",
+    answer: 3,
+    explanation: "Tree-based models are insensitive to feature scales since they split based on feature thresholds."
+  },
+  {
+    question: "Which method reduces dimension by projecting onto lower-variance space?",
+    choice1: "A) PCA",
+    choice2: "B) SMOTE",
+    choice3: "C) Normalization",
+    choice4: "D) Label Encoding",
+    answer: 1,
+    explanation: "Principal Component Analysis reduces dimensions by preserving as much variance as possible in fewer features."
+  }
+];
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='dlev7.html'">Go to Level 7 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'dlev6.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

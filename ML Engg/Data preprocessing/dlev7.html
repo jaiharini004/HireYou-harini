@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>data Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 7</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "Which technique is used to transform skewed numerical features into a more normal distribution?",
+    choice1: "A) Binarization",
+    choice2: "B) One-hot encoding",
+    choice3: "C) Log Transformation",
+    choice4: "D) Standardization",
+    answer: 3,
+    explanation: "Log transformation reduces right-skewed distribution, bringing it closer to normal."
+  },
+  {
+    question: "What will be the output of the following Python snippet?\n\nfrom sklearn.preprocessing import StandardScaler\nimport numpy as np\n\nX = np.array([[10], [20], [30], [40]])\nscaler = StandardScaler()\nprint(np.round(scaler.fit_transform(X), 2))",
+    choice1: "A) [-1.34, -0.45, 0.45, 1.34]",
+    choice2: "B) [10, 20, 30, 40]",
+    choice3: "C) [-1.16, -0.39, 0.39, 1.16]",
+    choice4: "D) [-1.5, -0.5, 0.5, 1.5]",
+    answer: 1,
+    explanation: "StandardScaler standardizes features → mean=0, std=1; z-scores vary depending on distribution."
+  },
+  {
+    question: "PCA reduces dimensionality by:",
+    choice1: "A) Dropping missing values",
+    choice2: "B) Merging labels",
+    choice3: "C) Projecting data onto principal components",
+    choice4: "D) Binning data into categories",
+    answer: 3,
+    explanation: "Principal components capture maximum variance in new orthogonal axes."
+  },
+  {
+    question: "Which of the following causes multicollinearity in feature space?",
+    choice1: "A) Missing values",
+    choice2: "B) Highly correlated independent variables",
+    choice3: "C) Label encoding",
+    choice4: "D) Data shuffling",
+    answer: 2,
+    explanation: "When independent features are strongly correlated, it introduces redundancy (multicollinearity)."
+  },
+  {
+    question: "You have a categorical column with 20 unique values. What's a better encoding than one-hot encoding?",
+    choice1: "A) Ordinal Encoding",
+    choice2: "B) Hash Encoding",
+    choice3: "C) Min-Max Scaling",
+    choice4: "D) Normalization",
+    answer: 2,
+    explanation: "Hash encoding avoids the curse of dimensionality and is efficient for high-cardinality features."
+  },
+  {
+    question: "What's the effect of scaling features in distance-based algorithms?",
+    choice1: "A) No effect",
+    choice2: "B) Makes model faster",
+    choice3: "C) Ensures fair distance computation",
+    choice4: "D) Reduces noise",
+    answer: 3,
+    explanation: "In algorithms like KNN, scaling ensures all features influence distance equally."
+  },
+  {
+    question: "You have a dataset with NaN values in multiple columns. What is a robust way to impute missing numeric values?",
+    choice1: "A) Drop all rows",
+    choice2: "B) Replace with mode",
+    choice3: "C) Replace with median",
+    choice4: "D) Set to 0",
+    answer: 3,
+    explanation: "Median is robust to outliers and works well for skewed numeric distributions."
+  },
+  {
+    question: "Given a DataFrame df, how do you drop all rows with any NaN values?",
+    choice1: "A) df.dropna(axis=1)",
+    choice2: "B) df.fillna(0)",
+    choice3: "C) df.dropna()",
+    choice4: "D) df.remove_nulls()",
+    answer: 3,
+    explanation: "df.dropna() removes all rows with any nulls."
+  },
+  {
+    question: "After applying Box-Cox transformation, which property is expected?",
+    choice1: "A) Linear data",
+    choice2: "B) Gaussian-like distribution",
+    choice3: "C) All values positive",
+    choice4: "D) Correlation removed",
+    answer: 2,
+    explanation: "Box-Cox transforms the data closer to normality, useful for models assuming normal distribution."
+  },
+  {
+    question: "What is the output of this transformation?\n\nfrom sklearn.preprocessing import Binarizer\nimport numpy as np\n\nX = np.array([[1.5], [0.5], [3.2]])\nbinarizer = Binarizer(threshold=1.0)\nprint(binarizer.fit_transform(X))",
+    choice1: "A) [[1], [0], [1]]",
+    choice2: "B) [[0], [0], [0]]",
+    choice3: "C) [[1.5], [0.5], [3.2]]",
+    choice4: "D) [[0], [1], [0]]",
+    answer: 1,
+    explanation: "Binarizer converts values > threshold to 1, else 0."
+  }
+];
+
+
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='dlev8.html'">Go to Level 8 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'dlev7.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

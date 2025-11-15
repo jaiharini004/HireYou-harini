@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>data Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 1</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+
+
+const questions = [
+  {
+    question: "What is the purpose of data preprocessing?",
+    choice1: "A) Increase dataset size",
+    choice2: "B) Improve model complexity",
+    choice3: "C) Convert raw data into clean format",
+    choice4: "D) Add noise to the data",
+    answer: 3,
+    explanation: "Data preprocessing transforms raw, messy data into a clean format suitable for machine learning models."
+  },
+  {
+    question: "Which of the following is NOT a preprocessing technique?",
+    choice1: "A) Normalization",
+    choice2: "B) Standardization",
+    choice3: "C) Overfitting",
+    choice4: "D) One-hot encoding",
+    answer: 3,
+    explanation: "Overfitting is a model behavior, not a preprocessing technique."
+  },
+  {
+    question: "What is the goal of feature scaling?",
+    choice1: "A) Increase accuracy",
+    choice2: "B) Reduce dimensions",
+    choice3: "C) Bring all features to the same scale",
+    choice4: "D) Increase model size",
+    answer: 3,
+    explanation: "Feature scaling adjusts features so they have similar scales, improving model performance."
+  },
+  {
+    question: "Which function in sklearn is used for Min-Max Scaling?",
+    choice1: "A) StandardScaler()",
+    choice2: "B) MinMaxScaler()",
+    choice3: "C) scale_minmax()",
+    choice4: "D) Normalizer()",
+    answer: 2,
+    explanation: "MinMaxScaler() scales features to a fixed range, typically 0 to 1."
+  },
+  {
+    question: "What does One-Hot Encoding do?",
+    choice1: "A) Removes rows with null values",
+    choice2: "B) Converts categorical data into binary vectors",
+    choice3: "C) Drops duplicate columns",
+    choice4: "D) Adds noise",
+    answer: 2,
+    explanation: "One-hot encoding converts categorical labels into binary columns for each class."
+  },
+  {
+    question: "What is the default range of MinMaxScaler()?",
+    choice1: "A) (−1, 1)",
+    choice2: "B) (0, 1)",
+    choice3: "C) (−100, 100)",
+    choice4: "D) None",
+    answer: 2,
+    explanation: "It scales each feature individually to the 0–1 range by default."
+  },
+  {
+    question: `What is the output of this code?\n\nfrom sklearn.preprocessing import MinMaxScaler\nimport numpy as np\ndata = np.array([[10], [20], [30]])\nscaler = MinMaxScaler()\nprint(scaler.fit_transform(data))`,
+    choice1: "A) [[1.0], [0.5], [0.0]]",
+    choice2: "B) [[0.], [0.5], [1.]]",
+    choice3: "C) [[10], [20], [30]]",
+    choice4: "D) Error",
+    answer: 2,
+    explanation: "Values are scaled between 0 and 1 using formula (x − min) / (max − min)."
+  },
+  {
+    question: "What is the purpose of handling missing values?",
+    choice1: "A) To make models slower",
+    choice2: "B) To increase nulls",
+    choice3: "C) To prevent model errors or bias",
+    choice4: "D) To normalize the data",
+    answer: 3,
+    explanation: "Missing values can cause models to behave unpredictably and need to be addressed."
+  },
+  {
+    question: "Which method removes rows with missing data?",
+    choice1: "A) fillna()",
+    choice2: "B) dropna()",
+    choice3: "C) drop()",
+    choice4: "D) remove_null()",
+    answer: 2,
+    explanation: "dropna() removes any row or column with NaNs from a pandas DataFrame."
+  },
+  {
+    question: `What is the output of this code?\n\nimport pandas as pd\ndf = pd.DataFrame({'Age': [22, None, 35]})\ndf.fillna(0, inplace=True)\nprint(df)`,
+    choice1: "A) Replaces None with mean",
+    choice2: "B) Error",
+    choice3: "C) Age values stay the same",
+    choice4: "D) Fills missing with 0",
+    answer: 4,
+    explanation: `Output:\n  Age\n0  22.0\n1   0.0\n2  35.0\n\nThe fillna(0) method replaces NaN with 0.`
+  }
+];
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='dlev2.html'">Go to Level 2 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'dlev1.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

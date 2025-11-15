@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>data Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "You need to impute missing values using a multivariate model. Which scikit‑learn class implements Iterative Imputation?",
+    choice1: "A) KNNImputer",
+    choice2: "B) SimpleImputer",
+    choice3: "C) IterativeImputer",
+    choice4: "D) MissingIndicator",
+    answer: 3,
+    explanation: "IterativeImputer models each feature with missing values as a function of other features and iteratively estimates missing values."
+  },
+  {
+    question: "What does the following code output?\n\nimport pandas as pd\nfrom sklearn.preprocessing import QuantileTransformer\n\ndf = pd.DataFrame({'x': [1,2,3,4,5]})\nqt = QuantileTransformer(n_quantiles=5, output_distribution='normal')\nprint(qt.fit_transform(df).round(2).flatten())",
+    choice1: "A) [-1.96, -0.67, 0.00, 0.67, 1.96]",
+    choice2: "B) [1,2,3,4,5]",
+    choice3: "C) [-2, -1, 0, 1, 2]",
+    choice4: "D) [0.2,0.4,0.6,0.8,1.0]",
+    answer: 1,
+    explanation: "QuantileTransformer maps percentiles to the standard normal distribution (approx Z-scores)."
+  },
+  {
+    question: "You have a datetime column. Which code correctly extracts “hour of day” and “day of week” features?",
+    choice1: "A) df['hour'] = df.date.hour; df['dow'] = df.date.weekday()",
+    choice2: "B) df['hour'] = df['date'].dt.hour; df['dow'] = df['date'].dt.dayofweek",
+    choice3: "C) df['hour'], df['dow'] = df.date.apply(lambda x: (x.hour,x.day))",
+    choice4: "D) None of the above",
+    answer: 2,
+    explanation: "Correct way is using `.dt` accessor on datetime Series for vectorized attribute extraction."
+  },
+  {
+    question: "After one-hot encoding a 4‑category variable, how many new features appear?",
+    choice1: "A) 3",
+    choice2: "B) 4",
+    choice3: "C) 5",
+    choice4: "D) Depends on drop parameter",
+    answer: 4,
+    explanation: "If drop='first', you get n-1 columns; if not, all 4 are retained. Hence, 'depends'."
+  },
+  {
+    question: "What does this pipeline print?\n\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.preprocessing import PolynomialFeatures\nimport numpy as np\n\npipe = Pipeline([\n  ('imp', SimpleImputer(strategy='mean')),\n  ('poly', PolynomialFeatures(degree=2, include_bias=False))\n])\nX = np.array([[1, np.nan], [3, 4]])\nprint(pipe.fit_transform(X))",
+    choice1: "A) [[1,0,1,0,0,0], …]",
+    choice2: "B) [[1,2.67,1,2.67,7.11], …]",
+    choice3: "C) [[1,2,1,2,0,0], …]",
+    choice4: "D) Error",
+    answer: 2,
+    explanation: "The pipeline imputes missing with mean, then applies polynomial expansion to degree 2 (including interactions and squares)."
+  },
+  {
+    question: "You wish to remove features with variance below 0.01. Which transformer do you use?",
+    choice1: "A) VarianceThreshold(threshold=0.01)",
+    choice2: "B) SelectKBest(k=0.01)",
+    choice3: "C) PCA(n_components=0.01)",
+    choice4: "D) FeatureAgglomeration(threshold=0.01)",
+    answer: 1,
+    explanation: "VarianceThreshold removes features with low variance (i.e., nearly constant features)."
+  },
+  {
+    question: "Which code snippet performs target encoding for categorical cat to predict numeric y?",
+    choice1: "A) df['enc'] = df.groupby('cat')['y'].transform('mean')",
+    choice2: "B) from category_encoders import TargetEncoder; te = TargetEncoder(); df['enc'] = te.fit_transform(df['cat'], df['y'])",
+    choice3: "C) Both A & B",
+    choice4: "D) Neither",
+    answer: 3,
+    explanation: "Both are valid: A is manual mean encoding; B uses a dedicated encoder from `category_encoders`."
+  },
+  {
+    question: "Compute the IQR (interquartile range) of [1, 7, 3, 9, 5].",
+    choice1: "A) 4",
+    choice2: "B) 6",
+    choice3: "C) 2",
+    choice4: "D) 8",
+    answer: 1,
+    explanation: "Sorted = [1,3,5,7,9]; Q1 = 3, Q3 = 7 → IQR = 7 − 3 = 4."
+  },
+  {
+    question: "Which transformer will cap outliers beyond 1.5×IQR?",
+    choice1: "A) RobustScaler()",
+    choice2: "B) StandardScaler()",
+    choice3: "C) QuantileTransformer()",
+    choice4: "D) PowerTransformer()",
+    answer: 1,
+    explanation: "RobustScaler scales using median and IQR, limiting outlier influence."
+  },
+  {
+    question: "You want to add interaction feature x1*x2. Code?",
+    choice1: "A) df['x1_x2'] = df.x1 + df.x2",
+    choice2: "B) df['x1_x2'] = df.x1 * df.x2",
+    choice3: "C) df = PolynomialFeatures(degree=2).fit_transform(df[['x1','x2']])",
+    choice4: "D) Both B & C",
+    answer: 4,
+    explanation: "B is manual multiplication, C is automatic via PolynomialFeatures which generates all interactions and squared terms."
+  }
+];
+
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='dlev10.html'">Go to Level 10 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'dlev9.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
