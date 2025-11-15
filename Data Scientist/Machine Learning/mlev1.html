@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ML Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 1</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What type of machine learning involves labeled data?",
+    choice1: "A) Unsupervised Learning",
+    choice2: "B) Reinforcement Learning",
+    choice3: "C) Supervised Learning",
+    choice4: "D) Deep Learning",
+    answer: 3,
+    explanation: "Supervised learning requires labeled data where both input and output are provided for the model to learn from."
+  },
+  {
+    question: "Which of the following is an example of an unsupervised learning task?",
+    choice1: "A) Predicting house prices",
+    choice2: "B) Classifying emails as spam or not",
+    choice3: "C) Grouping customers by purchasing behavior",
+    choice4: "D) Predicting loan default",
+    answer: 3,
+    explanation: "Grouping or clustering tasks with no predefined labels are examples of unsupervised learning."
+  },
+  {
+    question: "What is the correct sequence of steps in a typical machine learning pipeline?",
+    choice1: "A) Data cleaning → Model training → Feature selection → Evaluation",
+    choice2: "B) Data collection → Preprocessing → Model training → Evaluation → Deployment",
+    choice3: "C) Model training → Evaluation → Data cleaning → Deployment",
+    choice4: "D) Preprocessing → Deployment → Data collection → Model training",
+    answer: 2,
+    explanation: "This is the standard ML pipeline for building and deploying models."
+  },
+  {
+    question: "Which of the following is not a typical problem solved by machine learning?",
+    choice1: "A) Diagnosing diseases from images",
+    choice2: "B) Forecasting stock prices",
+    choice3: "C) Encrypting data",
+    choice4: "D) Recommending products",
+    answer: 3,
+    explanation: "Data encryption is a security-related task, not a predictive problem tackled by ML."
+  },
+  {
+    question: "What is the goal of supervised learning?",
+    choice1: "A) Discover hidden patterns in data",
+    choice2: "B) Group similar data points",
+    choice3: "C) Learn from labeled data to make predictions",
+    choice4: "D) Explore data using visualization",
+    answer: 3,
+    explanation: "Supervised learning aims to learn a mapping from inputs to known outputs."
+  },
+  {
+    question: "Which algorithm is used for classification in supervised learning?",
+    choice1: "A) K-Means",
+    choice2: "B) Principal Component Analysis (PCA)",
+    choice3: "C) Logistic Regression",
+    choice4: "D) Apriori Algorithm",
+    answer: 3,
+    explanation: "Logistic regression is a classification algorithm used in supervised learning."
+  },
+  {
+    question: "Which task is best suited for unsupervised learning?",
+    choice1: "A) Predicting sales figures",
+    choice2: "B) Identifying fraudulent transactions",
+    choice3: "C) Clustering documents by topic",
+    choice4: "D) Diagnosing heart disease",
+    answer: 3,
+    explanation: "Clustering is a key unsupervised learning task, where no labels are provided."
+  },
+  {
+    question: "In the machine learning pipeline, what is the purpose of preprocessing?",
+    choice1: "A) Tune the hyperparameters",
+    choice2: "B) Remove irrelevant features and handle missing values",
+    choice3: "C) Train the model",
+    choice4: "D) Interpret results",
+    answer: 2,
+    explanation: "Preprocessing cleans and prepares raw data for better model performance."
+  },
+  {
+    question: "Which of the following is an example of a regression problem?",
+    choice1: "A) Predicting whether a customer will churn",
+    choice2: "B) Forecasting the temperature tomorrow",
+    choice3: "C) Classifying an email as spam or not",
+    choice4: "D) Detecting anomalies in network traffic",
+    answer: 2,
+    explanation: "Regression predicts continuous values like temperature or price."
+  },
+  {
+    question: "What differentiates supervised from unsupervised learning?",
+    choice1: "A) The type of algorithm used",
+    choice2: "B) Presence of labels in the data",
+    choice3: "C) The amount of data",
+    choice4: "D) The speed of training",
+    answer: 2,
+    explanation: "Supervised learning uses labeled data, while unsupervised learning does not."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='mlev2.html'">Go to Level 2 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'mlev1.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>

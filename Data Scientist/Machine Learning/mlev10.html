@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ML Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is the primary purpose of using Keras in deep learning?",
+    choice1: "A) To visualize training",
+    choice2: "B) To perform EDA",
+    choice3: "C) To provide a high-level API for building neural networks",
+    choice4: "D) To deploy models in production",
+    answer: 3,
+    explanation: "Keras is a high-level API that simplifies the process of building and training deep learning models, built on top of TensorFlow."
+  },
+  {
+    question: "Which layer in Keras is typically used to create a fully connected neural network?",
+    choice1: "A) Conv2D",
+    choice2: "B) Dense",
+    choice3: "C) Flatten",
+    choice4: "D) LSTM",
+    answer: 2,
+    explanation: "Dense layer creates a fully connected neural network layer, where each neuron is connected to every neuron in the previous layer."
+  },
+  {
+    question: "What does the Dropout layer do in a neural network?",
+    choice1: "A) Removes unimportant features",
+    choice2: "B) Regularizes the model by randomly dropping units",
+    choice3: "C) Adds more neurons to the layer",
+    choice4: "D) Speeds up the training",
+    answer: 2,
+    explanation: "Dropout helps prevent overfitting by randomly deactivating neurons during training, forcing the network to learn more robust patterns."
+  },
+  {
+    question: "Which function is used to compile a Keras model?",
+    choice1: "A) model.run()",
+    choice2: "B) model.start()",
+    choice3: "C) model.compile()",
+    choice4: "D) model.init()",
+    answer: 3,
+    explanation: "The model.compile() function in Keras sets the optimizer, loss function, and metrics used for training."
+  },
+  {
+    question: "Which layer is commonly used before dense layers in image classification models?",
+    choice1: "A) Dense",
+    choice2: "B) MaxPooling2D",
+    choice3: "C) Conv2D",
+    choice4: "D) Flatten",
+    answer: 4,
+    explanation: "Flatten converts 2D feature maps into a 1D vector before feeding it to Dense layers for classification."
+  },
+  {
+    question: "What does Batch Normalization help with?",
+    choice1: "A) Making the model sparse",
+    choice2: "B) Converting 2D data to 1D",
+    choice3: "C) Normalizing inputs to each layer",
+    choice4: "D) Making training data smaller",
+    answer: 3,
+    explanation: "Batch Normalization normalizes the output of a layer, which helps with faster convergence and reduces internal covariate shift."
+  },
+  {
+    question: "In image classification, which layer is often used at the output of the model?",
+    choice1: "A) ReLU",
+    choice2: "B) Sigmoid",
+    choice3: "C) Softmax",
+    choice4: "D) Tanh",
+    answer: 3,
+    explanation: "Softmax is typically used in multi-class classification to produce a probability distribution across output classes."
+  },
+  {
+    question: "What is overfitting in deep learning?",
+    choice1: "A) Model fails to train",
+    choice2: "B) Model generalizes well",
+    choice3: "C) Model performs well on training data but poorly on test data",
+    choice4: "D) Model doesn't learn at all",
+    answer: 3,
+    explanation: "Overfitting occurs when a model learns the training data too well, including noise, leading to poor generalization on new data."
+  },
+  {
+    question: "Which optimizer is commonly used in Keras for training deep neural networks?",
+    choice1: "A) Random Forest",
+    choice2: "B) SGD",
+    choice3: "C) Adam",
+    choice4: "D) PCA",
+    answer: 3,
+    explanation: "Adam is an adaptive optimizer that combines the advantages of AdaGrad and RMSprop, making it a popular choice in Keras."
+  },
+  {
+    question: "Which layer in Keras is most appropriate for text classification using sequences?",
+    choice1: "A) Conv2D",
+    choice2: "B) Embedding",
+    choice3: "C) Dropout",
+    choice4: "D) Dense",
+    answer: 2,
+    explanation: "Embedding layer converts integer-encoded words into dense vectors, which is essential for working with text data in Keras models."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='data_scientist.html'">Wowww You Aced it ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'mlev10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

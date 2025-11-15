@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ML Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 3</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is the main purpose of Logistic Regression?",
+    choice1: "A) Predict continuous outcomes",
+    choice2: "B) Estimate probabilities and classify binary outcomes",
+    choice3: "C) Perform clustering",
+    choice4: "D) Handle missing values",
+    answer: 2,
+    explanation: "Logistic regression is used to estimate probabilities and classify binary (0/1) outcomes such as spam vs not-spam or churn vs no churn."
+  },
+  {
+    question: "What function is used in Logistic Regression to map predictions between 0 and 1?",
+    choice1: "A) Linear function",
+    choice2: "B) Sigmoid function",
+    choice3: "C) Exponential function",
+    choice4: "D) Softmax function",
+    answer: 2,
+    explanation: "The sigmoid function squashes any real-valued number into the range (0, 1) and is used in binary logistic regression."
+  },
+  {
+    question: "Which of the following is NOT a classification evaluation metric?",
+    choice1: "A) Precision",
+    choice2: "B) Recall",
+    choice3: "C) RMSE",
+    choice4: "D) F1-Score",
+    answer: 3,
+    explanation: "RMSE (Root Mean Squared Error) is used for regression, not classification. Classification uses precision, recall, F1-score, etc."
+  },
+  {
+    question: "What does high precision indicate in a classification model?",
+    choice1: "A) The model detects all positives",
+    choice2: "B) Few false positives",
+    choice3: "C) Few false negatives",
+    choice4: "D) Perfect classification",
+    answer: 2,
+    explanation: "Precision = TP / (TP + FP). High precision means the model makes few false positive errors."
+  },
+  {
+    question: "What does recall measure in classification performance?",
+    choice1: "A) Ratio of true positives to total actual positives",
+    choice2: "B) Ratio of true positives to total predictions",
+    choice3: "C) Ratio of true negatives to actual negatives",
+    choice4: "D) Ratio of all correct predictions to total predictions",
+    answer: 1,
+    explanation: "Recall = TP / (TP + FN) — it shows how well the model captures actual positives (true events), such as identifying all frauds."
+  },
+  {
+    question: "When is F1-Score preferred over accuracy?",
+    choice1: "A) When classes are balanced",
+    choice2: "B) When all predictions are correct",
+    choice3: "C) When false positives and false negatives matter equally",
+    choice4: "D) When only speed matters",
+    answer: 3,
+    explanation: "F1-Score balances precision and recall and is useful when false positives and false negatives are equally important, especially in imbalanced datasets."
+  },
+  {
+    question: "What does the ROC curve show?",
+    choice1: "A) Precision vs Recall",
+    choice2: "B) Accuracy vs Error",
+    choice3: "C) True Positive Rate vs False Positive Rate",
+    choice4: "D) TP vs FN",
+    answer: 3,
+    explanation: "ROC Curve plots True Positive Rate (Recall) against False Positive Rate, helping assess classifier performance across thresholds."
+  },
+  {
+    question: "What does an AUC score of 0.90 indicate?",
+    choice1: "A) The model is 90% accurate",
+    choice2: "B) The model performs worse than chance",
+    choice3: "C) The model has a 90% chance of ranking a random positive higher than a negative",
+    choice4: "D) The model has high RMSE",
+    answer: 3,
+    explanation: "AUC = Area Under the ROC Curve. A value of 0.90 means the model can correctly distinguish between positive and negative examples 90% of the time."
+  },
+  {
+    question: "In a confusion matrix, which element represents false positives?",
+    choice1: "A) Top-left",
+    choice2: "B) Top-right",
+    choice3: "C) Bottom-left",
+    choice4: "D) Bottom-right",
+    answer: 2,
+    explanation: "In a confusion matrix:\nTop-left = True Positives\nTop-right = False Positives\nBottom-left = False Negatives\nBottom-right = True Negatives"
+  },
+  {
+    question: "Which evaluation metric is most affected by class imbalance?",
+    choice1: "A) Accuracy",
+    choice2: "B) F1-Score",
+    choice3: "C) Precision",
+    choice4: "D) Recall",
+    answer: 1,
+    explanation: "Accuracy can be misleading in imbalanced datasets, as the model may predict the majority class correctly while failing to identify the minority class."
+  }
+];
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='mlev4.html'">Go to Level 4 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'mlev3.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

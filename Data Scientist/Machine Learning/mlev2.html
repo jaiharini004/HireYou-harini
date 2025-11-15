@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ML Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 2</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is the main difference between simple and multiple linear regression?",
+    choice1: "A) Simple regression uses categorical data, multiple does not",
+    choice2: "B) Simple regression uses one independent variable; multiple uses two or more",
+    choice3: "C) Multiple regression uses non-linear equations",
+    choice4: "D) Simple regression is only used for time series",
+    answer: 2,
+    explanation: "Simple linear regression involves one independent variable, while multiple linear regression involves two or more predictors."
+  },
+  {
+    question: "Which of the following is NOT an assumption of linear regression?",
+    choice1: "A) Independence of errors",
+    choice2: "B) Homoscedasticity",
+    choice3: "C) High multicollinearity",
+    choice4: "D) Linearity between variables",
+    answer: 3,
+    explanation: "High multicollinearity violates the assumptions of linear regression. It causes issues in estimating coefficients accurately."
+  },
+  {
+    question: "What does the coefficient in a linear regression equation represent?",
+    choice1: "A) The standard deviation of the predictor",
+    choice2: "B) The strength of the correlation",
+    choice3: "C) The expected change in the response variable per unit change in the predictor",
+    choice4: "D) The mean of the response variable",
+    answer: 3,
+    explanation: "Each coefficient represents the change in the response variable for a one-unit increase in the corresponding predictor, keeping other variables constant."
+  },
+  {
+    question: "How can multicollinearity be detected in a dataset?",
+    choice1: "A) By using a histogram",
+    choice2: "B) By calculating the R² value",
+    choice3: "C) By checking the VIF (Variance Inflation Factor)",
+    choice4: "D) By applying PCA",
+    answer: 3,
+    explanation: "The Variance Inflation Factor (VIF) is commonly used to detect multicollinearity in regression analysis. A VIF > 5 or 10 usually indicates high multicollinearity."
+  },
+  {
+    question: "What is the purpose of adjusted R² in multiple regression?",
+    choice1: "A) It increases with more variables added",
+    choice2: "B) It always remains the same",
+    choice3: "C) It adjusts R² for the number of predictors used",
+    choice4: "D) It is used for classification tasks",
+    answer: 3,
+    explanation: "Adjusted R² compensates for the number of predictors in the model, providing a more accurate measure than regular R² when comparing models with different numbers of variables."
+  },
+  {
+    question: "Which of the following metrics is best suited for evaluating a regression model’s error?",
+    choice1: "A) Accuracy",
+    choice2: "B) Precision",
+    choice3: "C) RMSE",
+    choice4: "D) ROC-AUC",
+    answer: 3,
+    explanation: "RMSE (Root Mean Squared Error) measures the average magnitude of error in predictions for regression models. Lower RMSE indicates a better fit."
+  },
+  {
+    question: "If a model has high R² on training data but low R² on test data, what is likely happening?",
+    choice1: "A) Underfitting",
+    choice2: "B) Overfitting",
+    choice3: "C) Normal error",
+    choice4: "D) Feature scaling issue",
+    answer: 2,
+    explanation: "High R² on training and low on testing indicates overfitting — the model is too tailored to training data and fails to generalize."
+  },
+  {
+    question: "Which regression technique would you use when the relationship between variables is clearly non-linear?",
+    choice1: "A) Linear Regression",
+    choice2: "B) Logistic Regression",
+    choice3: "C) Polynomial Regression",
+    choice4: "D) Ridge Regression",
+    answer: 3,
+    explanation: "Polynomial Regression is used to model non-linear relationships by adding higher-degree terms to the regression equation."
+  },
+  {
+    question: "What does an R² value of 0.90 mean?",
+    choice1: "A) 90% of errors are due to noise",
+    choice2: "B) The model explains 90% of the variance in the dependent variable",
+    choice3: "C) The model is 90% accurate",
+    choice4: "D) There is a 90% chance of correct prediction",
+    answer: 2,
+    explanation: "R² = 0.90 means that the model explains 90% of the variability in the target variable based on the features used."
+  },
+  {
+    question: "Which of the following is a real-world application of linear regression?",
+    choice1: "A) Image classification",
+    choice2: "B) Customer segmentation",
+    choice3: "C) Stock price prediction",
+    choice4: "D) Spam detection",
+    answer: 3,
+    explanation: "Stock price prediction is a continuous prediction task, making it a suitable application for linear regression."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='mlev3.html'">Go to Level 3 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'mlev2.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>

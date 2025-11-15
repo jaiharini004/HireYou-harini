@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ML Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is the role of an activation function in a neural network?",
+    choice1: "A) To store data",
+    choice2: "B) To make the model linear",
+    choice3: "C) To introduce non-linearity",
+    choice4: "D) To initialize weights",
+    answer: 3,
+    explanation: "Activation functions introduce non-linearity into the network, allowing it to learn complex patterns in the data."
+  },
+  {
+    question: "Which of the following is a commonly used activation function?",
+    choice1: "A) Linear",
+    choice2: "B) ReLU",
+    choice3: "C) Sigmoid",
+    choice4: "D) Both B and C",
+    answer: 4,
+    explanation: "ReLU and Sigmoid are both widely used. ReLU is preferred in hidden layers, while Sigmoid is used in binary classification outputs."
+  },
+  {
+    question: "In a fully connected neural network, a neuron performs which operation?",
+    choice1: "A) Division and multiplication",
+    choice2: "B) Weighted sum followed by activation",
+    choice3: "C) Sorting of inputs",
+    choice4: "D) Feature scaling",
+    answer: 2,
+    explanation: "A neuron computes a weighted sum of inputs, adds bias, and passes the result through an activation function."
+  },
+  {
+    question: "What happens in forward propagation?",
+    choice1: "A) Gradients are computed",
+    choice2: "B) Loss is minimized",
+    choice3: "C) Inputs are passed through layers to generate output",
+    choice4: "D) Weights are updated",
+    answer: 3,
+    explanation: "Forward propagation is the phase where input data flows through the network to generate predictions."
+  },
+  {
+    question: "What is the goal of backpropagation?",
+    choice1: "A) Predict output",
+    choice2: "B) Update weights by minimizing loss",
+    choice3: "C) Normalize data",
+    choice4: "D) Add more layers",
+    answer: 2,
+    explanation: "Backpropagation computes gradients of the loss with respect to each weight and updates them to minimize error."
+  },
+  {
+    question: "Which function measures the error between predicted and actual outputs?",
+    choice1: "A) Activation Function",
+    choice2: "B) Cost Function",
+    choice3: "C) ReLU",
+    choice4: "D) Optimizer",
+    answer: 2,
+    explanation: "A cost (or loss) function evaluates how far the model’s predictions are from the actual values."
+  },
+  {
+    question: "What is the most commonly used loss function for binary classification?",
+    choice1: "A) Mean Squared Error",
+    choice2: "B) Hinge Loss",
+    choice3: "C) Cross-Entropy Loss",
+    choice4: "D) MAE",
+    answer: 3,
+    explanation: "Binary Cross-Entropy is widely used for binary classification tasks, as it’s designed for probabilistic outputs."
+  },
+  {
+    question: "Which algorithm is most commonly used for optimization in deep learning?",
+    choice1: "A) Gradient Boosting",
+    choice2: "B) Decision Trees",
+    choice3: "C) Gradient Descent",
+    choice4: "D) Naive Bayes",
+    answer: 3,
+    explanation: "Gradient Descent and its variants (like Adam) are the go-to optimization algorithms for training neural networks."
+  },
+  {
+    question: "What is vanishing gradient problem?",
+    choice1: "A) Weights become too large",
+    choice2: "B) Learning rate increases too fast",
+    choice3: "C) Gradients shrink as they are backpropagated",
+    choice4: "D) Network trains faster than expected",
+    answer: 3,
+    explanation: "In deep networks, gradients can become very small during backpropagation, making the earlier layers learn very slowly."
+  },
+  {
+    question: "Which of the following is NOT a valid activation function?",
+    choice1: "A) Tanh",
+    choice2: "B) ReLU",
+    choice3: "C) Softmax",
+    choice4: "D) Average",
+    answer: 4,
+    explanation: "Average is not an activation function. The others (Tanh, ReLU, Softmax) are commonly used for different layers/tasks."
+  }
+];
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='mlev10.html'">Go to Level 10 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'mlev9.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
+
+
