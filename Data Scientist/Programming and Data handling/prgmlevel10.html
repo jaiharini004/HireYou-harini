@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Program Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What does an API (Application Programming Interface) allow you to do?",
+    choice1: "A) Compile code",
+    choice2: "B) Scrape websites directly",
+    choice3: "C) Interact with another application or service",
+    choice4: "D) Create a GUI",
+    answer: 3,
+    explanation: "APIs allow programs to communicate with each other, letting you access data or services from another app (like weather data from a weather API)."
+  },
+  {
+    question: "What is the most common format for API responses?",
+    choice1: "A) HTML",
+    choice2: "B) CSV",
+    choice3: "C) JSON",
+    choice4: "D) Excel",
+    answer: 3,
+    explanation: "Most web APIs return data in JSON (JavaScript Object Notation) format because it’s lightweight, readable, and easy to parse."
+  },
+  {
+    question: "Which Python module is commonly used to make API requests?",
+    choice1: "A) numpy",
+    choice2: "B) requests",
+    choice3: "C) json",
+    choice4: "D) urllib",
+    answer: 2,
+    explanation: "The requests library is a powerful and user-friendly way to send HTTP requests and fetch responses from APIs."
+  },
+  {
+    question: "What method is usually used to get data from an API endpoint?",
+    choice1: "A) POST",
+    choice2: "B) GET",
+    choice3: "C) PUT",
+    choice4: "D) DELETE",
+    answer: 2,
+    explanation: "The GET method is used to retrieve data from an API endpoint without making any changes to the server data."
+  },
+  {
+    question: "What is the purpose of response.json() in Python?",
+    choice1: "A) To convert XML into text",
+    choice2: "B) To write data to a file",
+    choice3: "C) To convert the JSON response into a Python dictionary",
+    choice4: "D) To close the API connection",
+    answer: 3,
+    explanation: "The json() method of a response object converts JSON-formatted data into a Python dictionary for easier processing."
+  },
+  {
+    question: "Which file format is commonly used for structured spreadsheet data?",
+    choice1: "A) JSON",
+    choice2: "B) XML",
+    choice3: "C) CSV",
+    choice4: "D) HTML",
+    answer: 3,
+    explanation: "CSV (Comma-Separated Values) is commonly used to store tabular data and can be easily read with libraries like pandas."
+  },
+  {
+    question: "What Python library is popular for parsing and extracting data from HTML in web scraping?",
+    choice1: "A) matplotlib",
+    choice2: "B) bs4 (BeautifulSoup)",
+    choice3: "C) numpy",
+    choice4: "D) sklearn",
+    answer: 2,
+    explanation: "BeautifulSoup from bs4 is widely used for web scraping because it allows you to parse and extract information from HTML and XML."
+  },
+  {
+    question: "What is XML mainly used for?",
+    choice1: "A) Styling web pages",
+    choice2: "B) Writing C++ code",
+    choice3: "C) Representing structured hierarchical data",
+    choice4: "D) Storing images",
+    answer: 3,
+    explanation: "XML (eXtensible Markup Language) is used to store and transport structured data, often in a nested format."
+  },
+  {
+    question: "Which function from the json module is used to load JSON data from a string or file?",
+    choice1: "A) json.write()",
+    choice2: "B) json.dump()",
+    choice3: "C) json.loads()",
+    choice4: "D) json.save()",
+    answer: 3,
+    explanation: "json.loads() parses a JSON-formatted string and converts it into a Python object (usually a dictionary)."
+  },
+  {
+    question: "What is a key risk to keep in mind while scraping websites?",
+    choice1: "A) Getting wrong answers",
+    choice2: "B) Network cable damage",
+    choice3: "C) Violating terms of service or legal policies",
+    choice4: "D) Missing a closing tag",
+    answer: 3,
+    explanation: "Web scraping must be done ethically and legally, as many websites have rules in their terms of service that prohibit unauthorized scraping."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='data_scientist.html'">Wowww You Aced it ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'prgmlevel10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

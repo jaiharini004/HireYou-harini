@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Program Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 7</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "Which of the following is the correct function to remove rows with missing values in Pandas?",
+    choice1: "A) drop_missing()",
+    choice2: "B) dropna()",
+    choice3: "C) remove_na()",
+    choice4: "D) clearna()",
+    answer: 2,
+    explanation: "dropna() removes rows (or columns if specified) containing NaN or missing values from a DataFrame."
+  },
+  {
+    question: "How can you replace missing values in a DataFrame with the column mean?",
+    choice1: "A) df.fillna('mean')",
+    choice2: "B) df.replace('NaN', mean)",
+    choice3: "C) df.fillna(df.mean())",
+    choice4: "D) df.na.fill(mean)",
+    answer: 3,
+    explanation: "fillna(df.mean()) replaces all NaN values with the respective column's mean."
+  },
+  {
+    question: "What does df.duplicated() return?",
+    choice1: "A) A DataFrame of duplicates",
+    choice2: "B) A list of duplicated column names",
+    choice3: "C) A Boolean Series indicating duplicated rows",
+    choice4: "D) Deletes all duplicates in the DataFrame",
+    answer: 3,
+    explanation: "duplicated() returns a Boolean Series that shows whether a row is a duplicate of a previous row."
+  },
+  {
+    question: "What method is used to drop duplicate rows in a DataFrame?",
+    choice1: "A) df.drop_duplicates()",
+    choice2: "B) df.remove_duplicates()",
+    choice3: "C) df.delete_duplicates()",
+    choice4: "D) df.clear_duplicates()",
+    answer: 1,
+    explanation: "drop_duplicates() removes duplicate rows from a DataFrame, keeping the first by default."
+  },
+  {
+    question: "Which of the following could be considered an outlier?",
+    choice1: "A) A value close to the median",
+    choice2: "B) A repeated value",
+    choice3: "C) A value far away from the rest of the dataset",
+    choice4: "D) A missing value",
+    answer: 3,
+    explanation: "An outlier is a value that is significantly different from other observations in the data."
+  },
+  {
+    question: "How can you detect outliers using the Interquartile Range (IQR)?",
+    choice1: "A) Values outside mean ± std deviation",
+    choice2: "B) Values outside Q1 - 1.5×IQR and Q3 + 1.5×IQR",
+    choice3: "C) Values equal to median",
+    choice4: "D) Values with duplicates",
+    answer: 2,
+    explanation: "The IQR method flags values below Q1 - 1.5×IQR or above Q3 + 1.5×IQR as outliers."
+  },
+  {
+    question: "Which function will replace all occurrences of 'Male' with 'M' in a column?",
+    choice1: "A) df.gender.replace('Male', 'M')",
+    choice2: "B) df.gender.switch('Male', 'M')",
+    choice3: "C) df.gender.rename('Male', 'M')",
+    choice4: "D) df.gender.alter('Male', 'M')",
+    answer: 1,
+    explanation: "replace() is used to replace values in a Series or DataFrame."
+  },
+  {
+    question: "What is the best way to standardize inconsistent string cases (e.g., “Yes”, “yes”, “YES”) in a column?",
+    choice1: "A) Use .standardize()",
+    choice2: "B) Use .capitalize()",
+    choice3: "C) Use .lower() or .upper()",
+    choice4: "D) Use .clean()",
+    answer: 3,
+    explanation: "Converting all strings to lowercase (.str.lower()) or uppercase (.str.upper()) helps standardize text data."
+  },
+  {
+    question: "Which of these can cause inconsistent data formats?",
+    choice1: "A) Different date formats",
+    choice2: "B) Mixed use of currency symbols",
+    choice3: "C) Varying units of measurement",
+    choice4: "D) All of the above",
+    answer: 4,
+    explanation: "Inconsistent formats can arise from any differences in representation (dates, currency, units, etc.)."
+  },
+  {
+    question: "What method can you use to change a column’s data type (e.g., from string to datetime)?",
+    choice1: "A) df.convert()",
+    choice2: "B) df.to_type()",
+    choice3: "C) pd.to_datetime()",
+    choice4: "D) df.retype()",
+    answer: 3,
+    explanation: "pd.to_datetime() converts a string/object column to a proper datetime format."
+  }
+];
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='prgmlevel8.html'">Go to Level 8 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'prgmlevel7.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>

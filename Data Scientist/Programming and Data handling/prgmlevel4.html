@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Program Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 4</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is the correct way to open a file named data.txt for reading in Python?",
+    choice1: "A) open(\"data.txt\", \"r\")",
+    choice2: "B) file.open(\"data.txt\")",
+    choice3: "C) read(\"data.txt\")",
+    choice4: "D) open(data.txt)",
+    answer: 1,
+    explanation: "\"r\" mode stands for read. The correct syntax is open(\"filename\", \"r\")."
+  },
+  {
+    question: "What does the with statement do when opening a file?",
+    choice1: "A) Automatically installs the file",
+    choice2: "B) Deletes the file after reading",
+    choice3: "C) Automatically closes the file",
+    choice4: "D) Only reads part of the file",
+    answer: 3,
+    explanation: "Using with open(...) automatically handles file closing, even if exceptions occur."
+  },
+  {
+    question: "Which Python module is commonly used to handle CSV files?",
+    choice1: "A) excel",
+    choice2: "B) json",
+    choice3: "C) csv",
+    choice4: "D) text",
+    answer: 3,
+    explanation: "The csv module provides functionality to read from and write to CSV files."
+  },
+  {
+    question: "How can you write data to a file in Python?",
+    choice1: "A) open(\"file.txt\", \"r\")",
+    choice2: "B) open(\"file.txt\", \"w\")",
+    choice3: "C) open(\"file.txt\", \"x\")",
+    choice4: "D) open(\"file.txt\", \"c\")",
+    answer: 2,
+    explanation: "\"w\" mode opens a file for writing and overwrites existing content."
+  },
+  {
+    question: "What does the following code do?\n\nimport json\nwith open(\"data.json\", \"r\") as file:\n    data = json.load(file)",
+    choice1: "A) Reads a CSV file",
+    choice2: "B) Parses a text file into a dictionary",
+    choice3: "C) Reads a JSON file into a Python dictionary",
+    choice4: "D) Opens a binary file",
+    answer: 3,
+    explanation: "json.load() loads JSON data from a file into a Python dictionary or list."
+  },
+  {
+    question: "Which exception is raised when trying to open a file that doesn’t exist?",
+    choice1: "A) FileFoundError",
+    choice2: "B) FileError",
+    choice3: "C) FileNotFoundError",
+    choice4: "D) IOError",
+    answer: 3,
+    explanation: "Python raises FileNotFoundError when a non-existent file is accessed."
+  },
+  {
+    question: "What is the output of this code if data.xlsx exists?\n\nimport pandas as pd\ndf = pd.read_excel(\"data.xlsx\")",
+    choice1: "A) File is deleted",
+    choice2: "B) Returns a DataFrame from the Excel file",
+    choice3: "C) Raises an error by default",
+    choice4: "D) Reads a CSV file instead",
+    answer: 2,
+    explanation: "pd.read_excel() reads Excel files and returns a DataFrame."
+  },
+  {
+    question: "What mode is used to append content to an existing file in Python?",
+    choice1: "A) \"r\"",
+    choice2: "B) \"x\"",
+    choice3: "C) \"w\"",
+    choice4: "D) \"a\"",
+    answer: 4,
+    explanation: "\"a\" mode appends data to the end of the file without deleting the existing content."
+  },
+  {
+    question: "What function is used to handle exceptions in Python?",
+    choice1: "A) error try",
+    choice2: "B) try-except",
+    choice3: "C) if-exception",
+    choice4: "D) handle(error)",
+    answer: 2,
+    explanation: "try-except blocks are used to catch and handle exceptions."
+  },
+  {
+    question: "What will the following code output?\n\ntry:\n    f = open(\"data.txt\")\n    print(f.read())\nexcept:\n    print(\"File error\")",
+    choice1: "A) Always prints \"File error\"",
+    choice2: "B) Never runs",
+    choice3: "C) Prints contents of data.txt or \"File error\" if file doesn’t exist",
+    choice4: "D) Prints the file name only",
+    answer: 3,
+    explanation: "If data.txt exists, its contents are printed. If not, the program handles the exception gracefully."
+  }
+];
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='prgmlevel5.html'">Go to Level 5 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'prgmlevel4.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Program Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 6</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is a Pandas Series?",
+    choice1: "A) A two-dimensional data structure",
+    choice2: "B) A labeled one-dimensional array",
+    choice3: "C) A list with indexes",
+    choice4: "D) A Python tuple",
+    answer: 2,
+    explanation: "A Pandas Series is a one-dimensional labeled array capable of holding any data type."
+  },
+  {
+    question: "How can you create a DataFrame from a dictionary?",
+    choice1: "A) pd.DataFrame.from_dict(dict)",
+    choice2: "B) pd.DataFrame(dict)",
+    choice3: "C) pd.dict_to_df(dict)",
+    choice4: "D) pd.create(dict)",
+    answer: 2,
+    explanation: "pd.DataFrame(dict) is the standard way to convert a dictionary to a DataFrame in Pandas."
+  },
+  {
+    question: "What is the output of this code?\n\nimport pandas as pd\ndata = pd.Series([10, 20, 30], index=['a', 'b', 'c'])\nprint(data['b'])",
+    choice1: "A) 10",
+    choice2: "B) 20",
+    choice3: "C) b",
+    choice4: "D) Error",
+    answer: 2,
+    explanation: "The value at index 'b' is 20 in the Series."
+  },
+  {
+    question: "What is the purpose of .loc[] in Pandas?",
+    choice1: "A) Access elements by integer position",
+    choice2: "B) Access elements by label/index",
+    choice3: "C) Apply filters",
+    choice4: "D) Change data type",
+    answer: 2,
+    explanation: ".loc[] is used to access a group of rows and columns by labels."
+  },
+  {
+    question: "What is the output of this code?\n\ndf = pd.DataFrame({'A': [1, 2, 3], 'B': [10, 20, 30]})\nprint(df[df['A'] > 1])",
+    choice1: "A) All rows",
+    choice2: "B) Rows where A > 1",
+    choice3: "C) Rows where B > 1",
+    choice4: "D) Error",
+    answer: 2,
+    explanation: "This is a filtering operation that returns only rows where column A is greater than 1."
+  },
+  {
+    question: "Which function merges two DataFrames horizontally on a common column?",
+    choice1: "A) pd.concat()",
+    choice2: "B) pd.merge()",
+    choice3: "C) pd.append()",
+    choice4: "D) pd.join()",
+    answer: 2,
+    explanation: "pd.merge() merges two DataFrames on one or more common columns, similar to SQL JOINs."
+  },
+  {
+    question: "What does groupby() do in Pandas?",
+    choice1: "A) Groups DataFrames into separate files",
+    choice2: "B) Groups rows based on column values for aggregation",
+    choice3: "C) Sorts values",
+    choice4: "D) Deletes duplicates",
+    answer: 2,
+    explanation: "groupby() groups the data based on values in specified columns and allows aggregate functions (sum, mean, etc.)."
+  },
+  {
+    question: "What is the result of this code?\n\ndf = pd.DataFrame({'Category': ['A', 'A', 'B'], 'Value': [10, 20, 30]})\nprint(df.groupby('Category').sum())",
+    choice1: "A) Sum of all values",
+    choice2: "B) Grouped values by index",
+    choice3: "C) Grouped and summed by 'Category'",
+    choice4: "D) Error",
+    answer: 3,
+    explanation: "The groupby('Category').sum() operation groups rows by 'Category' and sums the 'Value'."
+  },
+  {
+    question: "What will df.iloc[1] return?",
+    choice1: "A) All columns of row with index label 1",
+    choice2: "B) Row at position 1 (second row)",
+    choice3: "C) Only first column",
+    choice4: "D) Column at index 1",
+    answer: 2,
+    explanation: ".iloc[] accesses rows by integer location, so df.iloc[1] returns the second row."
+  },
+  {
+    question: "How do you drop missing values from a DataFrame?",
+    choice1: "A) df.remove_null()",
+    choice2: "B) df.drop_null()",
+    choice3: "C) df.dropna()",
+    choice4: "D) df.delete_nan()",
+    answer: 3,
+    explanation: "df.dropna() removes all rows with at least one NaN (missing) value."
+  }
+];
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='prgmlevel7.html'">Go to Level 7 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'prgmlevel6.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
