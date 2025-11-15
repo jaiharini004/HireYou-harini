@@ -1,1 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 1 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+const questions=[
+{
+    question: "What is the determinant of a matrix used for?",
+    choice1: "A) Calculating matrix inverse",
+    choice2: "B) Determining matrix rank",
+    choice3: "C) Checking if a matrix is invertible",
+    choice4: "D) Computing eigenvalues",
+    answer: 3,
+    explanation: "A non-zero determinant indicates that the matrix is invertible; a zero determinant means it's singular."
+  },
+  {
+    question: "Which operation is not defined for matrices A (2x3) and B (3x2)?",
+    choice1: "A) AB",
+    choice2: "B) BA",
+    choice3: "C) A + B",
+    choice4: "D) None of the above",
+    answer: 3,
+    explanation: "Matrix addition requires both matrices to have the same dimensions."
+  },
+  {
+    question: "What are eigenvalues?",
+    choice1: "A) Scalars indicating matrix invertibility",
+    choice2: "B) Scalars λ where Ax = λx for some vector x",
+    choice3: "C) Diagonal elements of a matrix",
+    choice4: "D) Determinants of a matrix",
+    answer: 2,
+    explanation: "Eigenvalues are scalars λ such that there exists a non-zero vector x satisfying Ax = λx."
+  },
+  {
+    question: "What is the rank of a matrix?",
+    choice1: "A) Number of rows",
+    choice2: "B) Number of columns",
+    choice3: "C) Number of linearly independent rows or columns",
+    choice4: "D) Determinant of the matrix",
+    answer: 3,
+    explanation: "The rank is the dimension of the vector space spanned by its rows or columns."
+  },
+  {
+    question: "Which matrix operation is used to find the best fit line in linear regression?",
+    choice1: "A) Matrix inversion",
+    choice2: "B) Eigen decomposition",
+    choice3: "C) Singular Value Decomposition (SVD)",
+    choice4: "D) Pseudo-inverse",
+    answer: 4,
+    explanation: "The Moore-Penrose pseudo-inverse is used when the matrix is not invertible to compute the least squares solution."
+  },
+  {
+    question: "What does the gradient of a function represent?",
+    choice1: "A) Rate of change in all directions",
+    choice2: "B) Maximum value of the function",
+    choice3: "C) Point of inflection",
+    choice4: "D) Second derivative",
+    answer: 1,
+    explanation: "The gradient points in the direction of the steepest ascent of the function."
+  },
+  {
+    question: "In optimization, what is the purpose of the learning rate?",
+    choice1: "A) Determines the number of iterations",
+    choice2: "B) Controls the step size during gradient descent",
+    choice3: "C) Measures model accuracy",
+    choice4: "D) Regularizes the model",
+    answer: 2,
+    explanation: "The learning rate dictates how much we adjust the weights with respect to the gradient."
+  },
+  {
+    question: "What is the derivative of the sigmoid function σ(x) = 1 / (1 + e^-x)?",
+    choice1: "A) σ(x)",
+    choice2: "B) σ(x)(1 - σ(x))",
+    choice3: "C) e^-x",
+    choice4: "D) 1",
+    answer: 2,
+    explanation: "The derivative of the sigmoid function is σ(x)(1 - σ(x)), which is used in backpropagation."
+  },
+  {
+    question: "What is the purpose of the Hessian matrix in optimization?",
+    choice1: "A) Stores first-order derivatives",
+    choice2: "B) Stores second-order partial derivatives",
+    choice3: "C) Represents the gradient",
+    choice4: "D) Calculates the loss function",
+    answer: 2,
+    explanation: "The Hessian matrix contains second-order partial derivatives, providing information about the curvature of the function."
+  },
+  {
+    question: "In gradient descent, what happens if the learning rate is too high?",
+    choice1: "A) Converges quickly",
+    choice2: "B) May overshoot minima and fail to converge",
+    choice3: "C) Leads to underfitting",
+    choice4: "D) Improves model accuracy",
+    answer: 2,
+    explanation: "A high learning rate can cause the algorithm to overshoot the minimum, leading to divergence."
+  }
+  
+
+]
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "amt2.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>
 
