@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>sql level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 3</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "What will the result of the following query be?\n\nSELECT LENGTH('Data Analyst');",
+    choice1: "A) 11",
+    choice2: "B) 12",
+    choice3: "C) 13",
+    choice4: "D) 10",
+    answer: 2,
+    explanation: "LENGTH() returns the number of characters including space. 'Data Analyst' has 12 characters."
+  },
+  {
+    question: "Which SQL function returns the average value of a numeric column?",
+    choice1: "A) SUM()",
+    choice2: "B) MEAN()",
+    choice3: "C) AVERAGE()",
+    choice4: "D) AVG()",
+    answer: 4,
+    explanation: "AVG() is used to calculate the average of numeric values."
+  },
+  {
+    question: "What is the output of this SQL query?\n\nSELECT 10 + 5 * 2;",
+    choice1: "A) 30",
+    choice2: "B) 25",
+    choice3: "C) 20",
+    choice4: "D) 40",
+    answer: 3,
+    explanation: "SQL follows mathematical operator precedence. So, 5*2 = 10, then 10+10 = 20."
+  },
+  {
+    question: "Which statement adds a new column to an existing table?",
+    choice1: "A) MODIFY TABLE table ADD column_name datatype;",
+    choice2: "B) ADD COLUMN column_name TO table;",
+    choice3: "C) ALTER TABLE table_name ADD column_name datatype;",
+    choice4: "D) INSERT COLUMN column_name INTO table_name;",
+    answer: 3,
+    explanation: "ALTER TABLE ... ADD is the correct syntax to add a column."
+  },
+  {
+    question: "You have a table sales with columns (id, item, price). What does this query do?\n\nSELECT SUM(price) FROM sales;",
+    choice1: "A) Returns the total price of all sales",
+    choice2: "B) Returns the average price",
+    choice3: "C) Lists all prices",
+    choice4: "D) Returns the number of sales",
+    answer: 1,
+    explanation: "SUM(price) adds up all values in the price column."
+  },
+  {
+    question: "What is the output of:\n\nSELECT ROUND(123.456, 1);",
+    choice1: "A) 123.4",
+    choice2: "B) 123.5",
+    choice3: "C) 123.45",
+    choice4: "D) 124",
+    answer: 2,
+    explanation: "ROUND(123.456, 1) rounds to one decimal place → 123.5."
+  },
+  {
+    question: "Which operator is used to check for a value in a set?",
+    choice1: "A) BETWEEN",
+    choice2: "B) IN",
+    choice3: "C) LIKE",
+    choice4: "D) IS",
+    answer: 2,
+    explanation: "IN checks if a value exists within a list of values."
+  },
+  {
+    question: "What is the purpose of the IS NULL operator?",
+    choice1: "A) Check if a value is 0",
+    choice2: "B) Check if a column is empty",
+    choice3: "C) Check if a value is undefined",
+    choice4: "D) Check if a value is NULL",
+    answer: 4,
+    explanation: "IS NULL checks if a column contains NULL (missing) value."
+  },
+  {
+    question: "What is the output of this SQL snippet?\n\nSELECT CONCAT('Data', ' ', 'Analyst');",
+    choice1: "A) DataAnalyst",
+    choice2: "B) Data Analyst",
+    choice3: "C) Data, Analyst",
+    choice4: "D) Data-Analyst",
+    answer: 2,
+    explanation: "CONCAT() joins strings — including the space here — result: 'Data Analyst'."
+  },
+  {
+    question: "Which clause is used to limit the number of records returned?",
+    choice1: "A) LIMIT",
+    choice2: "B) RESTRICT",
+    choice3: "C) TOP",
+    choice4: "D) MAX",
+    answer: 1,
+    explanation: "LIMIT is used in MySQL/PostgreSQL to restrict row count."
+  }
+];
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='slev4.html'">Go to Level 4 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'slev3.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

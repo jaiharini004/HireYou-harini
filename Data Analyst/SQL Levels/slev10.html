@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>sql level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "Identify the issue:\n\nSELECT *\nFROM Orders\nWHERE customer_id NOT IN (\n    SELECT customer_id FROM Customers WHERE region = 'Europe'\n);\nWhat happens if any customer_id is NULL in subquery?",
+    choice1: "A) Query runs fine",
+    choice2: "B) Returns correct result",
+    choice3: "C) Returns no rows",
+    choice4: "D) Throws error",
+    answer: 3,
+    explanation: "NOT IN with NULLs causes undefined behavior and returns no results due to NULL comparison."
+  },
+  {
+    question: "What’s the best index to optimize this query?\n\nSELECT * FROM Orders WHERE customer_id = 101 AND order_date = '2024-10-01';",
+    choice1: "A) Index on order_date",
+    choice2: "B) Index on customer_id",
+    choice3: "C) Composite index on (customer_id, order_date)",
+    choice4: "D) Index on id",
+    answer: 3,
+    explanation: "A composite index on both columns used in the WHERE clause improves performance."
+  },
+  {
+    question: "How do you get the 3rd highest salary from Employees?\n\nSELECT DISTINCT salary\nFROM Employees\nORDER BY salary DESC\nLIMIT 1 OFFSET 2;",
+    choice1: "A) Returns 3rd highest",
+    choice2: "B) Returns lowest salary",
+    choice3: "C) Returns error",
+    choice4: "D) Returns second highest",
+    answer: 1,
+    explanation: "OFFSET 2 skips top 2 rows; LIMIT 1 fetches the 3rd."
+  },
+  {
+    question: "What does this query compute?\n\nSELECT department,\n       SUM(salary) / COUNT(*) OVER (PARTITION BY department) AS avg_contrib\nFROM Employees;",
+    choice1: "A) Departmental total salary",
+    choice2: "B) Per-employee contribution to department average",
+    choice3: "C) Overall average salary",
+    choice4: "D) Error",
+    answer: 2,
+    explanation: "SUM/COUNT per partition = department average; shown for each employee."
+  },
+  {
+    question: "What’s the output of:\n\nSELECT department, \n       FIRST_VALUE(salary) OVER (PARTITION BY department ORDER BY salary DESC) AS top_salary\nFROM Employees;",
+    choice1: "A) Lowest salary per department",
+    choice2: "B) Top salary per department",
+    choice3: "C) Average salary",
+    choice4: "D) Rank of salaries",
+    answer: 2,
+    explanation: "FIRST_VALUE returns the first row in the order per partition → here: top salary per department."
+  },
+  {
+    question: "What does this query return?\n\nSELECT e.name\nFROM Employees e\nWHERE EXISTS (\n    SELECT 1 FROM Projects p\n    WHERE p.employee_id = e.id AND p.status = 'Completed'\n);",
+    choice1: "A) Employees with any projects",
+    choice2: "B) Employees with completed projects",
+    choice3: "C) Employees with pending projects",
+    choice4: "D) NULL",
+    answer: 2,
+    explanation: "EXISTS checks for at least one matching row — here, completed project assigned to the employee."
+  },
+  {
+    question: "What does the following CTE + query output?\n\nWITH RankedSalaries AS (\n    SELECT name, salary,\n           RANK() OVER (ORDER BY salary DESC) AS rnk\n    FROM Employees\n)\nSELECT name FROM RankedSalaries WHERE rnk <= 5;",
+    choice1: "A) Top 5 salaries",
+    choice2: "B) Bottom 5 salaries",
+    choice3: "C) Average salary employees",
+    choice4: "D) Error",
+    answer: 1,
+    explanation: "RANK assigns rank by salary; filter keeps top 5 ranked employees."
+  },
+  {
+    question: "What does this compute?\n\nSELECT name, salary,\n       salary / SUM(salary) OVER () * 100 AS contribution\nFROM Employees;",
+    choice1: "A) Employee salary percentage of total",
+    choice2: "B) Bonus calculation",
+    choice3: "C) Salary with tax",
+    choice4: "D) NULL",
+    answer: 1,
+    explanation: "Divides individual salary by total to get percentage share."
+  },
+  {
+    question: "Which technique is not ideal for improving large query performance?",
+    choice1: "A) Indexing",
+    choice2: "B) Partitioning",
+    choice3: "C) Using SELECT *",
+    choice4: "D) Optimizing JOINs",
+    answer: 3,
+    explanation: "SELECT * fetches unnecessary columns, slows down performance, and increases I/O."
+  },
+  {
+    question: "Given this query is slow, what should you analyze first?\n\nSELECT * FROM Orders WHERE status = 'Pending' AND customer_id = 205;",
+    choice1: "A) Number of rows",
+    choice2: "B) Database size",
+    choice3: "C) Indexes on status and customer_id",
+    choice4: "D) Query length",
+    answer: 3,
+    explanation: "Missing indexes on filtering columns is often the cause of slow SELECTs."
+  }
+];
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='data_analyst.html'">Hureyyy! You Aced it🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'slev10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

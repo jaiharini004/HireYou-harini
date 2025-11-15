@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>sql level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "What does the query return?\n\nSELECT name\nFROM Employees\nWHERE salary IN (\n    SELECT salary\n    FROM Employees\n    GROUP BY salary\n    HAVING COUNT(*) > 1\n);",
+    choice1: "A) Employees with unique salaries",
+    choice2: "B) Employees with duplicate salaries",
+    choice3: "C) All employees",
+    choice4: "D) Error",
+    answer: 2,
+    explanation: "The subquery returns salaries that appear more than once; the outer query gets those employees."
+  },
+  {
+    question: "Which employee(s) has the second highest salary?\n\nSELECT name\nFROM Employees\nWHERE salary = (\n    SELECT MAX(salary)\n    FROM Employees\n    WHERE salary < (\n        SELECT MAX(salary)\n        FROM Employees\n    )\n);",
+    choice1: "A) Highest salary",
+    choice2: "B) Second highest salary",
+    choice3: "C) Lowest salary",
+    choice4: "D) NULL",
+    answer: 2,
+    explanation: "Nested subqueries exclude the top salary and get the next highest."
+  },
+  {
+    question: "What does this CTE do?\n\nWITH DepartmentAverage AS (\n    SELECT department, AVG(salary) AS avg_salary\n    FROM Employees\n    GROUP BY department\n)\nSELECT e.name\nFROM Employees e\nJOIN DepartmentAverage d ON e.department = d.department\nWHERE e.salary > d.avg_salary;",
+    choice1: "A) All employees",
+    choice2: "B) Employees with salary above department average",
+    choice3: "C) Department with max salary",
+    choice4: "D) NULL",
+    answer: 2,
+    explanation: "CTE calculates per-department average; outer query joins and filters those above average."
+  },
+  {
+    question: "Identify the output:\n\nSELECT department, \n       COUNT(*) AS total,\n       SUM(CASE WHEN gender = 'F' THEN 1 ELSE 0 END) AS females\nFROM Employees\nGROUP BY department;",
+    choice1: "A) Total and female employees per department",
+    choice2: "B) Only female employees",
+    choice3: "C) Error",
+    choice4: "D) Total male employees",
+    answer: 1,
+    explanation: "CASE is used to count conditionally. This is conditional aggregation."
+  },
+  {
+    question: "What does the query do?\nSELECT name, salary,\n       ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC) AS dept_rank\nFROM Employees;",
+    choice1: "A) Assigns department ID",
+    choice2: "B) Assigns unique rank per department by salary",
+    choice3: "C) Gives same rank to equal salary",
+    choice4: "D) Skips ranks",
+    answer: 2,
+    explanation: "ROW_NUMBER() gives unique, sequential numbers per partition (i.e., per department)."
+  },
+  {
+    question: "Which of the following is not true about indexes in SQL?",
+    choice1: "A) Indexes speed up data retrieval",
+    choice2: "B) Indexes slow down insert/update operations",
+    choice3: "C) Indexes use extra disk space",
+    choice4: "D) Indexes are automatically created for every column",
+    answer: 4,
+    explanation: "Indexes are not automatically created for every column — only on primary keys or when explicitly defined."
+  },
+  {
+    question: "What does the following return?\n\nSELECT e.name\nFROM Employees e\nLEFT JOIN Projects p ON e.id = p.employee_id\nWHERE p.employee_id IS NULL;",
+    choice1: "A) Employees with projects",
+    choice2: "B) Employees without projects",
+    choice3: "C) Projects without employees",
+    choice4: "D) All data",
+    answer: 2,
+    explanation: "LEFT JOIN + NULL in the right table → finds unmatched rows = employees with no projects."
+  },
+  {
+    question: "What does this do?\n\nSELECT name\nFROM Employees\nWHERE department_id NOT IN (\n    SELECT department_id\n    FROM Departments\n    WHERE budget < 100000\n);",
+    choice1: "A) Employees in under-budget departments",
+    choice2: "B) Employees in well-funded departments",
+    choice3: "C) All employees",
+    choice4: "D) NULL",
+    answer: 2,
+    explanation: "Subquery finds low-budget departments and excludes them using NOT IN."
+  },
+  {
+    question: "What is the result of:\n\nSELECT name,\n       LEAD(salary, 1) OVER (ORDER BY salary DESC) AS next_salary\nFROM Employees;",
+    choice1: "A) Shows next higher salary",
+    choice2: "B) Shows next lower salary",
+    choice3: "C) Shows previous salary",
+    choice4: "D) Error",
+    answer: 2,
+    explanation: "LEAD() looks ahead in the result set — in descending order, next is lower."
+  },
+  {
+    question: "What does this return?\n\nSELECT department, \n       COUNT(*) FILTER (WHERE gender = 'M') AS male_count,\n       COUNT(*) FILTER (WHERE gender = 'F') AS female_count\nFROM Employees\nGROUP BY department;",
+    choice1: "A) Only male employees",
+    choice2: "B) Only female employees",
+    choice3: "C) Gender count per department",
+    choice4: "D) NULL",
+    answer: 3,
+    explanation: "FILTER clause allows conditional aggregation, like CASE but cleaner (PostgreSQL syntax)."
+  }
+];
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='slev10.html'">Go to Level 10 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'slev9.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
