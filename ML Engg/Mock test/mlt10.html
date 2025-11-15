@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test - Level 1</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 10<h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "In PCA, eigenvectors represent ______ and eigenvalues represent ______.",
+    choice1: "A) Variance, direction",
+    choice2: "B) Projection, noise",
+    choice3: "C) Direction, variance",
+    choice4: "D) Noise, error",
+    answer: 3,
+    explanation: "Eigenvectors = direction, Eigenvalues = magnitude of variance explained."
+  },
+  {
+    question: "Which of the following helps remove multicollinearity before modeling?",
+    choice1: "A) Standardization",
+    choice2: "B) PCA",
+    choice3: "C) Normalization",
+    choice4: "D) One-hot encoding",
+    answer: 2,
+    explanation: "PCA removes correlation among features by creating orthogonal components."
+  },
+  {
+    question: "What is vanishing gradient problem and which activation worsens it?",
+    choice1: "A) Exploding loss; Softmax",
+    choice2: "B) Small gradients; Sigmoid",
+    choice3: "C) Constant gradient; ReLU",
+    choice4: "D) High variance; Tanh",
+    answer: 2,
+    explanation: "Sigmoid compresses outputs between 0 and 1, causing small gradients in deep networks → vanishing gradients."
+  },
+  {
+    question: "What’s the effect of weight initialization using Xavier (Glorot) initialization?",
+    choice1: "A) Makes all weights equal",
+    choice2: "B) Increases variance",
+    choice3: "C) Maintains signal variance across layers",
+    choice4: "D) Promotes sparsity",
+    answer: 3,
+    explanation: "Xavier initialization maintains variance, preventing early saturation or explosion."
+  },
+  {
+    question: "In CNNs, what is the role of the pooling layer?",
+    choice1: "A) Introduce non-linearity",
+    choice2: "B) Reduce dimensionality",
+    choice3: "C) Increase overfitting",
+    choice4: "D) Flatten inputs",
+    answer: 2,
+    explanation: "Pooling layers downsample feature maps, reducing dimensions and overfitting."
+  },
+  {
+    question: "What does the following code compute?\n\nimport torch.nn.functional as F\noutput = F.cross_entropy(torch.tensor([[2.0, 0.5]]), torch.tensor([0]))",
+    choice1: "A) Cross-entropy between predicted and true class",
+    choice2: "B) MSE",
+    choice3: "C) Accuracy",
+    choice4: "D) Dot product",
+    answer: 1,
+    explanation: "F.cross_entropy calculates log loss between logits and true class index."
+  },
+  {
+    question: "What is the gradient of J(θ) = 3θ² + 2θ − 5 at θ = 2?",
+    choice1: "A) 14",
+    choice2: "B) 16",
+    choice3: "C) 18",
+    choice4: "D) 12",
+    answer: 1,
+    explanation: "dJ/dθ = 6θ + 2 ⇒ 6×2 + 2 = 14"
+  },
+  {
+    question: "Which optimizer adapts learning rate using both first and second moments of gradients?",
+    choice1: "A) SGD",
+    choice2: "B) RMSProp",
+    choice3: "C) Adam",
+    choice4: "D) Adagrad",
+    answer: 3,
+    explanation: "Adam = Adaptive Moment Estimation, combines momentum (1st moment) + RMS (2nd moment)."
+  },
+  {
+    question: "What is the effect of increasing the regularization parameter λ in L2?",
+    choice1: "A) Overfits more",
+    choice2: "B) Shrinks weights more",
+    choice3: "C) Removes features",
+    choice4: "D) Adds noise",
+    answer: 2,
+    explanation: "Higher λ in L2 regularization penalizes weight size, forcing them toward zero."
+  },
+  {
+    question: "Python: What’s the role of alpha in Ridge regression?\n\nfrom sklearn.linear_model import Ridge\nmodel = Ridge(alpha=10)",
+    choice1: "A) Controls regularization strength",
+    choice2: "B) Controls batch size",
+    choice3: "C) Sets learning rate",
+    choice4: "D) Penalizes data imbalance",
+    answer: 1,
+    explanation: "alpha is the regularization strength (λ) in Ridge (L2) regression."
+  }
+];
+
+
+
+
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = q.question;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    [q.choice1, q.choice2, q.choice3, q.choice4].forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.textContent = opt;
+      btn.onclick = () => handleAnswer(qDiv, i + 1, q.answer, q.explanation);
+      opts.appendChild(btn);
+    });
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / ${questions.length * 2}`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "mlengg.html"; // placeholder next level
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

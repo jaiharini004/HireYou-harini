@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test - Level 1</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 8</h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "Which of the following introduces non-linear interactions into the feature set?",
+    choice1: "A) PCA",
+    choice2: "B) StandardScaler",
+    choice3: "C) PolynomialFeatures",
+    choice4: "D) MinMaxScaler",
+    answer: 3,
+    explanation: "PolynomialFeatures include higher-degree and interaction terms for non-linear modeling."
+  },
+  {
+    question: "Why is feature scaling important in distance-based algorithms like KNN or K-Means?",
+    choice1: "A) To reduce dimensionality",
+    choice2: "B) To ensure all features contribute equally",
+    choice3: "C) To overfit the model",
+    choice4: "D) To apply PCA",
+    answer: 2,
+    explanation: "Scaling ensures that features with larger ranges don't dominate the distance calculations."
+  },
+  {
+    question: "In a 3-layer feedforward network with ReLU activations, what issue may arise during training?",
+    choice1: "A) Vanishing gradients",
+    choice2: "B) Exploding gradients",
+    choice3: "C) Dead neurons",
+    choice4: "D) Bias variance",
+    answer: 3,
+    explanation: "ReLU can cause some neurons to always output 0 if they fall in the negative zone → dead neurons."
+  },
+  {
+    question: "Which of these helps in mitigating vanishing gradient problems in deep networks?",
+    choice1: "A) Sigmoid activation",
+    choice2: "B) Batch Normalization",
+    choice3: "C) Cross-entropy loss",
+    choice4: "D) Increasing dropout",
+    answer: 2,
+    explanation: "Batch normalization helps maintain gradients by stabilizing input distributions during training."
+  },
+  {
+    question: "In binary classification, what is the output of the final neuron usually?",
+    choice1: "A) ReLU",
+    choice2: "B) Sigmoid",
+    choice3: "C) Softmax",
+    choice4: "D) Tanh",
+    answer: 2,
+    explanation: "Sigmoid outputs probabilities between 0 and 1 for binary decisions."
+  },
+  {
+    question: "Given weights = [0.3, -0.6], inputs = [2, 4], bias = 0.1. Compute output of one neuron (linear layer).",
+    choice1: "A) -1.5",
+    choice2: "B) -1.7",
+    choice3: "C) -0.9",
+    choice4: "D) -2.0",
+    answer: 2,
+    explanation: "(0.3×2) + (-0.6×4) + 0.1 = 0.6 − 2.4 + 0.1 = -1.7"
+  },
+  {
+    question: "What is the derivative of the cost function J(θ) = (θ − 2)² at θ = 3?",
+    choice1: "A) -2",
+    choice2: "B) 2",
+    choice3: "C) 4",
+    choice4: "D) 1",
+    answer: 2,
+    explanation: "dJ/dθ = 2(θ−2) = 2(1) = 2"
+  },
+  {
+    question: "Why is dropout effective in preventing overfitting in neural nets?",
+    choice1: "A) Makes training faster",
+    choice2: "B) Randomly disables neurons → prevents co-adaptation",
+    choice3: "C) Increases weight size",
+    choice4: "D) Reduces gradient",
+    answer: 2,
+    explanation: "Dropout forces the network to not rely on specific neurons, promoting redundancy and generalization."
+  },
+  {
+    question: "What is the main difference between L1 and L2 regularization?",
+    choice1: "A) L2 promotes sparsity",
+    choice2: "B) L1 penalizes squares",
+    choice3: "C) L1 leads to zero weights, L2 shrinks weights",
+    choice4: "D) L2 increases model size",
+    answer: 3,
+    explanation: "L1 = sparse (some weights = 0), L2 = small but non-zero weights."
+  },
+  {
+    question: "In gradient descent, if the learning rate is too high, what might happen?",
+    choice1: "A) Converges faster",
+    choice2: "B) Gets stuck in local minima",
+    choice3: "C) Oscillates or diverges",
+    choice4: "D) Underfits",
+    answer: 3,
+    explanation: "High learning rate may cause updates to overshoot minima, leading to divergence or oscillation."
+  }
+];
+
+
+
+
+
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = q.question;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    [q.choice1, q.choice2, q.choice3, q.choice4].forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.textContent = opt;
+      btn.onclick = () => handleAnswer(qDiv, i + 1, q.answer, q.explanation);
+      opts.appendChild(btn);
+    });
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / ${questions.length * 2}`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "mlt9.html"; // placeholder next level
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test - Level 1</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 9<h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "You apply Linear Regression on: X = [1, 2, 3], y = [2, 4, 6]. Compute slope (m) and intercept (b).",
+    choice1: "A) m = 2, b = 0",
+    choice2: "B) m = 1, b = 2",
+    choice3: "C) m = 3, b = -1",
+    choice4: "D) m = 2, b = 1",
+    answer: 1,
+    explanation: "Perfect linear relation → y = 2x → Slope (m) = 2, Intercept (b) = 0"
+  },
+  {
+    question: "In spectral clustering, which matrix is used to derive clusters?",
+    choice1: "A) Covariance matrix",
+    choice2: "B) Laplacian matrix",
+    choice3: "C) Weight matrix",
+    choice4: "D) Feature matrix",
+    answer: 2,
+    explanation: "Spectral clustering uses the graph Laplacian matrix, derived from similarity graphs."
+  },
+  {
+    question: "A classification model is evaluated using the following Python code:\n\nfrom sklearn.metrics import precision_score, recall_score\ny_true = [1, 0, 1, 1, 0, 1, 0]\ny_pred = [1, 0, 1, 0, 0, 1, 1]\nprecision_score(y_true, y_pred)\n\nWhat is the precision?",
+    choice1: "A) 0.75",
+    choice2: "B) 0.60",
+    choice3: "C) 0.66",
+    choice4: "D) 0.50",
+    answer: 1,
+    explanation: "TP = 3, FP = 1 → Precision = 3/(3+1) = 0.75"
+  },
+  {
+    question: "Which unsupervised algorithm performs best with non-globular clusters and detects outliers?",
+    choice1: "A) K-Means",
+    choice2: "B) DBSCAN",
+    choice3: "C) Agglomerative",
+    choice4: "D) PCA",
+    answer: 2,
+    explanation: "DBSCAN can identify arbitrary-shaped clusters and outliers using density thresholds."
+  },
+  {
+    question: "Calculate the F1-score using: TP = 70, FP = 20, FN = 10",
+    choice1: "A) 0.81",
+    choice2: "B) 0.87",
+    choice3: "C) 0.74",
+    choice4: "D) 0.77",
+    answer: 1,
+    explanation: "Precision = 70 / (70 + 20) = 0.777\nRecall = 70 / (70 + 10) = 0.875\nF1 = 2 × (P × R)/(P + R) ≈ 0.81"
+  },
+  {
+    question: "What is the adjusted R² for a model with R² = 0.90, n = 100, and k = 5?\nFormula:\nAdjusted R² = 1 − ((1− R²) × (n−1)/(n−k−1))",
+    choice1: "A) 0.85",
+    choice2: "B) 0.88",
+    choice3: "C) 0.91",
+    choice4: "D) 0.89",
+    answer: 2,
+    explanation: "Adjusted R² = 1 − ((1−0.9)×99)/94 = 1 − 9.45/94 ≈ 0.899 ≈ 0.88"
+  },
+  {
+    question: "Which Python tool offers stratified k-fold for imbalanced classification tasks?",
+    choice1: "A) StratifiedShuffleSplit",
+    choice2: "B) train_test_split",
+    choice3: "C) StratifiedKFold",
+    choice4: "D) TimeSeriesSplit",
+    answer: 3,
+    explanation: "StratifiedKFold maintains class proportions across folds."
+  },
+  {
+    question: "Why is log loss more appropriate than accuracy for probabilistic classifiers?",
+    choice1: "A) It encourages overfitting",
+    choice2: "B) It rewards exact matches",
+    choice3: "C) It penalizes confident wrong predictions",
+    choice4: "D) It computes R²",
+    answer: 3,
+    explanation: "Log loss heavily penalizes confident but wrong predictions, making it sensitive to probabilistic outputs."
+  },
+  {
+    question: "Which feature scaling technique is most robust to outliers?",
+    choice1: "A) Z-score",
+    choice2: "B) MinMaxScaler",
+    choice3: "C) RobustScaler",
+    choice4: "D) Normalization",
+    answer: 3,
+    explanation: "RobustScaler uses median and IQR, making it less sensitive to outliers."
+  },
+  {
+    question: "You have categorical data with high cardinality. Which encoding minimizes dimensionality?",
+    choice1: "A) One-hot encoding",
+    choice2: "B) Label encoding",
+    choice3: "C) Frequency encoding",
+    choice4: "D) Ordinal encoding",
+    answer: 3,
+    explanation: "Frequency encoding uses the occurrence count, reducing space vs one-hot."
+  }
+];
+
+
+
+
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = q.question;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    [q.choice1, q.choice2, q.choice3, q.choice4].forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.textContent = opt;
+      btn.onclick = () => handleAnswer(qDiv, i + 1, q.answer, q.explanation);
+      opts.appendChild(btn);
+    });
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / ${questions.length * 2}`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "mlt10.html"; // placeholder next level
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

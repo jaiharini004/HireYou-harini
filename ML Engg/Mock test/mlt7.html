@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test - Level 1</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 7</h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "You apply K-Means clustering to a dataset and the inertia drops significantly from k=2 to k=3, then levels out at k=4. What is the best value for k using the elbow method?",
+    choice1: "A) 2",
+    choice2: "B) 3",
+    choice3: "C) 4",
+    choice4: "D) 5",
+    answer: 2,
+    explanation: "The 'elbow' occurs at the point of maximum curvature before diminishing returns, which is at k = 3 here."
+  },
+  {
+    question: "Which of the following is an advantage of using Decision Trees in supervised learning?",
+    choice1: "A) They always generalize well",
+    choice2: "B) They don’t require feature scaling",
+    choice3: "C) They need a lot of labeled data",
+    choice4: "D) They perform poorly with non-linear data",
+    answer: 2,
+    explanation: "Decision trees are scale-invariant and work well without normalization."
+  },
+  {
+    question: "A semi-supervised learning model is trained on 80% unlabeled and 20% labeled data. What is the key benefit?",
+    choice1: "A) It avoids training",
+    choice2: "B) It improves generalization with less labeled data",
+    choice3: "C) It performs unsupervised learning",
+    choice4: "D) It ignores noise",
+    answer: 2,
+    explanation: "Semi-supervised models combine efficiency of unlabeled data with accuracy of labeled data."
+  },
+  {
+    question: "What is the silhouette coefficient used for?",
+    choice1: "A) Measuring classification accuracy",
+    choice2: "B) Measuring cluster separation and cohesion",
+    choice3: "C) Measuring overfitting",
+    choice4: "D) Measuring batch size",
+    answer: 2,
+    explanation: "Silhouette score evaluates how well data points fit their assigned cluster vs others."
+  },
+  {
+    question: "Given: TP=60, FP=20, FN=30, TN=90. Compute F1-score.",
+    choice1: "A) 0.666",
+    choice2: "B) 0.615",
+    choice3: "C) 0.545",
+    choice4: "D) 0.75",
+    answer: 1,
+    explanation: "Precision = 60 / (60+20) = 0.75\nRecall = 60 / (60+30) = 0.666\nF1 = 2*(PR)/(P+R) = 2(0.75*0.666)/(0.75+0.666) ≈ 0.666"
+  },
+  {
+    question: "Which technique helps in evaluating the stability of a model across different data partitions?",
+    choice1: "A) Grid search",
+    choice2: "B) ROC-AUC",
+    choice3: "C) k-Fold Cross-Validation",
+    choice4: "D) Confusion matrix",
+    answer: 3,
+    explanation: "k-Fold Cross-Validation rotates through data partitions to measure generalizability."
+  },
+  {
+    question: "You have a dataset with 95% class A, 5% class B. What metric is least reliable to evaluate performance?",
+    choice1: "A) Precision",
+    choice2: "B) F1-score",
+    choice3: "C) Accuracy",
+    choice4: "D) Recall",
+    answer: 3,
+    explanation: "High accuracy can mislead in imbalanced datasets by favoring the dominant class."
+  },
+  {
+    question: "A regression model has MSE = 9. What is RMSE?",
+    choice1: "A) 3",
+    choice2: "B) 4.5",
+    choice3: "C) 9",
+    choice4: "D) 2",
+    answer: 1,
+    explanation: "RMSE = √MSE = √9 = 3"
+  },
+  {
+    question: "You apply PCA and find that the first 2 components explain 90% variance. What does this mean?",
+    choice1: "A) Only 2 features matter",
+    choice2: "B) 2 components retain most signal",
+    choice3: "C) PCA failed",
+    choice4: "D) All features were removed",
+    answer: 2,
+    explanation: "90% variance in 2 components means PCA successfully retained essential information."
+  },
+  {
+    question: "In Python, what does this return?\n\nfrom sklearn.preprocessing import OneHotEncoder\nimport numpy as np\nohe = OneHotEncoder(sparse=False)\nohe.fit_transform(np.array([['Red'], ['Blue'], ['Red']]))",
+    choice1: "A) [[1, 0], [0, 1], [1, 0]]",
+    choice2: "B) [[0, 1], [1, 0], [0, 1]]",
+    choice3: "C) [[0], [1], [0]]",
+    choice4: "D) [[1, 1], [0, 1], [1, 0]]",
+    answer: 1,
+    explanation: "“Red” and “Blue” are encoded as separate binary columns. “Red” = [1, 0], “Blue” = [0, 1]."
+  }
+];
+
+
+
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = q.question;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    [q.choice1, q.choice2, q.choice3, q.choice4].forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.textContent = opt;
+      btn.onclick = () => handleAnswer(qDiv, i + 1, q.answer, q.explanation);
+      opts.appendChild(btn);
+    });
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / ${questions.length * 2}`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "mlt8.html"; // placeholder next level
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

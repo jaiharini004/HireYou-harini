@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test - Level 1</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 1 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "What type of learning uses labeled data?",
+        choice1: "A) Unsupervised",
+        choice2: "B) Reinforcement",
+        choice3: "C) Supervised",
+        choice4: "D) Self-supervised",
+        answer: 3,
+        explanation: "Supervised learning trains on labeled input-output pairs to learn a mapping."
+      },
+      {
+        question: "Which of the following is an unsupervised learning technique?",
+        choice1: "A) Decision Tree",
+        choice2: "B) Logistic Regression",
+        choice3: "C) K-Means Clustering",
+        choice4: "D) Linear Regression",
+        answer: 3,
+        explanation: "K-Means finds groups in unlabeled data — a core unsupervised algorithm."
+      },
+      {
+        question: "What is the main goal of supervised learning?",
+        choice1: "A) Reduce data",
+        choice2: "B) Predict labels",
+        choice3: "C) Detect outliers",
+        choice4: "D) Create new features",
+        answer: 2,
+        explanation: "Supervised learning maps inputs to known outputs or labels."
+      },
+      {
+        question: "Which task is best handled using unsupervised learning?",
+        choice1: "A) Spam classification",
+        choice2: "B) Image labeling",
+        choice3: "C) Customer segmentation",
+        choice4: "D) Predicting prices",
+        answer: 3,
+        explanation: "Clustering-based customer segmentation is an unsupervised task."
+      },
+      {
+        question: "What is accuracy in classification?",
+        choice1: "A) TP / (TP + FN)",
+        choice2: "B) (TP + TN) / Total",
+        choice3: "C) FP / (FP + TN)",
+        choice4: "D) FN / (FN + TP)",
+        answer: 2,
+        explanation: "Accuracy = Correct predictions (TP + TN) over total predictions."
+      },
+      {
+        question: "Which metric is most useful for imbalanced classes?",
+        choice1: "A) Accuracy",
+        choice2: "B) F1-score",
+        choice3: "C) Loss",
+        choice4: "D) R²",
+        answer: 2,
+        explanation: "F1-score considers both precision and recall — crucial for imbalance."
+      },
+      {
+        question: "What is a confusion matrix used for?",
+        choice1: "A) Reducing features",
+        choice2: "B) Evaluating classification",
+        choice3: "C) Training neural networks",
+        choice4: "D) Scaling data",
+        answer: 2,
+        explanation: "Confusion matrix provides insight into true/false positives and negatives."
+      },
+      {
+        question: "What does cross-validation do?",
+        choice1: "A) Cleans missing data",
+        choice2: "B) Reduces features",
+        choice3: "C) Estimates model performance",
+        choice4: "D) Scales variables",
+        answer: 3,
+        explanation: "Cross-validation helps evaluate generalization by training/testing on different data splits."
+      },
+      {
+        question: "What does normalization do?",
+        choice1: "A) Reduces variance",
+        choice2: "B) Scales data to a range",
+        choice3: "C) Adds new features",
+        choice4: "D) Removes nulls",
+        answer: 2,
+        explanation: "Normalization scales features to a common range like [0,1] or [-1,1]."
+      },
+      {
+        question: "What is the purpose of the cross_val_score function in sklearn?",
+        choice1: "A) Makes predictions",
+        choice2: "B) Splits data",
+        choice3: "C) Evaluates a model using cross-validation",
+        choice4: "D) Trains a model",
+        answer: 3,
+        explanation: "cross_val_score is used to evaluate a model's performance using cross-validation by splitting the data into training and testing sets multiple times."
+      }
+    ];
+
+    let score = 0;
+
+    function renderQuiz() {
+      const quiz = document.getElementById("quiz");
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+
+        const qTitle = document.createElement("h3");
+        qTitle.textContent = q.question;
+        qDiv.appendChild(qTitle);
+
+        const opts = document.createElement("div");
+        opts.className = "options";
+
+        [q.choice1, q.choice2, q.choice3, q.choice4].forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.textContent = opt;
+          btn.onclick = () => handleAnswer(qDiv, i + 1, q.answer, q.explanation);
+          opts.appendChild(btn);
+        });
+
+        const exp = document.createElement("div");
+        exp.className = "explanation";
+        exp.id = `exp${index}`;
+
+        qDiv.appendChild(opts);
+        qDiv.appendChild(exp);
+        quiz.appendChild(qDiv);
+      });
+    }
+
+    function handleAnswer(qDiv, selected, correct, explanation) {
+      const explanationEl = qDiv.querySelector(".explanation");
+      if (selected === correct) {
+        score += 2;
+        explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+      } else {
+        explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+      }
+      explanationEl.style.display = 'block';
+      qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+      const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+      if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+    }
+
+    function showFinalScore() {
+      document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / ${questions.length * 2}`;
+      document.getElementById("submitBtn").style.display = 'none';
+      document.getElementById("nextBtn").style.display = 'block';
+    }
+
+    function goToNextLevel() {
+      window.location.href = "mlt2.html"; // placeholder next level
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>

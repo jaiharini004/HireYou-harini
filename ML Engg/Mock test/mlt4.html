@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test - Level 1</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 4</h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "Which technique helps reduce feature space while preserving variance?",
+    choice1: "A) Label Encoding",
+    choice2: "B) PCA",
+    choice3: "C) Normalization",
+    choice4: "D) Outlier Removal",
+    answer: 2,
+    explanation: "Principal Component Analysis (PCA) reduces dimensionality."
+  },
+  {
+    question: "What is feature selection?",
+    choice1: "A) Adding new features",
+    choice2: "B) Dropping missing data",
+    choice3: "C) Choosing the most important features",
+    choice4: "D) Scaling features",
+    answer: 3,
+    explanation: "Feature selection removes irrelevant features to improve performance."
+  },
+  {
+    question: "What happens if no activation function is used in a neural network?",
+    choice1: "A) It underfits",
+    choice2: "B) It overfits",
+    choice3: "C) Network becomes linear",
+    choice4: "D) Network becomes convolutional",
+    answer: 3,
+    explanation: "Without activation, neural networks act as simple linear models."
+  },
+  {
+    question: "What is a common activation function in hidden layers?",
+    choice1: "A) Softmax",
+    choice2: "B) ReLU",
+    choice3: "C) Sigmoid",
+    choice4: "D) Identity",
+    answer: 2,
+    explanation: "ReLU = max(0, x) is widely used due to simplicity and performance."
+  },
+  {
+    question: "What is backpropagation used for?",
+    choice1: "A) Input normalization",
+    choice2: "B) Layer activation",
+    choice3: "C) Error correction",
+    choice4: "D) Dropout",
+    answer: 3,
+    explanation: "Backpropagation computes gradient of the loss w.r.t weights."
+  },
+  {
+    question: "Which of these is true about convolutional neural networks (CNNs)?",
+    choice1: "A) Used mainly for text classification",
+    choice2: "B) Used for tabular data",
+    choice3: "C) Used for image processing",
+    choice4: "D) Cannot be trained",
+    answer: 3,
+    explanation: "CNNs excel at learning spatial hierarchies in image data."
+  },
+  {
+    question: "What does early stopping do?",
+    choice1: "A) Reduces model complexity",
+    choice2: "B) Stops training when validation performance degrades",
+    choice3: "C) Lowers learning rate",
+    choice4: "D) Increases training time",
+    answer: 2,
+    explanation: "Early stopping prevents overfitting by halting at optimal validation performance."
+  },
+  {
+    question: "What does L1 regularization encourage in weights?",
+    choice1: "A) Larger values",
+    choice2: "B) Uniformity",
+    choice3: "C) Sparsity (zeros)",
+    choice4: "D) Gradient explosion",
+    answer: 3,
+    explanation: "L1 tends to drive some weights to zero, helping with feature selection."
+  },
+  {
+    question: "In gradient descent, what does the learning rate control?",
+    choice1: "A) Model architecture",
+    choice2: "B) Training data size",
+    choice3: "C) Step size in weight updates",
+    choice4: "D) Regularization strength",
+    answer: 3,
+    explanation: "Learning rate controls how much the model adjusts per iteration."
+  },
+  {
+    question: "Dropout regularization prevents overfitting by:",
+    choice1: "A) Adding noise to output",
+    choice2: "B) Increasing batch size",
+    choice3: "C) Randomly turning off neurons",
+    choice4: "D) Scaling gradients",
+    answer: 3,
+    explanation: "Dropout disables neurons to make the network less reliant on specific paths."
+  }
+];
+
+
+
+
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = q.question;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    [q.choice1, q.choice2, q.choice3, q.choice4].forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.textContent = opt;
+      btn.onclick = () => handleAnswer(qDiv, i + 1, q.answer, q.explanation);
+      opts.appendChild(btn);
+    });
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / ${questions.length * 2}`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "mlt5.html"; // placeholder next level
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

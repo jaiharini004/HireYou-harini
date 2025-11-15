@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test - Level 1</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 5</h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "You train a linear regression model with features X = [1, 2, 3] and target y = [2, 4, 6]. What are the slope and intercept?",
+    choice1: "A) Slope = 1, Intercept = 1",
+    choice2: "B) Slope = 2, Intercept = 0",
+    choice3: "C) Slope = 3, Intercept = -1",
+    choice4: "D) Slope = 2, Intercept = 1",
+    answer: 2,
+    explanation: "The relationship is linear and doubles: y = 2x → Slope = 2, Intercept = 0"
+  },
+  {
+    question: "Which of the following is the best unsupervised method for anomaly detection in high-dimensional data?",
+    choice1: "A) KNN",
+    choice2: "B) DBSCAN",
+    choice3: "C) Isolation Forest",
+    choice4: "D) Logistic Regression",
+    answer: 3,
+    explanation: "Isolation Forest is an ensemble method well-suited for unsupervised anomaly detection in high-dimensional data."
+  },
+  {
+    question: "Which of the following algorithms can be used for both classification and regression tasks?",
+    choice1: "A) Decision Tree",
+    choice2: "B) K-Means",
+    choice3: "C) Naive Bayes",
+    choice4: "D) LDA",
+    answer: 1,
+    explanation: "Decision Trees support both types depending on target (categorical or continuous)."
+  },
+  {
+    question: "You have 3 clusters with points: [4, 5, 6], [10, 12, 14], [20, 22, 25]. What is the centroid of the third cluster?",
+    choice1: "A) 22",
+    choice2: "B) 23",
+    choice3: "C) 22.33",
+    choice4: "D) 21",
+    answer: 3,
+    explanation: "Mean of [20, 22, 25] = (67)/3 = 22.33"
+  },
+  {
+    question: "Given a confusion matrix: TP=70, FP=30, FN=10, TN=90. Calculate Precision and Recall.",
+    choice1: "A) P=0.7, R=0.88",
+    choice2: "B) P=0.88, R=0.7",
+    choice3: "C) P=0.7, R=0.875",
+    choice4: "D) P=0.875, R=0.7",
+    answer: 3,
+    explanation: "Precision = TP / (TP + FP) = 70 / 100 = 0.7\nRecall = TP / (TP + FN) = 70 / 80 = 0.875"
+  },
+  {
+    question: "You’re using 10-fold cross-validation. How many times is the model trained and validated?",
+    choice1: "A) 10",
+    choice2: "B) 20",
+    choice3: "C) 5",
+    choice4: "D) 1",
+    answer: 1,
+    explanation: "Model trains 10 times, each time with a different fold as the validation set."
+  },
+  {
+    question: "What does a high AUC (e.g., 0.95) mean?",
+    choice1: "A) Poor model",
+    choice2: "B) Random predictions",
+    choice3: "C) Model distinguishes classes well",
+    choice4: "D) Underfitting",
+    answer: 3,
+    explanation: "AUC near 1 means the model ranks positives ahead of negatives effectively."
+  },
+  {
+    question: "In regression, R² = 0.85. What does this imply?",
+    choice1: "A) Model explains 85% of variance",
+    choice2: "B) 85% accuracy",
+    choice3: "C) 85% of features are useful",
+    choice4: "D) Residual error = 0.15",
+    answer: 1,
+    explanation: "R² = Explained variance / Total variance → 85% is explained by model."
+  },
+  {
+    question: "Given a dataset with skewed features, which transformation helps normalize it?",
+    choice1: "A) Z-score scaling",
+    choice2: "B) Log transformation",
+    choice3: "C) Label Encoding",
+    choice4: "D) Binning",
+    answer: 2,
+    explanation: "Log transforms right-skewed distributions into normal-like ones."
+  },
+  {
+    question: "In Python, what does StandardScaler do to a feature?\n\nfrom sklearn.preprocessing import StandardScaler\nscaler = StandardScaler()\nX_scaled = scaler.fit_transform(X)",
+    choice1: "A) Scales to 0–1",
+    choice2: "B) Makes all values positive",
+    choice3: "C) Centers to mean 0, std 1",
+    choice4: "D) Encodes categories",
+    answer: 3,
+    explanation: "StandardScaler standardizes the data using z-score scaling."
+  }
+];
+
+
+
+
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = q.question;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    [q.choice1, q.choice2, q.choice3, q.choice4].forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.textContent = opt;
+      btn.onclick = () => handleAnswer(qDiv, i + 1, q.answer, q.explanation);
+      opts.appendChild(btn);
+    });
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / ${questions.length * 2}`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "mlt6.html"; // placeholder next level
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

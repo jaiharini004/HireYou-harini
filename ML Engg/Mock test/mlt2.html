@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test - Level 1</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 2 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "What does one-hot encoding do?",
+    choice1: "A) Compresses features",
+    choice2: "B) Removes null values",
+    choice3: "C) Converts categories to binary columns",
+    choice4: "D) Normalizes input",
+    answer: 3,
+    explanation: "One-hot encoding turns categorical variables into binary features."
+  },
+  {
+    question: "What is a feature?",
+    choice1: "A) The output label",
+    choice2: "B) A part of the dataset",
+    choice3: "C) An input variable",
+    choice4: "D) A performance metric",
+    answer: 3,
+    explanation: "Features are input variables used to predict outcomes."
+  },
+  {
+    question: "What is the basic unit in a neural network?",
+    choice1: "A) Matrix",
+    choice2: "B) Layer",
+    choice3: "C) Neuron",
+    choice4: "D) Node",
+    answer: 3,
+    explanation: "Neurons process and transfer information."
+  },
+  {
+    question: "What is the activation function used for?",
+    choice1: "A) To split datasets",
+    choice2: "B) Introduce non-linearity",
+    choice3: "C) Reduce overfitting",
+    choice4: "D) Evaluate metrics",
+    answer: 2,
+    explanation: "Activation functions allow the model to capture complex patterns."
+  },
+  {
+    question: "What is a deep neural network?",
+    choice1: "A) One with a deep dataset",
+    choice2: "B) One with more than one hidden layer",
+    choice3: "C) One trained on deep images",
+    choice4: "D) One that uses shallow learning",
+    answer: 2,
+    explanation: "“Deep” refers to networks with multiple hidden layers."
+  },
+  {
+    question: "Which library is commonly used for building neural networks?",
+    choice1: "A) NumPy",
+    choice2: "B) Pandas",
+    choice3: "C) TensorFlow",
+    choice4: "D) Matplotlib",
+    answer: 3,
+    explanation: "TensorFlow is designed for building and training deep learning models."
+  },
+  {
+    question: "What is overfitting?",
+    choice1: "A) Model performs better on test data",
+    choice2: "B) Model learns noise in training data",
+    choice3: "C) Model has high bias",
+    choice4: "D) Model is undertrained",
+    answer: 2,
+    explanation: "Overfitting occurs when a model memorizes training data too well."
+  },
+  {
+    question: "What is underfitting?",
+    choice1: "A) Model performs too well",
+    choice2: "B) Model captures all noise",
+    choice3: "C) Model cannot capture the data trend",
+    choice4: "D) Model learns validation data",
+    answer: 3,
+    explanation: "Underfitting = model is too simple to learn from data."
+  },
+  {
+    question: "What is the goal of regularization?",
+    choice1: "A) Add noise",
+    choice2: "B) Increase training loss",
+    choice3: "C) Penalize large weights",
+    choice4: "D) Make data linear",
+    answer: 3,
+    explanation: "Regularization reduces model complexity by shrinking weights."
+  },
+  {
+    question: "Which technique randomly disables neurons during training?",
+    choice1: "A) Dropout",
+    choice2: "B) Batch Normalization",
+    choice3: "C) L1 Regularization",
+    choice4: "D) Weight decay",
+    answer: 1,
+    explanation: "Dropout prevents co-adaptation of neurons and helps prevent overfitting."
+  }
+];
+
+
+
+
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = q.question;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    [q.choice1, q.choice2, q.choice3, q.choice4].forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.textContent = opt;
+      btn.onclick = () => handleAnswer(qDiv, i + 1, q.answer, q.explanation);
+      opts.appendChild(btn);
+    });
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / ${questions.length * 2}`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "mlt3.html"; // placeholder next level
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

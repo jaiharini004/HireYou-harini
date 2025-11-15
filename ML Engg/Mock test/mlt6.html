@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test - Level 1</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e6f4ea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #a5d6a7;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #81c784;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #2e7d32;
+      background: #f1f8e9;
+      padding: 12px;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #81c784;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #66bb6a;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2e7d32;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Mock Test - Level 6</h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "You want to reduce a dataset with 100 features to 2 dimensions preserving 90% variance. What should you use?",
+    choice1: "A) One-hot encoding",
+    choice2: "B) PCA",
+    choice3: "C) DBSCAN",
+    choice4: "D) KNN",
+    answer: 2,
+    explanation: "PCA reduces dimensionality while retaining maximum variance."
+  },
+  {
+    question: "Which of the following introduces interaction terms between features?",
+    choice1: "A) One-hot encoding",
+    choice2: "B) PolynomialFeatures",
+    choice3: "C) LabelEncoder",
+    choice4: "D) PCA",
+    answer: 2,
+    explanation: "PolynomialFeatures creates combinations (x1*x2, x1², etc.) for feature interaction modeling."
+  },
+  {
+    question: "In a dense neural layer with 5 inputs and 3 neurons, how many total weights (excluding bias) are there?",
+    choice1: "A) 8",
+    choice2: "B) 15",
+    choice3: "C) 10",
+    choice4: "D) 5",
+    answer: 2,
+    explanation: "Each of 3 neurons gets 5 weights → 5 × 3 = 15"
+  },
+  {
+    question: "What does the ReLU function return when input < 0?",
+    choice1: "A) -1",
+    choice2: "B) 0",
+    choice3: "C) 1",
+    choice4: "D) Same as input",
+    answer: 2,
+    explanation: "ReLU(x) = max(0, x) → returns 0 for negative inputs"
+  },
+  {
+    question: "What does this code return?\n\nimport torch\nx = torch.tensor([-1.0, 0.0, 2.0])\ntorch.relu(x)",
+    choice1: "A) [-1.0, 0.0, 2.0]",
+    choice2: "B) [0.0, 0.0, 2.0]",
+    choice3: "C) [1.0, 0.0, 2.0]",
+    choice4: "D) [-1.0, -0.0, -2.0]",
+    answer: 2,
+    explanation: "ReLU replaces negatives with 0 → Output: [0.0, 0.0, 2.0]"
+  },
+  {
+    question: "Which loss function is used for binary classification in neural networks?",
+    choice1: "A) MSE",
+    choice2: "B) Categorical Crossentropy",
+    choice3: "C) Binary Crossentropy",
+    choice4: "D) Hinge Loss",
+    answer: 3,
+    explanation: "Binary Crossentropy computes the log loss for 2-class outputs."
+  },
+  {
+    question: "What is the gradient of J(θ) = θ² at θ = 5?",
+    choice1: "A) 10",
+    choice2: "B) 25",
+    choice3: "C) 5",
+    choice4: "D) 2",
+    answer: 1,
+    explanation: "dJ/dθ = 2θ → at θ = 5 ⇒ 2×5 = 10"
+  },
+  {
+    question: "In regularized linear regression, which term penalizes complexity in Ridge Regression?",
+    choice1: "A) λ∑|w|",
+    choice2: "B) λ∑w²",
+    choice3: "C) λ∑w",
+    choice4: "D) λ + b",
+    answer: 2,
+    explanation: "Ridge adds L2 penalty: sum of squared weights (λ∑w²)"
+  },
+  {
+    question: "You observe train accuracy = 98%, test accuracy = 75%. What is happening?",
+    choice1: "A) Model is unbiased",
+    choice2: "B) Underfitting",
+    choice3: "C) Overfitting",
+    choice4: "D) Gradient explosion",
+    answer: 3,
+    explanation: "High train–test gap means the model memorizes training data."
+  },
+  {
+    question: "Which optimizer combines momentum and adaptive learning rates?",
+    choice1: "A) SGD",
+    choice2: "B) RMSProp",
+    choice3: "C) Adam",
+    choice4: "D) Adagrad",
+    answer: 3,
+    explanation: "Adam = Adaptive Moment Estimation, popular in deep learning for its performance and convergence speed."
+  }
+];
+
+
+
+
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = q.question;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    [q.choice1, q.choice2, q.choice3, q.choice4].forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.textContent = opt;
+      btn.onclick = () => handleAnswer(qDiv, i + 1, q.answer, q.explanation);
+      opts.appendChild(btn);
+    });
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / ${questions.length * 2}`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "mlt7.html"; // placeholder next level
+}
+
+renderQuiz();
+</script>
+</body>
+</html>
