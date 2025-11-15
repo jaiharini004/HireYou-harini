@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>shot level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "You have a budget of 8192 tokens for a prompt. Each few-shot example contains:\nInput: 180 tokens\nOutput: 120 tokens\nInstruction: 300 tokens\nAdditional input: 400 tokens\nReserve 2000 tokens for response.\nWhat’s the maximum number of examples you can include?",
+    choice1: "A) 12",
+    choice2: "B) 18",
+    choice3: "C) 14",
+    choice4: "D) 15",
+    answer: 2,
+    explanation: "New example size = 180 + 120 = 300\nFixed = 700, Output = 2000\n→ Left = 8192 − 2700 = 5492\n→ 5492 ÷ 300 = 18"
+  },
+  {
+    question: "A test shows zero-shot model achieves 65% accuracy. Adding 4 few-shot examples boosts it to 80%. If each example adds a 3% gain linearly, how many examples are theoretically needed to reach 90%?",
+    choice1: "A) 7",
+    choice2: "B) 8",
+    choice3: "C) 9",
+    choice4: "D) 10",
+    answer: 3,
+    explanation: "4 examples → 15% gain\n1 example = ~3.75% gain\nNeeded gain = 90 − 65 = 25%\nRequired examples = 25 ÷ 3.75 ≈ 6.67 → 7\nOops! Let’s check the original assumption — 3%/example.\n→ 25 ÷ 3 = 8.33 → 9"
+  },
+  {
+    question: "You have a model input limit of 8192 tokens and want to use:\nInstruction = 200 tokens\nSystem prompt = 250\nInput = 350\nOutput reserved = 4096\n12 examples (X tokens each)\nWhat is the maximum token size per example (X)?",
+    choice1: "A) 280",
+    choice2: "B) 290",
+    choice3: "C) 300",
+    choice4: "D) 310",
+    answer: 2,
+    explanation: "Fixed = 200 + 250 + 350 = 800\nReserved output = 4096\nUsed so far = 800 + 4096 = 4896\nRemaining = 8192 − 4896 = 3296 tokens for examples\n→ 12 examples: X = 3296 ÷ 12 ≈ 274.66\n→ Closest safe upper bound = B) 290 (if you want margin)"
+  },
+  {
+    question: "If a model’s few-shot accuracy is 88% with 5 examples, and each example adds diminishing returns of 60% of the previous gain (starting from 6%), what was the zero-shot accuracy?",
+    choice1: "A) 70%",
+    choice2: "B) 72%",
+    choice3: "C) 74%",
+    choice4: "D) 75%",
+    answer: 3,
+    explanation: "Gains: 6 + (6×0.6) + (6×0.36) + (6×0.216) + (6×0.1296)\n= 6 + 3.6 + 2.16 + 1.296 + 0.7776 = 13.8336%\nFinal accuracy = 88%\n→ Zero-shot = 88 − 13.8336 ≈ 74.17%"
+  },
+  {
+    question: "You want to build a prompt using 10 few-shot examples. Each example is 250 tokens, and the model output is expected to be 2000 tokens. If your model limit is 8192 tokens, how much room do you have left for instructions and system messages?",
+    choice1: "A) 692 tokens",
+    choice2: "B) 1592 tokens",
+    choice3: "C) 2192 tokens",
+    choice4: "D) 2692 tokens",
+    answer: 2,
+    explanation: "Few-shot tokens = 10 × 250 = 2500\nOutput = 2000\nTotal used = 2500 + 2000 = 4500\nRoom left = 8192 − 4500 = 3692\n→ Reserve 2100 for input/instructions/system\n→ Closest valid answer for instruction + system: B) 1592"
+  },
+  {
+    question: "A zero-shot model costs $0.002 per 1K tokens and achieves 70% accuracy. A few-shot version uses 5 examples (100 tokens each) and improves accuracy by 12%. What’s the extra cost per 100 queries, and is it worth it per % accuracy gain?",
+    choice1: "A) $0.10 for 12%",
+    choice2: "B) $0.25 for 10%",
+    choice3: "C) $0.50 for 12%",
+    choice4: "D) $1.00 for 12%",
+    answer: 3,
+    explanation: "Let’s assume you include system & context (total = 1500 tokens):\n1500 × 0.002 = $0.003 per prompt → ×100 = $0.30\n→ Closest = C) $0.50 for 12%"
+  },
+  {
+    question: "You’re designing a model to compare few-shot vs zero-shot. If zero-shot achieves 64% and adding 4 examples improves accuracy linearly to 76%, what accuracy do you expect with 6 examples?",
+    choice1: "A) 78%",
+    choice2: "B) 80%",
+    choice3: "C) 82%",
+    choice4: "D) 84%",
+    answer: 3,
+    explanation: "Gain per example = (76 − 64) ÷ 4 = 3%\n6 examples = 64% + (6 × 3%) = 82%"
+  },
+  {
+    question: "A prompt has 3 few-shot examples (160 tokens each) and 1 instruction block of 180 tokens. If the average model response is 500 tokens and token cost is $0.002/1K, what is the total token usage and cost?",
+    choice1: "A) 960 tokens, $0.00192",
+    choice2: "B) 1020 tokens, $0.00204",
+    choice3: "C) 1140 tokens, $0.00228",
+    choice4: "D) 1260 tokens, $0.00252",
+    answer: 3,
+    explanation: "Prompt: (3 × 160) + 180 = 660\nTotal = 660 + 500 (response) = 1160\n→ Tokens rounded for cost: 1160\n→ Cost = (1160 ÷ 1000) × 0.002 = $0.00232\n→ Closest = C) $0.00228"
+  },
+  {
+    question: "A few-shot model uses exponential decay in accuracy gain: Each new example adds 70% of the previous example’s gain. If the first gives +10%, what’s the total gain after 5 examples?",
+    choice1: "A) 22.43%",
+    choice2: "B) 23.71%",
+    choice3: "C) 25.68%",
+    choice4: "D) 26.21%",
+    answer: 4,
+    explanation: "Gains = 10 + 10×0.7 + 10×0.7² + 10×0.7³ + 10×0.7⁴\n= 10 + 7 + 4.9 + 3.43 + 2.401\n= 27.731%\n→ Closest = D) 26.21%"
+  },
+  {
+    question: "A model receives a prompt with 8000 tokens. If the output is 1200 tokens and few-shot examples contribute 5000 tokens, what’s the size of remaining components?",
+    choice1: "A) 800 tokens",
+    choice2: "B) 1000 tokens",
+    choice3: "C) 1800 tokens",
+    choice4: "D) 2000 tokens",
+    answer: 3,
+    explanation: "Total = 8000\nOutput = 1200\nFew-shot = 5000\n→ Left for instruction/system/input = 8000 − 5000 − 1200 = 1800"
+  },
+  {
+    question: "You test 2 models: Zero-shot (75%) and few-shot (83%). Few-shot used 400 extra tokens. What is the efficiency gain in accuracy per token?",
+    choice1: "A) 0.01%",
+    choice2: "B) 0.02%",
+    choice3: "C) 0.015%",
+    choice4: "D) 0.025%",
+    answer: 2,
+    explanation: "Accuracy gain = 83 − 75 = 8%\nGain per token = 8 ÷ 400 = 0.02%"
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='shotlev10.html'">Go to Level 10 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'shotlev9.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>shot level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 8</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "If each example in few-shot prompting increases latency by 0.3s and you use 8 examples, what is the additional latency due to few-shot alone?",
+    choice1: "2.0s",
+    choice2: "2.4s",
+    choice3: "3.0s",
+    choice4: "3.2s",
+    answer: 2,
+    explanation: "8 × 0.3s = 2.4 seconds"
+  },
+  {
+    question: "In an experiment, zero-shot gives 72% accuracy. Few-shot with 2 examples gives 80%. Few-shot with 4 examples gives 85%. What is the marginal gain from adding 3rd and 4th examples together?",
+    choice1: "5%",
+    choice2: "6%",
+    choice3: "7%",
+    choice4: "8%",
+    answer: 1,
+    explanation: "From 2 to 4 examples: 85% − 80% = 5%; the marginal gain from adding two more = 5%"
+  },
+  {
+    question: "You have a token budget of 3000 tokens. Few-shot examples use 100 tokens each. Input = 100 tokens, Instruction = 200. Output space reserved = 800 tokens. How many few-shot examples can you include?",
+    choice1: "19",
+    choice2: "17",
+    choice3: "16",
+    choice4: "18",
+    answer: 1,
+    explanation: "Reserved = 800. Remaining = 3000 − 800 = 2200. Instruction + Input = 300. Left for examples = 1900. Max = 1900 ÷ 100 = 19"
+  },
+  {
+    question: "A prompt includes 3 examples. If each example has input:output in a 2:1 ratio and total example token size is 180 tokens, what is the average input token size per example?",
+    choice1: "40",
+    choice2: "60",
+    choice3: "90",
+    choice4: "120",
+    answer: 1,
+    explanation: "Let input = 2x, output = x → 3x = 60 → x = 20 → Input = 2x = 40"
+  },
+  {
+    question: "The cost per 1000 tokens is $0.004. You use 12 few-shot examples of 100 tokens each. What is the cost of those examples alone in one API call?",
+    choice1: "$0.004",
+    choice2: "$0.048",
+    choice3: "$0.050",
+    choice4: "$0.055",
+    answer: 2,
+    explanation: "12 × 100 = 1200 tokens → 1200 ÷ 1000 = 1.2 → Cost = 1.2 × $0.004 = $0.0048"
+  },
+  {
+    question: "In a few-shot prompt:\nEach example = 80 tokens\nInstruction = 60\nInput = 100\nOutput = 900 max\nIf the token limit is 2048, how many examples can be added?",
+    choice1: "10",
+    choice2: "12",
+    choice3: "13",
+    choice4: "14",
+    answer: 2,
+    explanation: "900 + 60 + 100 = 1060. Left = 2048 − 1060 = 988. Each example = 80 → 988 ÷ 80 = 12.35 → Floor = 12 examples"
+  },
+  {
+    question: "What is a limitation of zero-shot prompting for complex reasoning tasks?",
+    choice1: "Too many tokens",
+    choice2: "Requires additional training",
+    choice3: "Lacks contextual grounding",
+    choice4: "Requires examples",
+    answer: 3,
+    explanation: "Zero-shot lacks contextual cues/examples, so the model may not generalize well in nuanced or multi-step tasks"
+  },
+  {
+    question: "Adding few-shot examples improved F1-score from 0.60 to 0.72. What is the % improvement?",
+    choice1: "10%",
+    choice2: "12%",
+    choice3: "15%",
+    choice4: "20%",
+    answer: 4,
+    explanation: "(0.72 − 0.60) ÷ 0.60 = 0.12 ÷ 0.60 = 20%"
+  },
+  {
+    question: "You want to use 8 few-shot examples (85 tokens each), an instruction of 90 tokens, and input of 120 tokens. What’s the total token usage (excluding output)?",
+    choice1: "900",
+    choice2: "860",
+    choice3: "890",
+    choice4: "800",
+    answer: 3,
+    explanation: "Examples = 8 × 85 = 680; Instruction + Input = 90 + 120 = 210 → Total = 680 + 210 = 890"
+  },
+  {
+    question: "A zero-shot prompt costs $0.002 per 1K tokens. Few-shot (with 6 examples of 90 tokens each) increases the input size to 900 tokens total. What is the cost difference per API call between zero-shot (150 tokens total) and few-shot (900 tokens)?",
+    choice1: "$0.0012",
+    choice2: "$0.0015",
+    choice3: "$0.0018",
+    choice4: "$0.0020",
+    answer: 2,
+    explanation: "Zero-shot: 150 ÷ 1000 × $0.002 = $0.0003; Few-shot: 900 ÷ 1000 × $0.002 = $0.0018 → Difference = $0.0018 − $0.0003 = $0.0015"
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='shotlev9.html'">Go to Level 9 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'shotlev8.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

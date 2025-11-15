@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>shot level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 1</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is Zero-Shot Learning in prompt engineering?",
+    choice1: "A model learns from many examples",
+    choice2: "A model learns from exactly one example",
+    choice3: "A model performs tasks without seeing examples",
+    choice4: "A model is fine-tuned using supervised data",
+    answer: 3,
+    explanation: "Zero-shot learning refers to prompting the model without providing any examples of the task."
+  },
+  {
+    question: "Few-shot learning in prompts means providing...",
+    choice1: "No examples",
+    choice2: "One example only",
+    choice3: "Several task-related examples",
+    choice4: "Hundreds of training data points",
+    answer: 3,
+    explanation: "Few-shot learning involves providing a few relevant examples to guide the model."
+  },
+  {
+    question: "Which type of learning uses prior examples in the prompt?",
+    choice1: "Zero-shot",
+    choice2: "Few-shot",
+    choice3: "One-shot",
+    choice4: "None of the above",
+    answer: 2,
+    explanation: "Few-shot prompts include prior examples to demonstrate the task."
+  },
+  {
+    question: "Which of the following requires more tokens?",
+    choice1: "Zero-shot",
+    choice2: "Few-shot",
+    answer: 2,
+    explanation: "Few-shot prompts are longer because they include examples."
+  },
+  {
+    question: "A prompt with 3 examples is considered what type of prompt?",
+    choice1: "Zero-shot",
+    choice2: "Few-shot",
+    choice3: "Over-shot",
+    choice4: "None",
+    answer: 2,
+    explanation: "3 examples fall under few-shot prompting."
+  },
+  {
+    question: "Which is better for general tasks without training examples?",
+    choice1: "Few-shot",
+    choice2: "Zero-shot",
+    answer: 2,
+    explanation: "Zero-shot is more efficient when no examples are available."
+  },
+  {
+    question: "What does Zero-shot rely on to perform tasks?",
+    choice1: "Fine-tuning",
+    choice2: "Pre-trained knowledge",
+    choice3: "Training data",
+    choice4: "User feedback",
+    answer: 2,
+    explanation: "Zero-shot relies on the pre-trained model’s internal understanding."
+  },
+  {
+    question: "Few-shot prompting is often more accurate than zero-shot because it...",
+    choice1: "Adds system prompts",
+    choice2: "Gives structured input format",
+    choice3: "Demonstrates task explicitly",
+    choice4: "Changes the model’s architecture",
+    answer: 3,
+    explanation: "Few-shot improves results by providing direct task examples."
+  },
+  {
+    question: "What is common between Zero-shot and Few-shot prompting?",
+    choice1: "Both use examples",
+    choice2: "Both require labeled datasets",
+    choice3: "Both use the same model without retraining",
+    choice4: "Both require fine-tuning",
+    answer: 3,
+    explanation: "Both are types of prompting using the same pre-trained model."
+  },
+  {
+    question: "Few-shot prompting is helpful when:",
+    choice1: "You want to train the model",
+    choice2: "You have a few clear task examples",
+    choice3: "You want to reduce prompt length",
+    choice4: "You don’t know the task format",
+    answer: 2,
+    explanation: "Few-shot excels with clear examples for guidance."
+  }
+];
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='shotlev2.html'">Go to Level 2 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'shotlev1.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
