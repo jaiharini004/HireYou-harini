@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 5 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is the purpose of feature scaling in machine learning?",
+    choice1: "A) To increase the range of feature values",
+    choice2: "B) To bring features to a common scale",
+    choice3: "C) To eliminate redundant features",
+    choice4: "D) To reduce the dimensionality of features",
+    answer: 2,
+    explanation: "Feature scaling standardizes the range of independent variables, ensuring that each feature contributes equally to the model."
+  },
+  {
+    question: "Which SQL query would you use to find the total number of orders made by each customer in a table orders?",
+    choice1: "A) SELECT COUNT(*) FROM orders GROUP BY customer_id;",
+    choice2: "B) SELECT customer_id, COUNT(order_id) FROM orders;",
+    choice3: "C) SELECT customer_id, SUM(order_count) FROM orders;",
+    choice4: "D) SELECT SUM(order_count) FROM orders GROUP BY customer_id;",
+    answer: 2,
+    explanation: "COUNT(order_id) counts the number of orders for each customer, and GROUP BY customer_id groups the data by customer."
+  },
+  {
+    question: "Which SQL clause is used to sort the result set in ascending or descending order?",
+    choice1: "A) SORT BY",
+    choice2: "B) ORDER BY",
+    choice3: "C) GROUP BY",
+    choice4: "D) FILTER BY",
+    answer: 2,
+    explanation: "ORDER BY is used to sort the result set based on one or more columns."
+  },
+  {
+    question: "How can you increase the performance of a query that is frequently accessing large tables in SQL?",
+    choice1: "A) By using JOIN instead of WHERE",
+    choice2: "B) By using indexing on frequently queried columns",
+    choice3: "C) By using DISTINCT in the query",
+    choice4: "D) By reducing the number of rows in the database",
+    answer: 2,
+    explanation: "Indexing on frequently queried columns can significantly improve the query's performance."
+  },
+  {
+    question: "What is the purpose of the INNER JOIN in SQL?",
+    choice1: "A) Returns all records from the left table, and the matched records from the right table",
+    choice2: "B) Returns all records from both tables, even if no match is found",
+    choice3: "C) Returns only the records that have matching values in both tables",
+    choice4: "D) Returns records from the left table, regardless of matches in the right table",
+    answer: 3,
+    explanation: "INNER JOIN returns only the rows where there is a match between the tables."
+  },
+  {
+    question: "A dataset contains the following values: 5, 8, 12, 10, 15. What is the variance of this dataset?",
+    choice1: "A) 8.0",
+    choice2: "B) 12.25",
+    choice3: "C) 16.0",
+    choice4: "D) 9.5",
+    answer: 2,
+    explanation: "Variance = average of the squared differences from the mean. The mean is 10, so the squared differences are (5-10)², (8-10)², (12-10)², (10-10)², (15-10)². The variance is 12.25."
+  },
+  {
+    question: "Which of the following is used to determine the relationship between two variables?",
+    choice1: "A) Mean",
+    choice2: "B) Median",
+    choice3: "C) Correlation coefficient",
+    choice4: "D) Mode",
+    answer: 3,
+    explanation: "The correlation coefficient measures the relationship between two variables, indicating how strongly they are related."
+  },
+  {
+    question: "In a normal distribution, what percentage of data falls within one standard deviation of the mean?",
+    choice1: "A) 68%",
+    choice2: "B) 95%",
+    choice3: "C) 99%",
+    choice4: "D) 50%",
+    answer: 1,
+    explanation: "In a normal distribution, 68% of the data falls within one standard deviation of the mean."
+  },
+  {
+    question: "Which of the following tests is used to check if the data is normally distributed?",
+    choice1: "A) Z-test",
+    choice2: "B) T-test",
+    choice3: "C) Chi-square test",
+    choice4: "D) Shapiro-Wilk test",
+    answer: 4,
+    explanation: "The Shapiro-Wilk test is used to test whether the data is normally distributed."
+  },
+  {
+    question: "What is the purpose of a p-value in hypothesis testing?",
+    choice1: "A) To determine the probability of the null hypothesis being true",
+    choice2: "B) To determine the probability of the observed result occurring by chance",
+    choice3: "C) To measure the strength of the relationship between variables",
+    choice4: "D) To calculate the mean difference between two groups",
+    answer: 2,
+    explanation: "A p-value represents the probability of observing the data if the null hypothesis is true."
+  }
+];
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "t6.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

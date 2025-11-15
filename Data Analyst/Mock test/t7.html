@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 7 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "Which SQL query can be used to retrieve unique values from a column city in a table users?",
+    choice1: "A) SELECT DISTINCT city FROM users;",
+    choice2: "B) SELECT city FROM users;",
+    choice3: "C) SELECT city FROM users GROUP BY city;",
+    choice4: "D) SELECT UNIQUE city FROM users;",
+    answer: 1,
+    explanation: "The DISTINCT keyword is used to return only unique values from a column."
+  },
+  {
+    question: "What is the result of the following SQL query? SELECT COUNT(*) FROM orders WHERE order_amount > 100;",
+    choice1: "A) Total number of orders greater than 100",
+    choice2: "B) Total amount of orders greater than 100",
+    choice3: "C) List of orders greater than 100",
+    choice4: "D) Error in the query",
+    answer: 1,
+    explanation: "COUNT(*) counts the number of orders where order_amount is greater than 100."
+  },
+  {
+    question: "What is a LEFT JOIN in SQL?",
+    choice1: "A) It returns rows that have matching values in both tables",
+    choice2: "B) It returns all records from the left table and matched records from the right table",
+    choice3: "C) It returns all records from the right table and matched records from the left table",
+    choice4: "D) It only returns rows with matching values in both tables",
+    answer: 2,
+    explanation: "A LEFT JOIN returns all records from the left table and the matching records from the right table."
+  },
+  {
+    question: "What does the GROUP BY clause do in SQL?",
+    choice1: "A) Sorts data in ascending or descending order",
+    choice2: "B) Filters data based on specific conditions",
+    choice3: "C) Groups rows that have the same values into summary rows",
+    choice4: "D) Merges rows from two tables",
+    answer: 3,
+    explanation: "The GROUP BY clause groups rows with the same values into summary rows, typically used with aggregate functions."
+  },
+  {
+    question: "Which SQL command is used to modify the structure of an existing table?",
+    choice1: "A) MODIFY TABLE",
+    choice2: "B) ALTER TABLE",
+    choice3: "C) CHANGE TABLE",
+    choice4: "D) UPDATE TABLE",
+    answer: 2,
+    explanation: "ALTER TABLE is used to modify the structure of an existing table."
+  },
+  {
+    question: "Which of the following is a type of discrete probability distribution?",
+    choice1: "A) Normal distribution",
+    choice2: "B) Exponential distribution",
+    choice3: "C) Binomial distribution",
+    choice4: "D) Logarithmic distribution",
+    answer: 3,
+    explanation: "The binomial distribution is a discrete probability distribution used for binary outcomes (success/failure)."
+  },
+  {
+    question: "If you flip a fair coin three times, what is the probability of getting exactly two heads?",
+    choice1: "A) 0.25",
+    choice2: "B) 0.5",
+    choice3: "C) 0.375",
+    choice4: "D) 0.125",
+    answer: 1,
+    explanation: "The probability of exactly two heads in three flips of a fair coin is given by the binomial distribution formula, which results in 0.25."
+  },
+  {
+    question: "What does a p-value of 0.03 mean in hypothesis testing?",
+    choice1: "A) The null hypothesis is likely true",
+    choice2: "B) The result is statistically significant at a 5% significance level",
+    choice3: "C) The result is not statistically significant",
+    choice4: "D) The null hypothesis is definitely false",
+    answer: 2,
+    explanation: "A p-value of 0.03 means there is a 3% chance that the observed result occurred by random chance, and it is statistically significant at a 5% level."
+  },
+  {
+    question: "In regression analysis, what is the purpose of the R-squared value?",
+    choice1: "A) To measure the strength of the relationship between variables",
+    choice2: "B) To calculate the mean of the dataset",
+    choice3: "C) To determine the exact value of the dependent variable",
+    choice4: "D) To test the hypothesis",
+    answer: 1,
+    explanation: "R-squared measures the strength and direction of the relationship between the independent and dependent variables."
+  },
+  {
+    question: "Which of the following is a characteristic of a normal distribution?",
+    choice1: "A) It is skewed to the right",
+    choice2: "B) It has two peaks",
+    choice3: "C) It is symmetric around the mean",
+    choice4: "D) It is discrete",
+    answer: 3,
+    explanation: "A normal distribution is symmetric around the mean, with a bell-shaped curve."
+  }
+];
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "t8.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

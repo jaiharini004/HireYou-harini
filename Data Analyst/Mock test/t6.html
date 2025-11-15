@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 6 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "Which machine learning algorithm is best suited for predicting continuous values?",
+    choice1: "A) K-Nearest Neighbors",
+    choice2: "B) Decision Trees",
+    choice3: "C) Linear Regression",
+    choice4: "D) K-Means Clustering",
+    answer: 3,
+    explanation: "Linear Regression is used for predicting continuous values, such as prices or temperatures."
+  },
+  {
+    question: "What is the purpose of the GROUP BY clause in SQL?",
+    choice1: "A) To order the results in ascending or descending order",
+    choice2: "B) To filter records based on a condition",
+    choice3: "C) To combine records from two tables",
+    choice4: "D) To group rows that have the same values in specified columns",
+    answer: 4,
+    explanation: "GROUP BY is used to group rows with the same values into summary rows, like finding the number of orders per customer."
+  },
+  {
+    question: "What is the difference between precision and recall in classification problems?",
+    choice1: "A) Precision is the number of true positives divided by false positives, while recall is the number of true positives divided by false negatives",
+    choice2: "B) Precision measures the model's accuracy, while recall measures the model's sensitivity",
+    choice3: "C) Precision focuses on true positives, while recall focuses on false positives",
+    choice4: "D) Precision and recall are the same metric",
+    answer: 1,
+    explanation: "Precision is the number of true positives divided by the sum of true positives and false positives, whereas recall is the number of true positives divided by the sum of true positives and false negatives."
+  },
+  {
+    question: "What is the purpose of normalization in data preprocessing?",
+    choice1: "A) To remove outliers from the dataset",
+    choice2: "B) To transform features into the same scale",
+    choice3: "C) To fill missing values with the mean",
+    choice4: "D) To convert categorical variables into numerical format",
+    answer: 2,
+    explanation: "Normalization scales the data to a standard range (typically 0-1), which is useful for many machine learning algorithms."
+  },
+  {
+    question: "In SQL, what does the DISTINCT keyword do?",
+    choice1: "A) Returns all records from a table",
+    choice2: "B) Eliminates duplicate records from the result set",
+    choice3: "C) Sorts the result set in ascending order",
+    choice4: "D) Limits the number of records returned",
+    answer: 2,
+    explanation: "DISTINCT removes duplicate values from the result set, returning only unique records."
+  },
+  {
+    question: "Which of the following is an unsupervised machine learning technique?",
+    choice1: "A) Linear Regression",
+    choice2: "B) K-Means Clustering",
+    choice3: "C) Logistic Regression",
+    choice4: "D) Decision Trees",
+    answer: 2,
+    explanation: "K-Means is an unsupervised learning algorithm used for clustering data into groups based on similarity."
+  },
+  {
+    question: "What is the purpose of a confusion matrix in machine learning?",
+    choice1: "A) To visualize the relationship between features",
+    choice2: "B) To measure the model's performance by comparing predicted vs actual values",
+    choice3: "C) To identify the most important features in the model",
+    choice4: "D) To split the dataset into training and test sets",
+    answer: 2,
+    explanation: "A confusion matrix compares the predicted class labels with the true class labels, helping evaluate classification performance."
+  },
+  {
+    question: "What does the SELECT COUNT(*) statement in SQL return?",
+    choice1: "A) The total number of distinct records",
+    choice2: "B) The total number of rows in a table",
+    choice3: "C) The total sum of a column",
+    choice4: "D) The average of a column",
+    answer: 2,
+    explanation: "COUNT(*) returns the total number of rows in a table, regardless of their content."
+  },
+  {
+    question: "Which of the following statistical tests is used to compare the means of more than two groups?",
+    choice1: "A) Z-test",
+    choice2: "B) T-test",
+    choice3: "C) ANOVA",
+    choice4: "D) Chi-square test",
+    answer: 3,
+    explanation: "ANOVA (Analysis of Variance) is used to compare the means of more than two groups to determine if at least one group is significantly different."
+  },
+  {
+    question: "Which of the following is the purpose of the ACTUAL function in SQL?",
+    choice1: "A) To find the maximum value in a column",
+    choice2: "B) To calculate the average value of a column",
+    choice3: "C) To filter rows based on specific conditions",
+    choice4: "D) To return a column with numeric data for calculations",
+    answer: 4,
+    explanation: "ACTUAL function is used for operations that involve numeric values, for example, performing calculations directly within SQL queries."
+  }
+];
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "t7.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 3 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "Which of the following is a supervised learning algorithm?",
+    choice1: "A) K-Means",
+    choice2: "B) Decision Tree",
+    choice3: "C) PCA",
+    choice4: "D) DBSCAN",
+    answer: 2,
+    explanation: "Decision Trees are supervised learning algorithms that require labeled data."
+  },
+  {
+    question: "What does the acronym 'KNN' stand for in machine learning?",
+    choice1: "A) Kernelized Neural Networks",
+    choice2: "B) K-Nearest Neighbors",
+    choice3: "C) K-Node Networks",
+    choice4: "D) Kinematic Networks",
+    answer: 2,
+    explanation: "KNN stands for K-Nearest Neighbors, a supervised learning algorithm."
+  },
+  {
+    question: "Which of the following is NOT a type of regression model?",
+    choice1: "A) Linear Regression",
+    choice2: "B) Logistic Regression",
+    choice3: "C) Decision Trees",
+    choice4: "D) Polynomial Regression",
+    answer: 3,
+    explanation: "Decision Trees are not a type of regression; they are used for both classification and regression tasks."
+  },
+  {
+    question: "What is the purpose of the 'train-test split' in machine learning?",
+    choice1: "A) To evaluate the model's performance on unseen data",
+    choice2: "B) To increase the size of the dataset",
+    choice3: "C) To create a more complex model",
+    choice4: "D) To improve feature selection",
+    answer: 1,
+    explanation: "The train-test split is used to divide the dataset into training and testing subsets to evaluate the model's performance on unseen data."
+  },
+  {
+    question: "Which of the following evaluation metrics is most appropriate for an imbalanced classification problem?",
+    choice1: "A) Accuracy",
+    choice2: "B) Precision",
+    choice3: "C) Recall",
+    choice4: "D) F1-Score",
+    answer: 4,
+    explanation: "F1-Score is the best metric for imbalanced classification problems, as it balances precision and recall."
+  },
+  {
+    question: "What is the result of the following SQL query? SELECT MAX(salary) FROM employees WHERE department = 'IT';",
+    choice1: "A) The average salary of all employees in the IT department",
+    choice2: "B) The highest salary in the IT department",
+    choice3: "C) The total salary of all employees in the IT department",
+    choice4: "D) The salary of the employee with the longest tenure",
+    answer: 2,
+    explanation: "MAX(salary) returns the highest salary from the IT department."
+  },
+  {
+    question: "Which of the following statements correctly retrieves all unique values from the department column?",
+    choice1: "A) SELECT DISTINCT department FROM employees;",
+    choice2: "B) SELECT UNIQUE department FROM employees;",
+    choice3: "C) SELECT ALL department FROM employees;",
+    choice4: "D) SELECT DISTINCT FROM employees;",
+    answer: 1,
+    explanation: "DISTINCT ensures that only unique values from the department column are retrieved."
+  },
+  {
+    question: "In SQL, which operator is used to filter records based on a range of values?",
+    choice1: "A) BETWEEN",
+    choice2: "B) IN",
+    choice3: "C) LIKE",
+    choice4: "D) EQUALS",
+    answer: 1,
+    explanation: "BETWEEN is used to filter results within a range, such as dates or numbers."
+  },
+  {
+    question: "What does the JOIN keyword do in SQL?",
+    choice1: "A) Combines rows from two or more tables based on a related column",
+    choice2: "B) Adds new columns to a table",
+    choice3: "C) Deletes rows from a table",
+    choice4: "D) Updates values in a table",
+    answer: 1,
+    explanation: "JOIN is used to combine rows from multiple tables based on a common column."
+  },
+  {
+    question: "Which SQL clause is used to filter results after the GROUP BY operation?",
+    choice1: "A) WHERE",
+    choice2: "B) ORDER BY",
+    choice3: "C) HAVING",
+    choice4: "D) DISTINCT",
+    answer: 3,
+    explanation: "The HAVING clause filters the results after grouping, whereas WHERE filters before grouping."
+  }
+];
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "t4.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 8 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "In Python, what is the default axis used by dropna() to remove missing values?",
+    choice1: "A) Axis 0 (rows)",
+    choice2: "B) Axis 1 (columns)",
+    choice3: "C) Both rows and columns",
+    choice4: "D) None of the above",
+    answer: 1,
+    explanation: "By default, dropna() removes rows with missing values (axis 0)."
+  },
+  {
+    question: "Which method in Pandas would you use to convert a string column to lowercase?",
+    choice1: "A) str.lower()",
+    choice2: "B) df.lower()",
+    choice3: "C) str.to_lowercase()",
+    choice4: "D) df.convert()",
+    answer: 1,
+    explanation: "str.lower() converts a string column to lowercase in Pandas."
+  },
+  {
+    question: "What is the primary purpose of pivot_table() in Pandas?",
+    choice1: "A) To group data by specific columns",
+    choice2: "B) To remove duplicates from a DataFrame",
+    choice3: "C) To create a table with aggregated data from multiple columns",
+    choice4: "D) To merge two DataFrames",
+    answer: 3,
+    explanation: "pivot_table() is used to create a table that summarizes data by aggregating values from multiple columns."
+  },
+  {
+    question: "In the following Python code, what does df['col'].unique() do? df = pd.DataFrame({'col': [1, 2, 2, 3, 3, 3]}) df['col'].unique()",
+    choice1: "A) Returns the unique values in column col",
+    choice2: "B) Returns the sum of values in column col",
+    choice3: "C) Returns the number of occurrences of each value in column col",
+    choice4: "D) Returns the average value of column col",
+    answer: 1,
+    explanation: "unique() returns an array of unique values in the specified column."
+  },
+  {
+    question: "What is the result of applying df['col'].value_counts() in Pandas?",
+    choice1: "A) It counts the number of unique values in column col",
+    choice2: "B) It returns the sum of the values in column col",
+    choice3: "C) It returns the mean of the values in column col",
+    choice4: "D) It counts the number of occurrences of each value in column col",
+    answer: 4,
+    explanation: "value_counts() counts the number of occurrences of each value in a column."
+  },
+  {
+    question: "How would you check for missing values in a DataFrame?",
+    choice1: "A) df.isnull()",
+    choice2: "B) df.notnull()",
+    choice3: "C) df.missing()",
+    choice4: "D) df.has_na()",
+    answer: 1,
+    explanation: "df.isnull() returns a DataFrame of boolean values indicating missing (NaN) values."
+  },
+  {
+    question: "Which method would you use to fill missing values in Pandas with the column’s mean?",
+    choice1: "A) df.fillna(df.mean())",
+    choice2: "B) df.replace_na(df.mean())",
+    choice3: "C) df.fillna(method='ffill')",
+    choice4: "D) df.fill_missing(df.mean())",
+    answer: 1,
+    explanation: "df.fillna(df.mean()) fills missing values in the DataFrame with the column's mean."
+  },
+  {
+    question: "In Power BI, what feature allows users to filter a dataset dynamically across different visuals?",
+    choice1: "A) Slicers",
+    choice2: "B) Filters",
+    choice3: "C) Power Query",
+    choice4: "D) Data Model",
+    answer: 1,
+    explanation: "Slicers are interactive filters in Power BI that allow users to dynamically filter data across visuals."
+  },
+  {
+    question: "What is the main advantage of using a stacked bar chart?",
+    choice1: "A) It shows the trend of data over time",
+    choice2: "B) It allows for comparison of proportions within categories",
+    choice3: "C) It provides a breakdown of multiple variables",
+    choice4: "D) It displays the correlation between two continuous variables",
+    answer: 2,
+    explanation: "A stacked bar chart is useful for showing the proportions of multiple categories within a whole."
+  },
+  {
+    question: "Which type of chart is best suited for showing the distribution of a continuous variable?",
+    choice1: "A) Histogram",
+    choice2: "B) Pie chart",
+    choice3: "C) Line chart",
+    choice4: "D) Scatter plot",
+    answer: 1,
+    explanation: "A histogram is best suited for visualizing the distribution of continuous data."
+  }
+];
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "t9.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

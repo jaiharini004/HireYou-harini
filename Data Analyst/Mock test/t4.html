@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 4 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "Which of the following is a probability distribution that is symmetric and bell-shaped?",
+    choice1: "A) Normal distribution",
+    choice2: "B) Exponential distribution",
+    choice3: "C) Poisson distribution",
+    choice4: "D) Binomial distribution",
+    answer: 1,
+    explanation: "The normal distribution is symmetric and follows a bell-shaped curve."
+  },
+  {
+    question: "If you flip a fair coin three times, what is the probability of getting exactly two heads?",
+    choice1: "A) 1/8",
+    choice2: "B) 3/8",
+    choice3: "C) 1/2",
+    choice4: "D) 5/8",
+    answer: 2,
+    explanation: "There are 8 possible outcomes, and 3 of them have exactly two heads (HTH, HHT, THH), so the probability is 3/8."
+  },
+  {
+    question: "What is the mode of the following dataset: 3, 5, 7, 3, 8, 3, 9?",
+    choice1: "A) 3",
+    choice2: "B) 5",
+    choice3: "C) 7",
+    choice4: "D) 8",
+    answer: 1,
+    explanation: "The mode is the most frequent value, which in this case is 3."
+  },
+  {
+    question: "Which test is used to compare the means of two independent groups?",
+    choice1: "A) Z-test",
+    choice2: "B) T-test",
+    choice3: "C) Chi-square test",
+    choice4: "D) F-test",
+    answer: 2,
+    explanation: "A T-test is used to compare the means of two independent groups."
+  },
+  {
+    question: "In a binomial distribution, if the probability of success is 0.4 and the number of trials is 5, what is the probability of exactly 2 successes?",
+    choice1: "A) 0.2304",
+    choice2: "B) 0.4096",
+    choice3: "C) 0.0768",
+    choice4: "D) 0.1638",
+    answer: 1,
+    explanation: "Using the binomial probability formula, the probability of exactly 2 successes is 0.2304."
+  },
+  {
+    question: "Which method in Pandas is used to remove duplicate rows from a DataFrame?",
+    choice1: "A) drop_duplicates()",
+    choice2: "B) dropna()",
+    choice3: "C) remove_duplicates()",
+    choice4: "D) unique()",
+    answer: 1,
+    explanation: "drop_duplicates() is used to remove duplicate rows from a DataFrame."
+  },
+  {
+    question: "How would you convert a column of string dates to datetime format in Pandas?",
+    choice1: "A) df['date'] = pd.to_datetime(df['date'])",
+    choice2: "B) df['date'] = df.to_date(df['date'])",
+    choice3: "C) df['date'] = str(df['date'])",
+    choice4: "D) df['date'] = datetime(df['date'])",
+    answer: 1,
+    explanation: "pd.to_datetime() converts a string column to a datetime format in Pandas."
+  },
+  {
+    question: "Which of the following methods in Pandas is used to check for missing values in a DataFrame?",
+    choice1: "A) isnull()",
+    choice2: "B) check_missing()",
+    choice3: "C) is_missing()",
+    choice4: "D) nullcheck()",
+    answer: 1,
+    explanation: "isnull() checks for missing (NaN) values in a DataFrame."
+  },
+  {
+    question: "What is the result of this Python code snippet?\n\nimport pandas as pd\ndata = {'A': [1, 2, 3, 4], 'B': [5, 6, 7, 8]}\ndf = pd.DataFrame(data)\ndf['C'] = df['A'] + df['B']\nprint(df)",
+    choice1: "A) A DataFrame with column C as the sum of A and B",
+    choice2: "B) A DataFrame with column C as the product of A and B",
+    choice3: "C) A DataFrame with NaN values in column C",
+    choice4: "D) A DataFrame with column C as the difference of A and B",
+    answer: 1,
+    explanation: "The code creates a new column 'C' which is the sum of columns 'A' and 'B'."
+  },
+  {
+    question: "How can you convert a column in a Pandas DataFrame to lowercase?",
+    choice1: "A) df['column'] = df['column'].lower()",
+    choice2: "B) df['column'] = df['column'].str.lower()",
+    choice3: "C) df['column'] = df['column'].convert_lower()",
+    choice4: "D) df['column'] = df['column'].to_lowercase()",
+    answer: 2,
+    explanation: "df['column'].str.lower() converts all text in the column to lowercase."
+  }
+];
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "t5.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

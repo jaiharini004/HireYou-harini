@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 2 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "Which method in Pandas is used to remove rows with missing values?",
+    choice1: "A) drop_na()",
+    choice2: "B) dropnull()",
+    choice3: "C) dropna()",
+    choice4: "D) remove_na()",
+    answer: 3,
+    explanation: "dropna() is used in Pandas to remove rows with missing values."
+  },
+  {
+    question: "How would you replace missing values in a Pandas DataFrame with the mean of a column?",
+    choice1: "A) df.fillna(df.mean())",
+    choice2: "B) df.replace(df.mean())",
+    choice3: "C) df.isnull().mean()",
+    choice4: "D) df.dropna(df.mean())",
+    answer: 1,
+    explanation: "df.fillna(df.mean()) replaces missing values with the mean of each column."
+  },
+  {
+    question: "What is the result of the following code in Python? import pandas as pd df = pd.DataFrame({'A': [1, 2, 3, None]}) df['A'] = df['A'].fillna(df['A'].mean()) print(df)",
+    choice1: "A) Fills missing values with the median",
+    choice2: "B) Fills missing values with 0",
+    choice3: "C) Fills missing values with the mean of column A",
+    choice4: "D) Fills missing values with the mode",
+    answer: 3,
+    explanation: "The code fills missing values in column 'A' with the mean of that column."
+  },
+  {
+    question: "In which scenario would you apply the log transformation to a dataset?",
+    choice1: "A) When you have skewed data",
+    choice2: "B) When data is normally distributed",
+    choice3: "C) When data has missing values",
+    choice4: "D) When data is categorical",
+    answer: 1,
+    explanation: "Log transformation is used to handle skewed data, making it more normal for analysis."
+  },
+  {
+    question: "Which Pandas function is used to combine two DataFrames based on a common column?",
+    choice1: "A) merge()",
+    choice2: "B) concat()",
+    choice3: "C) join()",
+    choice4: "D) combine()",
+    answer: 1,
+    explanation: "merge() is used to join two DataFrames based on common columns or indices."
+  },
+  {
+    question: "Which type of chart would be best to visualize the relationship between two continuous variables?",
+    choice1: "A) Bar chart",
+    choice2: "B) Line chart",
+    choice3: "C) Scatter plot",
+    choice4: "D) Pie chart",
+    answer: 3,
+    explanation: "A scatter plot is ideal for visualizing the relationship between two continuous variables."
+  },
+  {
+    question: "Which of the following is NOT a common visualization feature in Tableau?",
+    choice1: "A) Dashboards",
+    choice2: "B) Pivot Tables",
+    choice3: "C) Pie Charts",
+    choice4: "D) Heat Maps",
+    answer: 2,
+    explanation: "Pivot tables are more commonly used in Excel, not Tableau, which focuses on interactive visualizations like dashboards and charts."
+  },
+  {
+    question: "Which of the following Python libraries is primarily used for data visualization?",
+    choice1: "A) NumPy",
+    choice2: "B) Scikit-learn",
+    choice3: "C) Matplotlib",
+    choice4: "D) TensorFlow",
+    answer: 3,
+    explanation: "Matplotlib is a Python library primarily used for data visualization."
+  },
+  {
+    question: "What is the purpose of a 'story' in Tableau?",
+    choice1: "A) To run SQL queries",
+    choice2: "B) To create a narrative with data",
+    choice3: "C) To clean data",
+    choice4: "D) To modify database schemas",
+    answer: 2,
+    explanation: "A 'story' in Tableau is a sequence of visualizations that work together to convey a narrative."
+  },
+  {
+    question: "In Power BI, which feature allows users to filter data interactively in reports?",
+    choice1: "A) Slicers",
+    choice2: "B) Pivot Tables",
+    choice3: "C) DAX",
+    choice4: "D) Data Model",
+    answer: 1,
+    explanation: "Slicers in Power BI allow users to interactively filter data in reports."
+  }
+];
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "t3.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 9 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What does the HAVING clause do in SQL?",
+    choice1: "A) It filters rows before grouping",
+    choice2: "B) It filters rows after grouping",
+    choice3: "C) It is used to join tables",
+    choice4: "D) It sorts data in ascending order",
+    answer: 2,
+    explanation: "The HAVING clause is used to filter data after it has been grouped by the GROUP BY clause."
+  },
+  {
+    question: "Which of the following SQL clauses is used to sort data in descending order?",
+    choice1: "A) ORDER BY DESC",
+    choice2: "B) SORT BY DESC",
+    choice3: "C) DESC ORDER",
+    choice4: "D) ORDER DESC",
+    answer: 1,
+    explanation: "ORDER BY DESC is used to sort the results in descending order."
+  },
+  {
+    question: "How do you calculate the total sales in a table sales with a column amount?",
+    choice1: "A) SELECT SUM(amount) FROM sales;",
+    choice2: "B) SELECT COUNT(amount) FROM sales;",
+    choice3: "C) SELECT AVERAGE(amount) FROM sales;",
+    choice4: "D) SELECT MAX(amount) FROM sales;",
+    answer: 1,
+    explanation: "The SUM() function is used to calculate the total of the amount column."
+  },
+  {
+    question: "What is the result of the following SQL query? SELECT customer_id, COUNT(*) FROM orders GROUP BY customer_id;",
+    choice1: "A) A list of customers with the total number of orders",
+    choice2: "B) A list of customers with their order details",
+    choice3: "C) A list of all orders with their customer ID",
+    choice4: "D) A list of all customer IDs only",
+    answer: 1,
+    explanation: "This query returns a list of customers and the total number of orders for each."
+  },
+  {
+    question: "Which SQL function would you use to find the highest salary in a table employees with a column salary?",
+    choice1: "A) MAX(salary)",
+    choice2: "B) MIN(salary)",
+    choice3: "C) AVG(salary)",
+    choice4: "D) COUNT(salary)",
+    answer: 1,
+    explanation: "The MAX() function returns the highest value in the specified column."
+  },
+  {
+    question: "In probability, the sum of the probabilities of all possible outcomes must equal:",
+    choice1: "A) 0",
+    choice2: "B) 1",
+    choice3: "C) The mean",
+    choice4: "D) The variance",
+    answer: 2,
+    explanation: "The sum of the probabilities of all possible outcomes must always equal 1."
+  },
+  {
+    question: "What is the formula for calculating the standard deviation?",
+    choice1: "A) √(Σ(x - μ)² / n)",
+    choice2: "B) Σ(x - μ)² / n",
+    choice3: "C) Σ(x - x̄) / n",
+    choice4: "D) √(Σ(x - x̄)² / n)",
+    answer: 1,
+    explanation: "The formula for standard deviation is the square root of the variance, where the variance is the average of the squared differences from the mean."
+  },
+  {
+    question: "What is the purpose of a chi-square test?",
+    choice1: "A) To compare two independent sample means",
+    choice2: "B) To measure the correlation between two variables",
+    choice3: "C) To test if the distribution of categorical data fits an expected distribution",
+    choice4: "D) To compare proportions between two groups",
+    answer: 3,
+    explanation: "A chi-square test is used to determine if the observed distribution of categorical data differs from an expected distribution."
+  },
+  {
+    question: "Which of the following is true for a normal distribution?",
+    choice1: "A) It is always skewed",
+    choice2: "B) Its mean, median, and mode are all equal",
+    choice3: "C) It has two modes",
+    choice4: "D) It is not symmetric",
+    answer: 2,
+    explanation: "In a normal distribution, the mean, median, and mode are all equal and it is symmetric."
+  },
+  {
+    question: "In regression analysis, what does multicollinearity refer to?",
+    choice1: "A) High correlation between dependent and independent variables",
+    choice2: "B) High correlation among independent variables",
+    choice3: "C) Low correlation between independent variables",
+    choice4: "D) No correlation between dependent and independent variables",
+    answer: 2,
+    explanation: "Multicollinearity occurs when two or more independent variables in a regression model are highly correlated, which can affect the model’s accuracy."
+  }
+];
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "t10.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

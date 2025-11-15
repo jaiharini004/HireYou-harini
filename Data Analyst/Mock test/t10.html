@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 10 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "Which Python library is commonly used for data cleaning and manipulation?",
+    choice1: "A) Matplotlib",
+    choice2: "B) NumPy",
+    choice3: "C) Pandas",
+    choice4: "D) Scikit-learn",
+    answer: 3,
+    explanation: "Pandas is the most commonly used library for data cleaning and manipulation in Python."
+  },
+  {
+    question: "What is the output of the following code? df['col'] = df['col'].fillna(df['col'].mean())",
+    choice1: "A) It fills missing values in col with the mean of col",
+    choice2: "B) It drops rows with missing values in col",
+    choice3: "C) It replaces missing values with 0",
+    choice4: "D) It removes the col column",
+    answer: 1,
+    explanation: "This code fills missing values in the column col with the mean of col."
+  },
+  {
+    question: "How would you change the data type of a column in Pandas?",
+    choice1: "A) df['col'].astype(new_type)",
+    choice2: "B) df.change_dtype('col', new_type)",
+    choice3: "C) df['col'].type(new_type)",
+    choice4: "D) df.convert_dtype('col', new_type)",
+    answer: 1,
+    explanation: "The astype() method is used to change the data type of a column in Pandas."
+  },
+  {
+    question: "What type of algorithm is K-Nearest Neighbors (KNN)?",
+    choice1: "A) Regression",
+    choice2: "B) Classification",
+    choice3: "C) Clustering",
+    choice4: "D) Association",
+    answer: 2,
+    explanation: "K-Nearest Neighbors (KNN) is a classification algorithm that classifies data points based on the majority class of their neighbors."
+  },
+  {
+    question: "In Tableau, which feature allows you to group data based on certain attributes?",
+    choice1: "A) Filter",
+    choice2: "B) Dashboard",
+    choice3: "C) Grouping",
+    choice4: "D) Hierarchy",
+    answer: 3,
+    explanation: "Grouping in Tableau allows you to combine data based on specified attributes."
+  },
+  {
+    question: "In logistic regression, what is the purpose of the sigmoid function?",
+    choice1: "A) To handle missing values",
+    choice2: "B) To transform input features",
+    choice3: "C) To map the output to a probability between 0 and 1",
+    choice4: "D) To calculate the mean",
+    answer: 3,
+    explanation: "The sigmoid function in logistic regression transforms the model’s output into a probability value between 0 and 1, which is used to classify binary outcomes."
+  },
+  {
+    question: "What is the primary purpose of a dashboard in Power BI?",
+    choice1: "A) To display raw data",
+    choice2: "B) To summarize data visually for quick insights",
+    choice3: "C) To store data",
+    choice4: "D) To run data transformations",
+    answer: 2,
+    explanation: "A dashboard in Power BI is designed to provide visual summaries of data to support decision-making."
+  },
+  {
+    question: "What is the main purpose of feature scaling in machine learning?",
+    choice1: "A) To improve the interpretability of the model",
+    choice2: "B) To make the model more complex",
+    choice3: "C) To ensure all features are on a similar scale for better model performance",
+    choice4: "D) To reduce the number of features in the model",
+    answer: 3,
+    explanation: "Feature scaling ensures that all features are on a similar scale, which can improve the performance of certain machine learning algorithms, such as KNN and SVM."
+  },
+  {
+    question: "What is a common method for dealing with missing data in a dataset?",
+    choice1: "A) Drop all rows with missing values",
+    choice2: "B) Replace missing values with the mean or median of the column",
+    choice3: "C) Ignore the missing values and continue",
+    choice4: "D) Both A and B",
+    answer: 4,
+    explanation: "Common methods for handling missing data include dropping rows with missing values or replacing missing values with the mean or median of the column."
+  },
+  {
+    question: "Which algorithm is best suited for classifying images based on pixel data?",
+    choice1: "A) Linear Regression",
+    choice2: "B) Decision Trees",
+    choice3: "C) Convolutional Neural Networks (CNN)",
+    choice4: "D) K-Nearest Neighbors",
+    answer: 3,
+    explanation: "Convolutional Neural Networks (CNN) are designed specifically for image classification tasks, as they can learn spatial hierarchies of features from images."
+  }
+];
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "analyst.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>
