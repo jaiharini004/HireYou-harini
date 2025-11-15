@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>statistics level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 5</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "What is the z-score of a value 85 in a dataset with mean = 70 and std dev = 10?",
+    choice1: "A) 1.5",
+    choice2: "B) 0.85",
+    choice3: "C) 2",
+    choice4: "D) 3",
+    answer: 1,
+    explanation: "Z = (X − μ) / σ = (85 − 70) / 10 = 15 / 10 = 1.5"
+  },
+  {
+    question: "You sample 5 random values: [4, 8, 6, 10, 2]. What is the sample standard deviation?",
+    choice1: "A) 2.83",
+    choice2: "B) 3.16",
+    choice3: "C) 2.5",
+    choice4: "D) 4",
+    answer: 2,
+    explanation: "Mean = (4+8+6+10+2)/5 = 30/5 = 6\nVariance (sample) = [(4−6)² + (8−6)² + (6−6)² + (10−6)² + (2−6)²] / (5−1) = [4 + 4 + 0 + 16 + 16] / 4 = 40 / 4 = 10\nStd dev = √10 ≈ 3.16"
+  },
+  {
+    question: "In Python, what does this return? \n\n import numpy as np \n np.var([1, 2, 3, 4, 5])",
+    choice1: "A) 2.0",
+    choice2: "B) 2.5",
+    choice3: "C) 3.0",
+    choice4: "D) 1.5",
+    answer: 1,
+    explanation: "NumPy by default computes population variance:\nMean = 3\nVariance = [(1−3)² + (2−3)² + (3−3)² + (4−3)² + (5−3)²]/5 = 10/5 = 2"
+  },
+  {
+    question: "Which test is used to check whether a sample mean differs significantly from a population mean?",
+    choice1: "A) Chi-square",
+    choice2: "B) T-test",
+    choice3: "C) Z-test",
+    choice4: "D) ANOVA",
+    answer: 2,
+    explanation: "Use a one-sample t-test when population std dev is unknown and sample size is small."
+  },
+  {
+    question: "What’s the output of this Python code? \n\n from scipy import stats \n stats.mode([1, 2, 2, 3, 3, 3, 4])",
+    choice1: "A) 3",
+    choice2: "B) 2",
+    choice3: "C) (3, 3)",
+    choice4: "D) (3, 1)",
+    answer: 3,
+    explanation: "stats.mode() returns the value with the highest frequency and its count.\n3 appears 3 times: (mode=3, count=3)"
+  },
+  {
+    question: "A bag contains 3 red, 5 blue, and 2 green balls. If 2 balls are drawn without replacement, what’s the probability both are red?",
+    choice1: "A) 3/10",
+    choice2: "B) 3/45",
+    choice3: "C) 3/15",
+    choice4: "D) 1/15",
+    answer: 4,
+    explanation: "P(first red) = 3/10\nP(second red) = 2/9\nSo, P(both red) = (3/10) * (2/9) = 6/90 = 1/15"
+  },
+  {
+    question: "What does this Python function return? \n\n import random \n random.choices(['H', 'T'], k=4)",
+    choice1: "A) 4 heads",
+    choice2: "B) List of 4 random values of H or T",
+    choice3: "C) Error",
+    choice4: "D) Always same output",
+    answer: 2,
+    explanation: "random.choices() returns a list of size k with random choices with replacement."
+  },
+  {
+    question: "If mean = 50 and standard deviation = 5, what is the coefficient of variation (CV)?",
+    choice1: "A) 10",
+    choice2: "B) 5",
+    choice3: "C) 0.1",
+    choice4: "D) 0.5",
+    answer: 3,
+    explanation: "CV = Std Dev / Mean = 5 / 50 = 0.1"
+  },
+  {
+    question: "You toss a coin 10 times. What's the probability of getting exactly 5 heads?",
+    choice1: "A) 0.246",
+    choice2: "B) 0.5",
+    choice3: "C) 0.75",
+    choice4: "D) 0.1",
+    answer: 1,
+    explanation: "Use binomial probability:\nP(X=5) = C(10,5) * (0.5)^5 * (0.5)^5 = 252 * (1/1024) ≈ 0.246"
+  },
+  {
+    question: "What is the skewness of a perfectly symmetric distribution?",
+    choice1: "A) 1",
+    choice2: "B) 0",
+    choice3: "C) −1",
+    choice4: "D) Undefined",
+    answer: 2,
+    explanation: "Symmetric (e.g., normal) distributions have skewness = 0"
+  }
+];
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='stlev6.html'">Go to Level 6 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'stlev5.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

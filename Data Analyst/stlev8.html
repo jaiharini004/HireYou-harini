@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>statistics level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 8</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "You have a dataset with mean = 70, SD = 10. What score has a z-score of −1.5?",
+    choice1: "A) 55",
+    choice2: "B) 60",
+    choice3: "C) 50",
+    choice4: "D) 65",
+    answer: 1,
+    explanation: "Z = (X − 70)/10 → −1.5 = (X − 70)/10 ⇒ X = 55"
+  },
+  {
+    question: "Python: Compute variance using pandas\n\n import pandas as pd\ndata = pd.Series([4, 8, 6])\ndata.var()",
+    choice1: "A) 2.0",
+    choice2: "B) 4.0",
+    choice3: "C) 3.0",
+    choice4: "D) 2.67",
+    answer: 2,
+    explanation: "Sample variance: Mean = 6\n[(4−6)² + (8−6)² + (6−6)²] / (n−1) = (4 + 4 + 0)/2 = 4"
+  },
+  {
+    question: "A test has mean = 100, std dev = 15. What score is at 84th percentile?",
+    choice1: "A) 115",
+    choice2: "B) 120",
+    choice3: "C) 110",
+    choice4: "D) 130",
+    answer: 1,
+    explanation: "84th percentile in standard normal is Z = 1\nX = μ + Zσ = 100 + 1×15 = 115"
+  },
+  {
+    question: "What is the area under a standard normal curve from −∞ to ∞?",
+    choice1: "A) 1",
+    choice2: "B) 0",
+    choice3: "C) Depends",
+    choice4: "D) ∞",
+    answer: 1,
+    explanation: "Total probability under normal distribution curve is 1"
+  },
+  {
+    question: "Python: What does this compute?\n\n import numpy as np\n np.percentile([1, 2, 3, 4, 5], 75)",
+    choice1: "A) 3",
+    choice2: "B) 3.5",
+    choice3: "C) 4",
+    choice4: "D) 5",
+    answer: 3,
+    explanation: "75th percentile of sorted list = 4"
+  },
+  {
+    question: "What is the p-value in hypothesis testing?",
+    choice1: "A) Probability null is true",
+    choice2: "B) Probability test is wrong",
+    choice3: "C) Probability of observed result if null is true",
+    choice4: "D) Probability sample is biased",
+    answer: 3,
+    explanation: "p-value is the probability of getting the observed result (or more extreme) if the null hypothesis is true"
+  },
+  {
+    question: "What is the power of a statistical test?",
+    choice1: "A) Probability of accepting null",
+    choice2: "B) Probability of Type I error",
+    choice3: "C) Probability of rejecting null when it's false",
+    choice4: "D) Probability of Type II error",
+    answer: 3,
+    explanation: "Power = 1 − β = probability that we correctly reject a false null"
+  },
+  {
+    question: "If correlation coefficient r = 0.95, what can you say?",
+    choice1: "A) Strong negative correlation",
+    choice2: "B) No correlation",
+    choice3: "C) Strong positive correlation",
+    choice4: "D) Weak correlation",
+    answer: 3,
+    explanation: "r close to +1 means strong positive correlation"
+  },
+  {
+    question: "Python: What is computed?\n\n import numpy as np\n np.cov([1,2,3], [4,5,6])",
+    choice1: "A) Correlation",
+    choice2: "B) Covariance",
+    choice3: "C) Mean",
+    choice4: "D) Mode",
+    answer: 2,
+    explanation: "np.cov() returns covariance matrix between the input variables."
+  },
+  {
+    question: "What is Type I error?",
+    choice1: "A) Accepting null when it is true",
+    choice2: "B) Rejecting null when it is false",
+    choice3: "C) Rejecting null when it is true",
+    choice4: "D) Accepting null when it is false",
+    answer: 3,
+    explanation: "Type I Error = False Positive = rejecting a true null hypothesis"
+  }
+];
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='stlev9.html'">Go to Level 9 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'stlev8.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

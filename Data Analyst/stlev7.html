@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>statistics level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 7</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "A machine produces bolts with lengths that are normally distributed. Mean = 5 cm, SD = 0.2 cm. What proportion of bolts are longer than 5.4 cm?",
+    choice1: "A) 0.0228",
+    choice2: "B) 0.9772",
+    choice3: "C) 0.1587",
+    choice4: "D) 0.8413",
+    answer: 1,
+    explanation: "Z = (5.4−5)/0.2 = 2\nP(Z > 2) = 1 − P(Z ≤ 2) = 1 − 0.9772 = 0.0228"
+  },
+  {
+    question: "Python: What’s the output? \n\n from scipy.stats import norm \n norm.sf(2)",
+    choice1: "A) 0.9772",
+    choice2: "B) 0.5",
+    choice3: "C) 0.0228",
+    choice4: "D) 2",
+    answer: 3,
+    explanation: "sf() = survival function = P(Z > 2) = 0.0228"
+  },
+  {
+    question: "A die is rolled twice. What is the probability the sum is 9?",
+    choice1: "A) 1/9",
+    choice2: "B) 4/36",
+    choice3: "C) 1/12",
+    choice4: "D) 5/36",
+    answer: 1,
+    explanation: "Sums of 9 can be: (3,6), (4,5), (5,4), (6,3), (2,7) — but 7 doesn’t exist → 4 valid combos\nSo: 4/36 = 1/9"
+  },
+  {
+    question: "In Python, simulate 1000 values from N(50, 5²). What code is correct?",
+    choice1: "A) np.random.normal(50, 5, 1000)",
+    choice2: "B) np.random.normal(5, 50, 1000)",
+    choice3: "C) np.random.normal(50, 25, 1000)",
+    choice4: "D) np.random.normal(mean=50, std=25, size=1000)",
+    answer: 1,
+    explanation: "Syntax: np.random.normal(loc=mean, scale=std_dev, size=n) → std dev is √variance = 5."
+  },
+  {
+    question: "What is the conditional probability P(A|B), if P(A and B) = 0.2 and P(B) = 0.5?",
+    choice1: "A) 0.1",
+    choice2: "B) 0.2",
+    choice3: "C) 0.4",
+    choice4: "D) 0.6",
+    answer: 3,
+    explanation: "P(A|B) = P(A ∩ B) / P(B) = 0.2 / 0.5 = 0.4"
+  },
+  {
+    question: "You toss 4 coins. What’s the probability of getting exactly 3 heads?",
+    choice1: "A) 1/4",
+    choice2: "B) 1/2",
+    choice3: "C) 1/8",
+    choice4: "D) 1/16",
+    answer: 1,
+    explanation: "Total outcomes = 2⁴ = 16\nWays to get 3 heads = C(4,3) = 4\nP = 4/16 = 1/4"
+  },
+  {
+    question: "Python: Perform a one-sample t-test on data with population mean = 50\n\n from scipy.stats import ttest_1samp\n ttest_1samp([52, 49, 51, 53, 48], 50)",
+    choice1: "A) Returns p-value",
+    choice2: "B) Returns t-stat and p-value",
+    choice3: "C) Returns z-score",
+    choice4: "D) Returns mean",
+    answer: 2,
+    explanation: "ttest_1samp() returns the t-statistic and p-value to test if the sample mean = 50"
+  },
+  {
+    question: "In a sample of 100 people, 45 are left-handed. What’s the 95% confidence interval for the true proportion?",
+    choice1: "A) [0.35, 0.55]",
+    choice2: "B) [0.42, 0.48]",
+    choice3: "C) [0.355, 0.545]",
+    choice4: "D) [0.4, 0.5]",
+    answer: 3,
+    explanation: "Proportion = 0.45\nCI = p ± Z * sqrt(p(1−p)/n)\n≈ 0.45 ± 1.96 * √(0.2475/100)\n≈ 0.45 ± 0.095 ≈ [0.355, 0.545]"
+  },
+  {
+    question: "Python: What does this do?\n\n import pandas as pd\n df = pd.DataFrame({'x': [1,2,3], 'y': [2,4,6]})\n df.corr()",
+    choice1: "A) Mean of columns",
+    choice2: "B) Covariance matrix",
+    choice3: "C) Correlation matrix",
+    choice4: "D) Variance matrix",
+    answer: 3,
+    explanation: "df.corr() returns Pearson correlation matrix between numerical columns."
+  },
+  {
+    question: "If mean = 100 and 95% of data falls between 60 and 140, what is the standard deviation (assuming normality)?",
+    choice1: "A) 20",
+    choice2: "B) 30",
+    choice3: "C) 40",
+    choice4: "D) 25",
+    answer: 1,
+    explanation: "95% of normal data falls in μ ± 2σ\nSo: 100 − 2σ = 60 ⇒ σ = (100−60)/2 = 20"
+  }
+];
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='stlev8.html'">Go to Level 8 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'stlev7.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

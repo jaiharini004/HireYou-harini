@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>statistics level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "You observe a right-skewed dataset. What’s the relationship between mean, median, mode?",
+    choice1: "A) Mean < Median < Mode",
+    choice2: "B) Mean = Median = Mode",
+    choice3: "C) Mode < Median < Mean",
+    choice4: "D) Median < Mode < Mean",
+    answer: 3,
+    explanation: "In right-skewed data, the mean is pulled right by extreme values → Mode < Median < Mean."
+  },
+  {
+    question: "Python: Calculate IQR in pandas\n\nimport pandas as pd\ndata = pd.Series([1, 3, 5, 7, 9])\niqr = data.quantile(0.75) - data.quantile(0.25)\nWhat is IQR?",
+    choice1: "A) 4",
+    choice2: "B) 3",
+    choice3: "C) 2",
+    choice4: "D) 6",
+    answer: 1,
+    explanation: "Q3 = 7, Q1 = 3 → IQR = 7 − 3 = 4"
+  },
+  {
+    question: "What is bootstrapping in statistics?",
+    choice1: "A) Testing normality",
+    choice2: "B) Simulating probability",
+    choice3: "C) Resampling with replacement",
+    choice4: "D) Removing outliers",
+    answer: 3,
+    explanation: "Bootstrapping estimates statistics by resampling the original dataset with replacement."
+  },
+  {
+    question: "What is the Central Limit Theorem?",
+    choice1: "A) Large samples are skewed",
+    choice2: "B) Population mean = sample mean",
+    choice3: "C) Distribution of sample means → normal",
+    choice4: "D) Mean and median become equal",
+    answer: 3,
+    explanation: "CLT: The sampling distribution of the mean approaches a normal distribution as sample size increases."
+  },
+  {
+    question: "A hypothesis test uses α = 0.01. You get p = 0.005. What’s the decision?",
+    choice1: "A) Reject null",
+    choice2: "B) Fail to reject null",
+    choice3: "C) Reduce α",
+    choice4: "D) Accept null",
+    answer: 1,
+    explanation: "Since p < α, we reject the null hypothesis — results are statistically significant."
+  },
+  {
+    question: "Python: What’s computed?\n\nfrom scipy.stats import norm\nnorm.ppf(0.975)",
+    choice1: "A) 95th percentile",
+    choice2: "B) 97.5% probability",
+    choice3: "C) Z-value for 95% CI",
+    choice4: "D) Z = 1.96",
+    answer: 4,
+    explanation: "ppf(0.975) gives the Z-score of 1.96 for the 95% confidence interval (two-tailed)."
+  },
+  {
+    question: "What is the shape of a Poisson distribution?",
+    choice1: "A) Bell",
+    choice2: "B) Skewed right",
+    choice3: "C) Uniform",
+    choice4: "D) Symmetric",
+    answer: 2,
+    explanation: "The Poisson distribution is typically right-skewed, especially for small λ."
+  },
+  {
+    question: "In a Poisson process, if λ = 4 events/hour, what is the probability of 0 events in one hour?",
+    choice1: "A) 0.1353",
+    choice2: "B) 0.018",
+    choice3: "C) 0.25",
+    choice4: "D) 0.5",
+    answer: 2,
+    explanation: "P(X=0) = e^(−λ) × λ^0 / 0! = e^(−4) ≈ 0.0183"
+  },
+  {
+    question: "Python: Generate 10 Poisson samples with λ = 3\n\nimport numpy as np\nnp.random.poisson(3, 10)\nWhat does this do?",
+    choice1: "A) Generates normal values",
+    choice2: "B) Generates 10 values with λ = 3",
+    choice3: "C) Plots histogram",
+    choice4: "D) Randomly shuffles array",
+    answer: 2,
+    explanation: "np.random.poisson(3, 10) generates 10 random samples from a Poisson distribution with λ = 3."
+  },
+  {
+    question: "What is the law of large numbers?",
+    choice1: "A) Means become equal",
+    choice2: "B) Distributions converge",
+    choice3: "C) Sample mean → population mean",
+    choice4: "D) Sample variance increases",
+    answer: 3,
+    explanation: "Law of Large Numbers states that as the sample size increases, the sample mean approaches the population mean."
+  }
+];
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='data_analyst.html'">Hureyyy! You Aced it🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'stlev10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
