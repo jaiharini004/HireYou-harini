@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Model evaluation Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 6</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+    const questions = [
+  {
+    question: "What metric is ideal for evaluating regression models?",
+    choice1: "A) Accuracy",
+    choice2: "B) ROC-AUC",
+    choice3: "C) MAE",
+    choice4: "D) Confusion Matrix",
+    answer: 3,
+    explanation: "Mean Absolute Error (MAE) is a common evaluation metric for regression tasks."
+  },
+  {
+    question: "Which scenario best suits stratified K-fold cross-validation?",
+    choice1: "A) High variance dataset",
+    choice2: "B) Uniform label distribution",
+    choice3: "C) Imbalanced classification",
+    choice4: "D) Regression tasks",
+    answer: 3,
+    explanation: "Stratified K-Fold keeps class proportions intact across folds, perfect for imbalanced datasets."
+  },
+  {
+    question: "What’s the limitation of Leave-One-Out CV (LOOCV)?",
+    choice1: "A) It’s inaccurate",
+    choice2: "B) It wastes data",
+    choice3: "C) High computation time",
+    choice4: "D) Can’t be used for classification",
+    answer: 3,
+    explanation: "LOOCV requires training the model n times (n = number of samples), which is computationally expensive."
+  },
+  {
+    question: "Calculate MAE for: y_true = [1, 2, 3], y_pred = [2, 2, 4]",
+    choice1: "A) 1",
+    choice2: "B) 0.5",
+    choice3: "C) 2",
+    choice4: "D) 0.75",
+    answer: 1,
+    explanation: "MAE = (|1−2| + |2−2| + |3−4|) / 3 = (1 + 0 + 1) / 3 = 1.0"
+  },
+  {
+    question: "Which of the following improves cross-validation reliability?",
+    choice1: "A) Shuffling data",
+    choice2: "B) Reducing features",
+    choice3: "C) Using test set for training",
+    choice4: "D) Overfitting the model",
+    answer: 1,
+    explanation: "Shuffling ensures random splits, which enhances the reliability of cross-validation."
+  },
+  {
+    question: "Given precision = 0.6 and recall = 0.75, what is the F1-score?",
+    choice1: "A) 0.66",
+    choice2: "B) 0.70",
+    choice3: "C) 0.67",
+    choice4: "D) 0.9",
+    answer: 3,
+    explanation: "F1 = 2 × (0.6 × 0.75) / (0.6 + 0.75) ≈ 0.667"
+  },
+  {
+    question: "Which metric penalizes large errors more heavily?",
+    choice1: "A) MAE",
+    choice2: "B) Accuracy",
+    choice3: "C) RMSE",
+    choice4: "D) F1-score",
+    answer: 3,
+    explanation: "RMSE squares the errors, so larger errors have a disproportionately larger effect."
+  },
+  {
+    question: "In regression, what does a negative R² indicate?",
+    choice1: "A) Overfitting",
+    choice2: "B) Underfitting",
+    choice3: "C) Better than mean model",
+    choice4: "D) Worse than mean model",
+    answer: 4,
+    explanation: "Negative R² indicates the model performs worse than simply predicting the mean."
+  },
+  {
+    question: "Which line plots the relationship between recall and precision?",
+    choice1: "A) ROC Curve",
+    choice2: "B) Confusion Matrix",
+    choice3: "C) Precision-Recall Curve",
+    choice4: "D) Regression Line",
+    answer: 3,
+    explanation: "Precision-Recall Curve is valuable for classification tasks, especially imbalanced ones."
+  },
+
+
+
+{
+  question: "What is the purpose of the cross_val_score function in sklearn?",
+  choice1: "A) Makes predictions",
+  choice2: "B) Splits data",
+  choice3: "C) Evaluates a model using cross-validation",
+  choice4: "D) Trains a model",
+  answer: 3,
+  explanation: "cross_val_score is used to evaluate a model's performance using cross-validation by splitting the data into training and testing sets multiple times."
+}
+];
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='modlev7.html'">Go to Level 7 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'modlev6.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

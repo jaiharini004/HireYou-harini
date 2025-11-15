@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Model evaluation Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 5</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "Which metric is most appropriate for evaluating a multi-class classification model?",
+    choice1: "A) MSE",
+    choice2: "B) ROC-AUC",
+    choice3: "C) Accuracy",
+    choice4: "D) Adjusted R²",
+    answer: 3,
+    explanation: "Accuracy is a simple yet effective metric for multi-class problems when classes are balanced."
+  },
+  {
+    question: "In classification, what does a confusion matrix NOT include?",
+    choice1: "A) True Positives",
+    choice2: "B) False Positives",
+    choice3: "C) Learning Rate",
+    choice4: "D) True Negatives",
+    answer: 3,
+    explanation: "Learning rate is a model hyperparameter, not a part of confusion matrix components."
+  },
+  {
+    question: "What is the main issue when using accuracy on imbalanced datasets?",
+    choice1: "A) It underestimates accuracy",
+    choice2: "B) It’s computationally expensive",
+    choice3: "C) It gives misleading results",
+    choice4: "D) It’s difficult to implement",
+    answer: 3,
+    explanation: "High accuracy may hide poor performance on the minority class in imbalanced datasets."
+  },
+  {
+    question: "F1-score is the harmonic mean of:",
+    choice1: "A) Accuracy and Precision",
+    choice2: "B) Recall and ROC-AUC",
+    choice3: "C) Precision and Recall",
+    choice4: "D) Precision and Specificity",
+    answer: 3,
+    explanation: "F1-score = 2 × (Precision × Recall) / (Precision + Recall), useful for imbalanced datasets."
+  },
+  {
+    question: "Compute the precision given: TP = 70, FP = 30.",
+    choice1: "A) 0.7",
+    choice2: "B) 0.9",
+    choice3: "C) 0.5",
+    choice4: "D) 0.875",
+    answer: 1,
+    explanation: "Precision = TP / (TP + FP) = 70 / (70 + 30) = 0.7"
+  },
+  {
+    question: "Compute the recall given: TP = 50, FN = 10.",
+    choice1: "A) 0.75",
+    choice2: "B) 0.83",
+    choice3: "C) 0.8",
+    choice4: "D) 0.5",
+    answer: 3,
+    explanation: "Recall = TP / (TP + FN) = 50 / (50 + 10) ≈ 0.833"
+  },
+  {
+    question: "What is the output of the following code?\n\nfrom sklearn.metrics import mean_squared_error\n" +
+      "y_true = [3, -0.5, 2, 7]\ny_pred = [2.5, 0.0, 2, 8]\nprint(mean_squared_error(y_true, y_pred))",
+    choice1: "A) 0.75",
+    choice2: "B) 0.375",
+    choice3: "C) 1.0",
+    choice4: "D) 2.5",
+    answer: 1,
+    explanation: "MSE = mean([0.25, 0.25, 0, 1]) = 0.75"
+  },
+  {
+    question: "Which Python library provides classification_report for evaluation?",
+    choice1: "A) pandas",
+    choice2: "B) numpy",
+    choice3: "C) sklearn",
+    choice4: "D) matplotlib",
+    answer: 3,
+    explanation: "sklearn.metrics includes classification_report for detailed class-wise evaluation."
+  },
+  {
+    question: "Calculate R² score: SS_res = 50, SS_tot = 200.",
+    choice1: "A) 0.25",
+    choice2: "B) 0.5",
+    choice3: "C) 0.75",
+    choice4: "D) 0.8",
+    answer: 3,
+    explanation: "R² = 1 − (SS_res / SS_tot) = 1 − 0.25 = 0.75"
+  },
+  {
+    question: "In K-fold cross-validation, how many models are trained when k=5?",
+    choice1: "A) 1",
+    choice2: "B) 5",
+    choice3: "C) 10",
+    choice4: "D) 6",
+    answer: 2,
+    explanation: "One model is trained per fold; with k=5, it trains 5 models."
+  }
+];
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='modlev6.html'">Go to Level 6 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'modlev5.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

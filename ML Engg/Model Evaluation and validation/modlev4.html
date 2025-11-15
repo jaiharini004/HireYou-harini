@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Model evaluation Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 4</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: " What is the default number of folds in KFold() from sklearn?",
+    choice1: "A) 5",
+    choice2: "B) 10",
+    choice3: "C) 3",
+    choice4: "D) Depends on dataset size",
+    answer: 1,
+    explanation: "By default, cross_val_score uses 5 folds unless specified."
+  },
+  {
+    question: " In classification, what does a ROC AUC score of 1.0 indicate?",
+    choice1: "A) Model is random",
+    choice2: "B) Model is perfect",
+    choice3: "C) Model underfitted",
+    choice4: "D) Model is overfitted",
+    answer: 2,
+    explanation: "AUC of 1.0 means perfect classification."
+  },
+  {
+    question: " What is the MAE if predicted = [3, 4], actual = [2, 5]?",
+    choice1: "A) 0",
+    choice2: "B) 2",
+    choice3: "C) 1",
+    choice4: "D) 0.5",
+    answer: 3,
+    explanation: "MAE = (|3−2| + |4−5|)/2 = (1 + 1)/2 = 1"
+  },
+  {
+    question: " What is k-fold cross-validation used for?",
+    choice1: "A) Feature scaling",
+    choice2: "B) Model comparison",
+    choice3: "C) Hyperparameter tuning",
+    choice4: "D) Estimating model performance",
+    answer: 4,
+    explanation: "k-fold splits data multiple times to better estimate how the model generalizes."
+  },
+  {
+    question: " If you get drastically different results on each fold of cross-validation, what does it indicate?",
+    choice1: "A) Data is clean",
+    choice2: "B) Model is stable",
+    choice3: "C) High variance",
+    choice4: "D) Low complexity",
+    answer: 3,
+    explanation: "Varying results suggest instability, possibly due to overfitting or sensitive features."
+  },
+  {
+    question: " Which code prints accuracy from a model in sklearn?\n\nfrom sklearn.metrics import accuracy_score\n" +
+      "y_pred = [1, 0, 1, 1]\ny_true = [1, 0, 0, 1]",
+    choice1: "A) accuracy_score(y_true, y_pred)",
+    choice2: "B) accuracy_score(y_pred)",
+    choice3: "C) confusion_matrix(y_true, y_pred)",
+    choice4: "D) print(y_pred == y_true)",
+    answer: 1,
+    explanation: "accuracy_score(y_true, y_pred) is the correct method to compare predicted to actual labels."
+  },
+  {
+    question: " A model’s accuracy is 0.95, but F1-score is 0.40. Why?",
+    choice1: "A) Model has high bias",
+    choice2: "B) Data is balanced",
+    choice3: "C) Precision and recall are low due to imbalance",
+    choice4: "D) Model is perfect",
+    answer: 3,
+    explanation: "High accuracy but low F1-score suggests class imbalance and poor minority class handling."
+  },
+  {
+    question: " Which technique is used to validate a model’s ability to generalize?",
+    choice1: "A) Train on full dataset",
+    choice2: "B) Validation with train set",
+    choice3: "C) Cross-validation",
+    choice4: "D) Shuffle labels",
+    answer: 3,
+    explanation: "Cross-validation is the standard method to test generalization on multiple data splits."
+  },
+  {
+    question: " What’s the purpose of a test set?",
+    choice1: "A) Model training",
+    choice2: "B) Hyperparameter tuning",
+    choice3: "C) Model evaluation on unseen data",
+    choice4: "D) Outlier removal",
+    answer: 3,
+    explanation: "The test set simulates real-world data to evaluate the model’s final performance."
+  },
+  {
+    question: " What does this code compute?\n\nfrom sklearn.metrics import r2_score\n" +
+      "y_true = [1, 2, 3]\ny_pred = [1.1, 1.9, 3.2]\nprint(r2_score(y_true, y_pred))",
+    choice1: "A) Correlation",
+    choice2: "B) MAE",
+    choice3: "C) R-squared",
+    choice4: "D) RMSE",
+    answer: 3,
+    explanation: "r2_score computes the coefficient of determination, a common regression metric."
+  }
+];
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='modlev5.html'">Go to Level 5 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'modlev4.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Model evaluation Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 7</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "Which performance metric is best suited for imbalanced binary classification tasks?",
+    choice1: "A) Accuracy",
+    choice2: "B) Precision",
+    choice3: "C) ROC-AUC",
+    choice4: "D) MSE",
+    answer: 3,
+    explanation: "ROC-AUC evaluates classifier performance across all thresholds and handles class imbalance well."
+  },
+  {
+    question: "What is the output of the following code block using cross_val_score with scoring='neg_mean_squared_error'?\n\nfrom sklearn.model_selection import cross_val_score\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn.datasets import make_regression\n\nX, y = make_regression(n_samples=100, n_features=3, noise=0.1)\nmodel = LinearRegression()\nscores = cross_val_score(model, X, y, scoring='neg_mean_squared_error', cv=5)\nprint(scores.mean())",
+    choice1: "A) A positive MSE",
+    choice2: "B) A negative MSE",
+    choice3: "C) An R2 score",
+    choice4: "D) A value error",
+    answer: 2,
+    explanation: "Loss functions return negative scores in sklearn to match the score-maximization framework."
+  },
+  {
+    question: "In a 10-fold CV, your validation accuracy fluctuates significantly across folds. What does this indicate?",
+    choice1: "A) Model is underfitting",
+    choice2: "B) Data leakage",
+    choice3: "C) High variance in the data",
+    choice4: "D) Feature redundancy",
+    answer: 3,
+    explanation: "High variance across folds implies the model is sensitive to the data and may not generalize well."
+  },
+  {
+    question: "Compute the F1-score with the following values: Precision = 0.83, Recall = 0.77.",
+    choice1: "A) 0.80",
+    choice2: "B) 0.75",
+    choice3: "C) 0.90",
+    choice4: "D) 0.70",
+    answer: 1,
+    explanation: "F1 = 2 × (P × R) / (P + R) = 2 × (0.83 × 0.77) / (0.83 + 0.77) ≈ 0.80"
+  },
+  {
+    question: "What does StratifiedKFold ensure that KFold does not?",
+    choice1: "A) Equal number of samples",
+    choice2: "B) Equal variance",
+    choice3: "C) Balanced class distribution",
+    choice4: "D) Random shuffle",
+    answer: 3,
+    explanation: "StratifiedKFold preserves class ratios in each fold—important for classification, especially imbalanced ones."
+  },
+  {
+    question: "How can you evaluate overfitting during cross-validation?",
+    choice1: "A) Low training and validation scores",
+    choice2: "B) High training and low validation scores",
+    choice3: "C) Both scores are equal",
+    choice4: "D) Validation scores are higher",
+    answer: 2,
+    explanation: "A large gap between training and validation accuracy typically points to overfitting."
+  },
+  {
+    question: "You have a dataset of 1 million rows. Which validation strategy is best for time-series prediction?",
+    choice1: "A) StratifiedKFold",
+    choice2: "B) TimeSeriesSplit",
+    choice3: "C) RandomSplit",
+    choice4: "D) ShuffleSplit",
+    answer: 2,
+    explanation: "TimeSeriesSplit maintains the order of data—critical for sequential predictions."
+  },
+  {
+    question: "Calculate RMSE for the following: y_true = [3, -0.5, 2], y_pred = [2.5, 0.0, 2].",
+    choice1: "A) 0.5",
+    choice2: "B) 0.58",
+    choice3: "C) 0.61",
+    choice4: "D) 0.82",
+    answer: 2,
+    explanation: "MSE = [(0.5)^2 + (0.5)^2 + 0^2]/3 = 0.1667 → RMSE = √0.1667 ≈ 0.58"
+  },
+  {
+    question: "Which metric does NOT depend on thresholds?",
+    choice1: "A) F1-score",
+    choice2: "B) Accuracy",
+    choice3: "C) ROC-AUC",
+    choice4: "D) Precision",
+    answer: 3,
+    explanation: "ROC-AUC considers all classification thresholds; it doesn’t rely on one fixed threshold."
+  },
+  {
+    question: "Which of the following techniques will NOT help reduce overfitting?",
+    choice1: "A) Early stopping",
+    choice2: "B) Adding more features",
+    choice3: "C) Cross-validation",
+    choice4: "D) L2 regularization",
+    answer: 2,
+    explanation: "Adding more features can actually increase the risk of overfitting by expanding hypothesis space."
+  }
+];
+
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='modlev8.html'">Go to Level 8 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'modlev7.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
