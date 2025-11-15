@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visualization level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 2</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is the primary purpose of Matplotlib in Python?",
+    choice1: "A) Data cleaning",
+    choice2: "B) Building machine learning models",
+    choice3: "C) Data visualization",
+    choice4: "D) Database management",
+    answer: 3,
+    explanation: "Matplotlib is a powerful plotting library used in Python to create static, animated, and interactive visualizations."
+  },
+  {
+    question: "Which Matplotlib function is used to create a line chart?",
+    choice1: "A) bar()",
+    choice2: "B) hist()",
+    choice3: "C) line()",
+    choice4: "D) plot()",
+    answer: 4,
+    explanation: "The plot() function in Matplotlib is used to draw line charts by default."
+  },
+  {
+    question: "What method is used to create bar charts in Matplotlib?",
+    choice1: "A) bar()",
+    choice2: "B) pie()",
+    choice3: "C) line()",
+    choice4: "D) plot()",
+    answer: 1,
+    explanation: "The bar() function creates vertical bar charts in Matplotlib."
+  },
+  {
+    question: "How do you display a plot in Matplotlib?",
+    choice1: "A) plt.show()",
+    choice2: "B) plt.draw()",
+    choice3: "C) plt.open()",
+    choice4: "D) plt.plot()",
+    answer: 1,
+    explanation: "plt.show() renders and displays the plot window in Matplotlib."
+  },
+  {
+    question: "What function is used to create a histogram in Matplotlib?",
+    choice1: "A) histogram()",
+    choice2: "B) plot()",
+    choice3: "C) hist()",
+    choice4: "D) bars()",
+    answer: 3,
+    explanation: "The hist() function creates histograms, which show the distribution of numeric data."
+  },
+  {
+    question: "To create a pie chart in Matplotlib, you use:",
+    choice1: "A) pie()",
+    choice2: "B) plt.chart()",
+    choice3: "C) circle()",
+    choice4: "D) donut()",
+    answer: 1,
+    explanation: "The pie() function in Matplotlib is used to generate pie charts, which show part-to-whole relationships."
+  },
+  {
+    question: "What is the purpose of plt.title(\"My Chart\")?",
+    choice1: "A) Adds a legend to the chart",
+    choice2: "B) Sets the chart’s X-axis name",
+    choice3: "C) Displays the figure window",
+    choice4: "D) Adds a title to the chart",
+    answer: 4,
+    explanation: "plt.title() sets the title text displayed at the top of the chart."
+  },
+  {
+    question: "Which command labels the x-axis of a Matplotlib chart?",
+    choice1: "A) plt.xlabel()",
+    choice2: "B) plt.xaxis()",
+    choice3: "C) plt.x()",
+    choice4: "D) plt.setx()",
+    answer: 1,
+    explanation: "plt.xlabel() allows you to add a label to the x-axis of your plot."
+  },
+  {
+    question: "What does plt.legend() do in a plot with multiple lines?",
+    choice1: "A) Adds markers to each line",
+    choice2: "B) Automatically colors the lines",
+    choice3: "C) Displays a legend that identifies each line",
+    choice4: "D) Sorts the lines",
+    answer: 3,
+    explanation: "plt.legend() is used to display a legend that helps identify the different plotted elements when there are multiple lines or bars."
+  },
+  {
+    question: "What is the role of plt.figure(figsize=(8,5))?",
+    choice1: "A) Sets the window color",
+    choice2: "B) Changes the default backend",
+    choice3: "C) Sets the figure size",
+    choice4: "D) Sets the number of subplots",
+    answer: 3,
+    explanation: "plt.figure(figsize=(8,5)) sets the width and height of the figure in inches."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='vislev3.html'">Go to Level 3 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'vislev2.html'; // Redirect to Level 2 directly
+}
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
+

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visualization level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 3</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is the primary advantage of using Seaborn over Matplotlib?",
+    choice1: "A) Faster rendering",
+    choice2: "B) Easier data import",
+    choice3: "C) Simplified syntax and attractive statistical plots",
+    choice4: "D) More animations",
+    answer: 3,
+    explanation: "Seaborn is built on top of Matplotlib and is designed for easier and more aesthetic statistical visualizations with fewer lines of code."
+  },
+  {
+    question: "Which function is used to draw a boxplot in Seaborn?",
+    choice1: "A) sns.box()",
+    choice2: "B) sns.plot()",
+    choice3: "C) sns.boxplot()",
+    choice4: "D) sns.statplot()",
+    answer: 3,
+    explanation: "sns.boxplot() is used to create boxplots, which show distributions based on five-number summaries and detect outliers."
+  },
+  {
+    question: "What kind of information does a violin plot show?",
+    choice1: "A) Only mean and median",
+    choice2: "B) Frequency distributions",
+    choice3: "C) Category proportions",
+    choice4: "D) Correlation between variables",
+    answer: 2,
+    explanation: "Violin plots combine boxplots with KDE (kernel density estimate) to show the full distribution shape of the data."
+  },
+  {
+    question: "What function is used to create violin plots in Seaborn?",
+    choice1: "A) sns.violin()",
+    choice2: "B) sns.violinplot()",
+    choice3: "C) sns.kdeplot()",
+    choice4: "D) sns.densityplot()",
+    answer: 2,
+    explanation: "sns.violinplot() creates violin plots showing both summary statistics and distribution shapes."
+  },
+  {
+    question: "Which Seaborn plot is best for visualizing pairwise relationships between all numeric columns in a DataFrame?",
+    choice1: "A) sns.lineplot()",
+    choice2: "B) sns.boxplot()",
+    choice3: "C) sns.pairplot()",
+    choice4: "D) sns.scatterplot()",
+    answer: 3,
+    explanation: "sns.pairplot() generates a grid of scatter plots for each pair of features, great for initial data exploration."
+  },
+  {
+    question: "What does sns.heatmap() visualize in Seaborn?",
+    choice1: "A) 3D surface plots",
+    choice2: "B) Relationships between categorical and numeric variables",
+    choice3: "C) Correlation matrices or tabular data with color encoding",
+    choice4: "D) Probability distributions",
+    answer: 3,
+    explanation: "A heatmap uses color intensity to represent values in a matrix format — commonly used to display correlation matrices."
+  },
+  {
+    question: "What parameter is used in Seaborn plots to separate data by category (like hue/column/row)?",
+    choice1: "A) groupby",
+    choice2: "B) facet",
+    choice3: "C) hue",
+    choice4: "D) legend",
+    answer: 3,
+    explanation: "The hue parameter adds color separation to different categories in plots, helping distinguish multiple classes."
+  },
+  {
+    question: "Which of the following plots can be created using sns.catplot()?",
+    choice1: "A) Only bar plots",
+    choice2: "B) Violin, strip, box plots",
+    choice3: "C) Only scatter plots",
+    choice4: "D) Pie charts",
+    answer: 2,
+    explanation: "catplot() is a general categorical plot interface in Seaborn and can create box, strip, violin, and bar plots by changing the kind argument."
+  },
+  {
+    question: "What is the default statistical estimator for sns.barplot()?",
+    choice1: "A) Mean",
+    choice2: "B) Median",
+    choice3: "C) Count",
+    choice4: "D) Max",
+    answer: 1,
+    explanation: "By default, sns.barplot() calculates and displays the mean of the numeric variable for each category unless another estimator is provided."
+  },
+  {
+    question: "What does the annot=True argument do in sns.heatmap()?",
+    choice1: "A) Adds a title to the plot",
+    choice2: "B) Annotates cells with numeric values",
+    choice3: "C) Shows tooltips on hover",
+    choice4: "D) Removes labels",
+    answer: 2,
+    explanation: "annot=True adds numeric labels inside each cell of the heatmap, making it easier to read exact values."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='vislev4.html'">Go to Level 4 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'vislev3.html'; // Redirect to Level 2 directly
+}
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
+

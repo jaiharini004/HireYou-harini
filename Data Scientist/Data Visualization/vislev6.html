@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visualization level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 6</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is the primary goal of good data visualization design?",
+    choice1: "A) To make charts look colorful",
+    choice2: "B) To fill the screen space",
+    choice3: "C) To communicate insights clearly and effectively",
+    choice4: "D) To include as many visuals as possible",
+    answer: 3,
+    explanation: "Good visualization design prioritizes clarity and comprehension, helping users grasp insights quickly and accurately."
+  },
+  {
+    question: "Which of the following is a recommended practice for choosing fonts in a dashboard?",
+    choice1: "A) Use decorative fonts for creativity",
+    choice2: "B) Use multiple fonts for variety",
+    choice3: "C) Use simple, readable fonts consistently",
+    choice4: "D) Use cursive fonts for emphasis",
+    answer: 3,
+    explanation: "Sans-serif fonts like Arial or Roboto are preferred for readability. Consistent use of font type, size, and weight is key."
+  },
+  {
+    question: "Why is white space important in data visualization?",
+    choice1: "A) It wastes screen space",
+    choice2: "B) It helps reduce load time",
+    choice3: "C) It improves readability and reduces clutter",
+    choice4: "D) It should always be filled with text",
+    answer: 3,
+    explanation: "White space (or negative space) makes the layout more breathable, guiding the viewer's attention and avoiding visual overload."
+  },
+  {
+    question: "When choosing colors for charts, which guideline should you follow?",
+    choice1: "A) Use as many bright colors as possible",
+    choice2: "B) Use consistent color schemes and avoid red-green combinations",
+    choice3: "C) Use dark backgrounds and neon fonts",
+    choice4: "D) Change colors randomly for variety",
+    answer: 2,
+    explanation: "Consistent, colorblind-friendly palettes help ensure accessibility and maintain visual consistency across charts."
+  },
+  {
+    question: "What does 'chartjunk' refer to?",
+    choice1: "A) Minimalist design",
+    choice2: "B) Informative labels",
+    choice3: "C) Unnecessary visual clutter like 3D effects or patterns",
+    choice4: "D) Clean legends",
+    answer: 3,
+    explanation: "Chartjunk refers to visual elements that don't enhance understanding and can distract viewers from the core message."
+  },
+  {
+    question: "Which chart type is best for showing parts of a whole, especially with a few categories?",
+    choice1: "A) Bar chart",
+    choice2: "B) Scatter plot",
+    choice3: "C) Pie chart",
+    choice4: "D) Line chart",
+    answer: 3,
+    explanation: "Pie charts are suitable for showing proportional relationships when there are limited categories (ideally <6)."
+  },
+  {
+    question: "Which layout practice improves user engagement on a dashboard?",
+    choice1: "A) Display everything in one screen with no scroll",
+    choice2: "B) Group related visuals and use consistent alignment",
+    choice3: "C) Randomly position charts for variety",
+    choice4: "D) Use small font sizes to save space",
+    answer: 2,
+    explanation: "Logical grouping and alignment help users navigate dashboards naturally, improving usability and comprehension."
+  },
+  {
+    question: "How should titles and labels be used in visualizations?",
+    choice1: "A) Avoid them to save space",
+    choice2: "B) Use acronyms and jargon",
+    choice3: "C) Provide clear, concise titles and axis labels",
+    choice4: "D) Use titles in all caps for emphasis",
+    answer: 3,
+    explanation: "Descriptive titles and clear labels guide interpretation and help users quickly understand what they're seeing."
+  },
+  {
+    question: "For dashboards viewed by non-technical users, what's the best approach?",
+    choice1: "A) Include code and SQL queries",
+    choice2: "B) Add detailed statistical formulas",
+    choice3: "C) Use plain language and intuitive visuals",
+    choice4: "D) Show all raw data in tables",
+    answer: 3,
+    explanation: "Using simple language, interactive visuals, and intuitive design ensures that all stakeholders, technical or not, can understand the insights."
+  },
+  {
+    question: "What is the best color scheme for visualizing data with emphasis on accessibility?",
+    choice1: "A) Rainbow gradients",
+    choice2: "B) Red-green contrasts",
+    choice3: "C) Monochrome or colorblind-friendly palettes",
+    choice4: "D) Fluorescent backgrounds",
+    answer: 3,
+    explanation: "Colorblind-friendly palettes (like Color Universal Design) ensure charts are accessible to all, including those with color vision deficiencies."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='vislev7.html'">Go to Level 7 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'vislev6.html'; // Redirect to Level 2 directly
+}
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
+

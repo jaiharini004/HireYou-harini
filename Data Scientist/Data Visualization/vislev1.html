@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visualization level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 1</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "Why is data visualization important in data analysis?",
+    choice1: "A) It reduces the need for data storage",
+    choice2: "B) It makes complex data easier to understand",
+    choice3: "C) It eliminates the need for data collection",
+    choice4: "D) It replaces data cleaning",
+    answer: 2,
+    explanation: "Data visualization transforms complex datasets into visual formats like graphs or charts, making patterns and insights easier to understand and communicate."
+  },
+  {
+    question: "Which of the following is best for showing trends over time?",
+    choice1: "A) Bar Chart",
+    choice2: "B) Pie Chart",
+    choice3: "C) Line Chart",
+    choice4: "D) Scatter Plot",
+    answer: 3,
+    explanation: "Line charts are ideal for showing how data changes over continuous intervals like time (e.g., monthly sales)."
+  },
+  {
+    question: "When should you use a bar chart?",
+    choice1: "A) To show proportions of a whole",
+    choice2: "B) To show relationships between two numeric variables",
+    choice3: "C) To compare discrete categories",
+    choice4: "D) To display time series data",
+    answer: 3,
+    explanation: "Bar charts are used to compare quantities across different categories, such as sales per product."
+  },
+  {
+    question: "Which chart type is least effective for comparing many categories?",
+    choice1: "A) Pie Chart",
+    choice2: "B) Bar Chart",
+    choice3: "C) Dot Plot",
+    choice4: "D) Column Chart",
+    answer: 1,
+    explanation: "Pie charts become cluttered and hard to interpret with many slices. Bar charts handle multiple categories more effectively."
+  },
+  {
+    question: "What does visual storytelling help achieve?",
+    choice1: "A) Adds noise to data",
+    choice2: "B) Automates model training",
+    choice3: "C) Guides users toward key insights",
+    choice4: "D) Reduces memory usage",
+    answer: 3,
+    explanation: "Visual storytelling helps users understand context, see patterns, and focus on key messages in data presentations."
+  },
+  {
+    question: "A histogram is best used to:",
+    choice1: "A) Compare parts of a whole",
+    choice2: "B) Show data distribution",
+    choice3: "C) Show relationships",
+    choice4: "D) Compare categorical variables",
+    answer: 2,
+    explanation: "Histograms show how values are distributed over intervals, which is ideal for analyzing frequency distributions."
+  },
+  {
+    question: "When should you use a scatter plot?",
+    choice1: "A) To show how categories relate to percentages",
+    choice2: "B) To visualize a correlation between two continuous variables",
+    choice3: "C) To show time series data",
+    choice4: "D) To summarize categorical data",
+    answer: 2,
+    explanation: "Scatter plots are great for spotting patterns or correlations between two numeric variables, like height vs. weight."
+  },
+  {
+    question: "What principle should guide chart selection?",
+    choice1: "A) The most colorful chart is always best",
+    choice2: "B) Choose the chart that tells your story clearly",
+    choice3: "C) Use 3D effects for better engagement",
+    choice4: "D) Always use pie charts for simplicity",
+    answer: 2,
+    explanation: "Charts should be chosen based on their ability to represent data clearly and support the narrative you want to convey."
+  },
+  {
+    question: "A pie chart is most effective when:",
+    choice1: "A) Comparing many variables",
+    choice2: "B) Showing time-based changes",
+    choice3: "C) Showing part-to-whole relationships for a few categories",
+    choice4: "D) Showing data trends",
+    answer: 3,
+    explanation: "Pie charts work well when visualizing proportions of a whole for a small number of categories (ideally under 6)."
+  },
+  {
+    question: "Which visualization is ideal for showing correlation between two variables?",
+    choice1: "A) Pie Chart",
+    choice2: "B) Bar Chart",
+    choice3: "C) Scatter Plot",
+    choice4: "D) Line Chart",
+    answer: 3,
+    explanation: "Scatter plots clearly show the relationship between two continuous variables, helping identify correlations or patterns."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='vislev2.html'">Go to Level 2 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'vislev1.html'; // Redirect to Level 2 directly
+}
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
+

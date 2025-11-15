@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visualization level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 4</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is one key advantage of Plotly over Matplotlib and Seaborn?",
+    choice1: "A) Faster computation",
+    choice2: "B) Simpler syntax",
+    choice3: "C) Interactive and web-friendly visualizations",
+    choice4: "D) More built-in color palettes",
+    answer: 3,
+    explanation: "Plotly specializes in building interactive, browser-based visualizations that can be easily embedded into web apps and dashboards."
+  },
+  {
+    question: "Which module is used to create interactive plots in Plotly with Python?",
+    choice1: "A) plotly.tools",
+    choice2: "B) plotly.graph_objs",
+    choice3: "C) plotly.interactive",
+    choice4: "D) plotly.charts",
+    answer: 2,
+    explanation: "plotly.graph_objs is the main module used for creating chart components like traces and layouts."
+  },
+  {
+    question: "What is the function used to create a basic interactive line chart in Plotly Express?",
+    choice1: "A) px.lineplot()",
+    choice2: "B) px.chart.line()",
+    choice3: "C) px.line()",
+    choice4: "D) px.linegraph()",
+    answer: 3,
+    explanation: "px.line() is the correct function in Plotly Express to create line charts with minimal syntax."
+  },
+  {
+    question: "How do you create a scatter plot using Plotly Express?",
+    choice1: "A) px.scatterplot()",
+    choice2: "B) px.scatter()",
+    choice3: "C) px.points()",
+    choice4: "D) px.dotplot()",
+    answer: 2,
+    explanation: "px.scatter() creates interactive scatter plots using x and y data, optionally with size, color, and hover data."
+  },
+  {
+    question: "Which method is used to render Plotly charts in Jupyter notebooks?",
+    choice1: "A) plotly.offline.render()",
+    choice2: "B) plotly.show()",
+    choice3: "C) fig.display()",
+    choice4: "D) fig.show()",
+    answer: 4,
+    explanation: "Calling fig.show() on a Plotly figure opens the interactive chart directly in the notebook or browser."
+  },
+  {
+    question: "How do you create a 3D scatter plot using Plotly Express?",
+    choice1: "A) px.scatter_3d()",
+    choice2: "B) px.scatter3d()",
+    choice3: "C) px.3dscatter()",
+    choice4: "D) px.3Dplot()",
+    answer: 1,
+    explanation: "px.scatter_3d() creates a 3D scatter plot where you can specify x, y, and z dimensions for the data."
+  },
+  {
+    question: "Which Plotly feature allows you to add interactive dropdowns and sliders to charts?",
+    choice1: "A) Widgets",
+    choice2: "B) Layout controls",
+    choice3: "C) updatemenus",
+    choice4: "D) ButtonAPI",
+    answer: 3,
+    explanation: "updatemenus in the Plotly layout allows you to add dropdowns or buttons to filter/change chart views interactively."
+  },
+  {
+    question: "What type of object does plotly.graph_objects.Figure() create?",
+    choice1: "A) Only bar charts",
+    choice2: "B) Static visual",
+    choice3: "C) A container for multiple plot traces",
+    choice4: "D) Table data",
+    answer: 3,
+    explanation: "The Figure object can hold multiple traces (like lines, bars, etc.) and layout customizations for interactive plots."
+  },
+  {
+    question: "What’s a common use of Plotly Dash?",
+    choice1: "A) Real-time data scraping",
+    choice2: "B) Building REST APIs",
+    choice3: "C) Creating interactive web dashboards",
+    choice4: "D) Deep learning models",
+    answer: 3,
+    explanation: "Dash, by Plotly, is a Python framework that lets you build web apps and dashboards with interactive charts and controls."
+  },
+  {
+    question: "Which of the following can not be added directly to a Plotly chart?",
+    choice1: "A) Tooltips",
+    choice2: "B) Animations",
+    choice3: "C) SQL queries",
+    choice4: "D) Hover effects",
+    answer: 3,
+    explanation: "Plotly charts can include tooltips, animations, and interactivity, but SQL queries must be handled separately in the backend before plotting."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='vislev5.html'">Go to Level 5 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'vislev4.html'; // Redirect to Level 2 directly
+}
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
+
