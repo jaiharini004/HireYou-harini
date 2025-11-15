@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 4 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 3</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+
+const questions = [
+  {
+    question: "Which component ensures feature values are up-to-date in an online store?",
+    choice1: "A) Data drift detector",
+    choice2: "B) Feature materialization job",
+    choice3: "C) Model trainer",
+    choice4: "D) Hyperparameter tuner",
+    answer: 2,
+    explanation: "Feature materialization jobs compute and push the latest feature values into the online store to ensure freshness."
+  },
+  {
+    question: "How does a feature store help in feature reuse?",
+    choice1: "A) By storing all models in one place",
+    choice2: "B) By enabling developers to share and use previously defined features",
+    choice3: "C) By storing training logs",
+    choice4: "D) By re-training the model automatically",
+    answer: 2,
+    explanation: "Feature stores promote reusability by making existing, validated features discoverable and shareable across teams."
+  },
+  {
+    question: "What is one major benefit of using a feature store for data scientists?",
+    choice1: "A) It automatically builds neural networks",
+    choice2: "B) It handles cloud billing optimization",
+    choice3: "C) It provides consistent access to production-grade features",
+    choice4: "D) It improves GPU performance",
+    answer: 3,
+    explanation: "Feature stores give data scientists easy access to clean, consistent, and production-ready features to accelerate development."
+  },
+  {
+    question: "In Feast, what defines how data is loaded into a Feature View?",
+    choice1: "A) Training job",
+    choice2: "B) Entity type",
+    choice3: "C) Data source configuration",
+    choice4: "D) Redis instance",
+    answer: 3,
+    explanation: "Each Feature View in Feast is linked to a data source (e.g., a table or stream) that defines how features are loaded."
+  },
+  {
+    question: "Which of the following best describes 'training-serving skew'?",
+    choice1: "A) A mismatch in model accuracy across datasets",
+    choice2: "B) Using different versions of models",
+    choice3: "C) Using different feature logic for training and serving",
+    choice4: "D) A latency issue in feature retrieval",
+    answer: 3,
+    explanation: "Training-serving skew occurs when the logic used to generate features differs between training and inference, potentially degrading model performance."
+  },
+  {
+    question: "Which of the following is a benefit of centralized feature storage?",
+    choice1: "A) Better GPU utilization",
+    choice2: "B) Consistent and versioned features across teams",
+    choice3: "C) Auto-scaling of ML models",
+    choice4: "D) Reduced data labeling effort",
+    answer: 2,
+    explanation: "Centralized feature storage ensures version control, avoids duplication, and enables easy collaboration across teams."
+  },
+  {
+    question: "In MLOps, how can a feature store improve monitoring?",
+    choice1: "A) By logging model metrics",
+    choice2: "B) By tracking how features are created and used",
+    choice3: "C) By retraining models automatically",
+    choice4: "D) By improving logging latency",
+    answer: 2,
+    explanation: "Feature stores track feature lineage, statistics, and access logs, making it easier to monitor data quality and model inputs."
+  },
+  {
+    question: "Which type of store is ideal for storing features used in batch training?",
+    choice1: "A) Online store",
+    choice2: "B) NoSQL store",
+    choice3: "C) Offline store",
+    choice4: "D) Graph store",
+    answer: 3,
+    explanation: "Offline stores are optimized for high-throughput batch processing, making them ideal for training models."
+  },
+  {
+    question: "How does a feature store support versioning?",
+    choice1: "A) By keeping only the latest version",
+    choice2: "B) By tagging models with timestamps",
+    choice3: "C) By allowing multiple versions of the same feature to coexist",
+    choice4: "D) By automatically updating all models",
+    answer: 3,
+    explanation: "Feature stores support versioning by maintaining historical versions of features, which helps with reproducibility and debugging."
+  },
+  {
+    question: "Which statement about feature lineage is true?",
+    choice1: "A) It tracks the accuracy of models",
+    choice2: "B) It maps how a feature was generated from raw data",
+    choice3: "C) It records user preferences",
+    choice4: "D) It logs inference time",
+    answer: 2,
+    explanation: "Feature lineage tracks the transformation steps, data sources, and logic used to compute each feature."
+  }
+];
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='4l4.html'">Go to Level 4 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '4l3.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

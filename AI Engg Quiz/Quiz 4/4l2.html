@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 4 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 2</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "In the ETL process, what does the 'L' stand for?",
+    choice1: "A) Lookup",
+    choice2: "B) Link",
+    choice3: "C) Load",
+    choice4: "D) Launch",
+    answer: 3,
+    explanation: "ETL stands for Extract, Transform, Load. Data is loaded into the destination system after transformation."
+  },
+  {
+    question: "How does ELT differ from ETL in terms of data transformation?",
+    choice1: "A) ELT does not transform data",
+    choice2: "B) ELT transforms data before loading",
+    choice3: "C) ELT transforms data after loading",
+    choice4: "D) ELT transforms data during extraction",
+    answer: 3,
+    explanation: "In ELT, data is first loaded into the data warehouse, and transformation happens there — useful with modern cloud platforms."
+  },
+  {
+    question: "Which of the following is a popular workflow orchestration tool for data pipelines?",
+    choice1: "A) Pandas",
+    choice2: "B) TensorFlow",
+    choice3: "C) Apache Airflow",
+    choice4: "D) Numpy",
+    answer: 3,
+    explanation: "Apache Airflow is a powerful open-source tool for programmatically authoring, scheduling, and monitoring workflows."
+  },
+  {
+    question: "What is a key advantage of using ELT with cloud-based data warehouses?",
+    choice1: "A) More secure than ETL",
+    choice2: "B) Reduces need for scheduling",
+    choice3: "C) Leverages powerful in-warehouse computing for transformations",
+    choice4: "D) Avoids data loading steps",
+    answer: 3,
+    explanation: "ELT takes advantage of modern data warehouses' compute capabilities for fast, scalable transformations."
+  },
+  {
+    question: "What type of data pipeline is most suitable for real-time analytics?",
+    choice1: "A) Batch pipeline",
+    choice2: "B) ETL pipeline",
+    choice3: "C) Streaming pipeline",
+    choice4: "D) ELT pipeline",
+    answer: 3,
+    explanation: "Streaming pipelines process data in near real-time, enabling real-time analytics and decision-making."
+  },
+  {
+    question: "In Apache Airflow, what is a DAG?",
+    choice1: "A) Directed Algorithm Generator",
+    choice2: "B) Data Access Gateway",
+    choice3: "C) Data Aggregation Graph",
+    choice4: "D) Directed Acyclic Graph",
+    answer: 4,
+    explanation: "In Airflow, a DAG represents the workflow of tasks in a directed graph where cycles are not allowed."
+  },
+  {
+    question: "Which of the following tools is an alternative to Apache Airflow for workflow orchestration?",
+    choice1: "A) Scikit-learn",
+    choice2: "B) Luigi",
+    choice3: "C) Kafka",
+    choice4: "D) MongoDB",
+    answer: 2,
+    explanation: "Luigi, developed by Spotify, is another Python package used for building complex pipelines and workflows."
+  },
+  {
+    question: "Which is a major limitation of traditional batch processing pipelines?",
+    choice1: "A) Require distributed systems",
+    choice2: "B) Cannot process large datasets",
+    choice3: "C) High latency in data availability",
+    choice4: "D) Lack of scalability",
+    answer: 3,
+    explanation: "Batch processing processes data at intervals, causing delays (latency) in data availability for analysis."
+  },
+  {
+    question: "What kind of transformation typically happens in the staging area during ETL?",
+    choice1: "A) Indexing and joining only",
+    choice2: "B) Final aggregations",
+    choice3: "C) Intermediate cleansing and reshaping",
+    choice4: "D) Dashboard rendering",
+    answer: 3,
+    explanation: "The staging area in ETL is used for cleaning, validating, and reshaping data before final loading."
+  },
+  {
+    question: "Which component in a data pipeline is responsible for ensuring tasks execute in the correct sequence?",
+    choice1: "A) Data warehouse",
+    choice2: "B) Scheduler",
+    choice3: "C) API Gateway",
+    choice4: "D) Load balancer",
+    answer: 2,
+    explanation: "A scheduler (like Airflow’s scheduler) ensures tasks are triggered in the defined order with proper dependencies."
+  }
+];
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='4l3.html'">Go to Level 3 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '4l2.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

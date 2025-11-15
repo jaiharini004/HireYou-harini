@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 4 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+
+const questions = [
+  {
+    question: "What is concept drift in machine learning?",
+    choice1: "A) Increase in training time",
+    choice2: "B) Change in the input data format",
+    choice3: "C) Change in the statistical relationship between input and output variables over time",
+    choice4: "D) Model overfitting",
+    answer: 3,
+    explanation: "Concept drift refers to changes in the underlying patterns the model learned from, affecting prediction accuracy."
+  },
+  {
+    question: "What is data drift?",
+    choice1: "A) Sudden model failure",
+    choice2: "B) Change in data distribution over time",
+    choice3: "C) Low latency in predictions",
+    choice4: "D) Increase in model size",
+    answer: 2,
+    explanation: "Data drift occurs when the distribution of input data during inference differs from training data, leading to degraded performance."
+  },
+  {
+    question: "Which metric is most useful to detect model latency issues in production?",
+    choice1: "A) Accuracy",
+    choice2: "B) F1 Score",
+    choice3: "C) Response time",
+    choice4: "D) ROC-AUC",
+    answer: 3,
+    explanation: "Response time measures how quickly a model provides predictions, which is key to monitoring latency."
+  },
+  {
+    question: "Which of the following tools is commonly used for monitoring and alerting in ML pipelines?",
+    choice1: "A) Jupyter Notebook",
+    choice2: "B) Pandas",
+    choice3: "C) Prometheus + Grafana",
+    choice4: "D) Scikit-learn",
+    answer: 3,
+    explanation: "Prometheus is used to collect metrics, and Grafana is used to visualize and alert on them."
+  },
+  {
+    question: "What is one way to detect concept drift in deployed models?",
+    choice1: "A) Only track memory usage",
+    choice2: "B) Monitor prediction accuracy over time",
+    choice3: "C) Remove input features",
+    choice4: "D) Use dropout in the model",
+    answer: 2,
+    explanation: "A decline in accuracy over time can signal concept drift."
+  },
+  {
+    question: "Which of the following best describes model degradation?",
+    choice1: "A) Improved model speed",
+    choice2: "B) Increased model accuracy",
+    choice3: "C) Decline in model performance in production over time",
+    choice4: "D) Reduced model size",
+    answer: 3,
+    explanation: "Model degradation refers to a drop in performance due to drift or system-related issues."
+  },
+  {
+    question: "Why is monitoring input feature distribution important in production ML systems?",
+    choice1: "A) Helps reduce training time",
+    choice2: "B) Ensures faster inference",
+    choice3: "C) Detects data drift",
+    choice4: "D) Improves UI",
+    answer: 3,
+    explanation: "Monitoring the distribution of input features helps identify data drift before it affects model performance."
+  },
+  {
+    question: "What is the role of alerting systems in model monitoring?",
+    choice1: "A) Training models automatically",
+    choice2: "B) Scaling the application",
+    choice3: "C) Notifying stakeholders of anomalies or drift",
+    choice4: "D) Compressing the model",
+    answer: 3,
+    explanation: "Alerting systems notify teams when metrics go out of bounds, indicating potential issues with the model."
+  },
+  {
+    question: "Which of the following can be a sign of concept drift?",
+    choice1: "A) Constant accuracy",
+    choice2: "B) Reduced training time",
+    choice3: "C) Increasing prediction errors over time",
+    choice4: "D) Low memory usage",
+    answer: 3,
+    explanation: "A gradual or sudden increase in prediction errors might signal a shift in underlying data relationships."
+  },
+  {
+    question: "What is shadow deployment in model monitoring?",
+    choice1: "A) Deploying models at night",
+    choice2: "B) Deploying models without version control",
+    choice3: "C) Running a new model in parallel without affecting production",
+    choice4: "D) Replacing old models instantly",
+    answer: 3,
+    explanation: "Shadow deployment allows testing a new model’s performance in production without impacting user experience."
+  }
+];
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='4l10.html'">Go to Level 10 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '4l9.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
