@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Context Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 7</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "If a prompt consists of 350 tokens for instruction and 100 tokens for the input, and the model’s token limit is 4096, how many tokens remain for the output?",
+    choice1: "3746",
+    choice2: "3796",
+    choice3: "4000",
+    choice4: "3846",
+    answer: 1,
+    explanation: "4096 - (350 + 100) = 3746 tokens left for output."
+  },
+  {
+    question: "A task requires summarizing 5 articles, each with 500 tokens. The model allows 2048 tokens in total. How many tokens are used for context and how many remain for the output?",
+    choice1: "2500 tokens used, 548 remain",
+    choice2: "2500 tokens used, 1000 remain",
+    choice3: "500 tokens used, 1548 remain",
+    choice4: "1000 tokens used, 1048 remain",
+    answer: 1,
+    explanation: "5 articles × 500 tokens = 2500 tokens used for context. 2048 - 2500 = 548 tokens remain for output."
+  },
+  {
+    question: "In prompt chaining, if each step uses 200 tokens and the process includes 7 steps, how many tokens will be used in total for the task?",
+    choice1: "1300",
+    choice2: "1500",
+    choice3: "1400",
+    choice4: "1600",
+    answer: 3,
+    explanation: "7 steps × 200 tokens = 1400 tokens used for the entire process."
+  },
+  {
+    question: "How can excessive token usage in chained prompts affect the model’s output?",
+    choice1: "Increases token generation",
+    choice2: "Reduces the ability to remember prior context",
+    choice3: "Increases output quality",
+    choice4: "Reduces computational load",
+    answer: 2,
+    explanation: "Too many tokens can exceed the model’s token limit, causing a loss of important context and affecting output quality."
+  },
+  {
+    question: "If you are chaining 5 prompts, each with 150 tokens, and the model’s token limit is 4096, how many tokens are left for output?",
+    choice1: "2500",
+    choice2: "4000",
+    choice3: "3076",
+    choice4: "2200",
+    answer: 3,
+    explanation: "5 × 150 = 750 tokens for context. 4096 - 750 = 3076 tokens for output."
+  },
+  {
+    question: "If a model’s token limit is 2048, and you use a 400-token context, how many steps of prompt chaining can you fit if each step requires 120 tokens?",
+    choice1: "12",
+    choice2: "14",
+    choice3: "15",
+    choice4: "10",
+    answer: 2,
+    explanation: "2048 - 400 = 1648 tokens for output. 1648 ÷ 120 = 13.73 steps, so 13 full steps are possible."
+  },
+  {
+    question: "What is the maximum number of examples that can be included in a few-shot prompt if the model’s token limit is 4096 and each example is 100 tokens long (with a 200-token instruction)?",
+    choice1: "39",
+    choice2: "38",
+    choice3: "37",
+    choice4: "40",
+    answer: 2,
+    explanation: "4096 - 200 = 3896 tokens left. 3896 ÷ 100 = 38 examples that can be included."
+  },
+  {
+    question: "How does prompt chaining help when dealing with a 512-token limit per prompt?",
+    choice1: "Increases prompt size",
+    choice2: "Decreases prompt complexity",
+    choice3: "Divides the task into manageable parts",
+    choice4: "Reduces the number of tokens required",
+    answer: 3,
+    explanation: "Prompt chaining breaks down a task into smaller parts, each fitting within the token limit."
+  },
+  {
+    question: "If you are using a prompt with a 100-token context and each of 10 chained steps uses 50 tokens, how many tokens does the whole process consume?",
+    choice1: "600",
+    choice2: "700",
+    choice3: "550",
+    choice4: "500",
+    answer: 2,
+    explanation: "10 × 50 tokens = 500 tokens for 10 steps. 100 tokens for context. 100 + 500 = 700 tokens total."
+  },
+  {
+    question: "In a task where each step of prompt chaining requires 250 tokens and 6 steps are used, how many tokens will be needed for the entire process?",
+    choice1: "1500",
+    choice2: "1600",
+    choice3: "1400",
+    choice4: "1200",
+    answer: 1,
+    explanation: "6 × 250 = 1500 tokens needed."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='conlev8.html'">Go to Level 8 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'conlev7.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>

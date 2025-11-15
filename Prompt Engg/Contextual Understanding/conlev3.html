@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Context Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 3</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "If a prompt includes 200 tokens of context and the model limit is 4096 tokens, how many tokens remain for the output?",
+    choice1: "3896",
+    choice2: "1900",
+    choice3: "4096",
+    choice4: "2000",
+    answer: 1,
+    explanation: "4096 (total limit) - 200 (prompt context) = 3896 tokens left for output."
+  },
+  {
+    question: "Why is prompt chaining helpful when context token limits are exceeded?",
+    choice1: "It reduces model memory",
+    choice2: "It allows breaking tasks into smaller prompts",
+    choice3: "It expands token limits",
+    choice4: "It resets the model",
+    answer: 2,
+    explanation: "Chaining helps divide tasks across multiple prompts, staying within token limits."
+  },
+  {
+    question: "A model outputs 100 tokens per prompt. How many chained prompts are needed to process a 600-token summary task?",
+    choice1: "2",
+    choice2: "3",
+    choice3: "4",
+    choice4: "6",
+    answer: 4,
+    explanation: "600 ÷ 100 = 6 chained prompts required to handle the summary."
+  },
+  {
+    question: "Which part of a prompt helps maintain contextual clarity?",
+    choice1: "Random facts",
+    choice2: "Consistent formatting and clear instructions",
+    choice3: "Unrelated content",
+    choice4: "Hashtags",
+    answer: 2,
+    explanation: "Clear format and structured layout maintain clarity for the model."
+  },
+  {
+    question: "Which format best supports contextual understanding?",
+    choice1: "Just a question",
+    choice2: "A command with no subject",
+    choice3: "Instruction + Example + Input",
+    choice4: "Input + Emoji",
+    answer: 3,
+    explanation: "Structured formats improve comprehension and relevance."
+  },
+  {
+    question: "How does using bullet points in a prompt help?",
+    choice1: "Makes prompt longer",
+    choice2: "Confuses the model",
+    choice3: "Improves readability and organization",
+    choice4: "Adds decoration",
+    answer: 3,
+    explanation: "Organized text improves model’s ability to follow context."
+  },
+  {
+    question: "If each example in few-shot prompting uses 50 tokens and you include 4 examples, how many tokens are used for examples?",
+    choice1: "150",
+    choice2: "100",
+    choice3: "200",
+    choice4: "250",
+    answer: 3,
+    explanation: "4 × 50 = 200 tokens used by examples."
+  },
+  {
+    question: "Which sequence best represents a prompt chaining structure?",
+    choice1: "Prompt → Restart → Prompt",
+    choice2: "Prompt → Output → Next Prompt → Final Output",
+    choice3: "Prompt → Repeat Prompt",
+    choice4: "Prompt → Guess",
+    answer: 2,
+    explanation: "Chaining involves using one output as the next prompt’s input."
+  },
+  {
+    question: "Which prompt is likely to lack context?",
+    choice1: "\"Rewrite the sentence to be formal: 'Hey dude, what's up?'\"",
+    choice2: "\"What do you think?\"",
+    choice3: "\"Summarize the below article.\"",
+    choice4: "\"Translate: 'Bonjour'\"",
+    answer: 2,
+    explanation: "“What do you think?” lacks clear instruction and subject context."
+  },
+  {
+    question: "What is a potential issue with excessive prompt chaining?",
+    choice1: "Context confusion",
+    choice2: "Fewer outputs",
+    choice3: "More clarity",
+    choice4: "Faster execution",
+    answer: 1,
+    explanation: "Too many chains without clarity can confuse the model."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='conlev4.html'">Go to Level 4 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'conlev3.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>

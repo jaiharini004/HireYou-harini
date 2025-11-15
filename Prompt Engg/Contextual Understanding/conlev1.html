@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Context Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 1</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What does \"context\" mean in prompt engineering?",
+    choice1: "The language model's training data",
+    choice2: "The environment the model is run in",
+    choice3: "The information given in the prompt",
+    choice4: "The size of the model",
+    answer: 3,
+    explanation: "In prompt engineering, context refers to the information provided within the prompt that guides the model's response."
+  },
+  {
+    question: "What is prompt chaining?",
+    choice1: "Training the model again",
+    choice2: "Linking multiple prompts together to solve a complex task",
+    choice3: "Asking the same question repeatedly",
+    choice4: "Rewriting a prompt in simpler words",
+    answer: 2,
+    explanation: "Prompt chaining is a technique where the output of one prompt is fed into the next to perform multi-step reasoning or tasks."
+  },
+  {
+    question: "Why is context important in prompts?",
+    choice1: "It makes the prompt longer",
+    choice2: "It allows the model to predict future inputs",
+    choice3: "It helps the model generate relevant and accurate responses",
+    choice4: "It increases model size",
+    answer: 3,
+    explanation: "A well-structured context ensures the model understands what the user wants, leading to better outputs."
+  },
+  {
+    question: "Which of these is an example of prompt chaining?",
+    choice1: "Giving multiple examples in one prompt",
+    choice2: "Asking unrelated questions one after the other",
+    choice3: "Using the answer from one prompt as input to the next",
+    choice4: "Providing random text as input",
+    answer: 3,
+    explanation: "Prompt chaining connects outputs to new prompts, enabling step-by-step reasoning or transformation."
+  },
+  {
+    question: "What kind of prompts benefit most from context?",
+    choice1: "Yes/no questions",
+    choice2: "Simple math problems",
+    choice3: "Complex, multi-step tasks",
+    choice4: "Any prompt without instruction",
+    answer: 3,
+    explanation: "Complex tasks require more background information or prior steps, which context provides."
+  },
+  {
+    question: "Which of these improves contextual understanding?",
+    choice1: "Removing all prior instructions",
+    choice2: "Using clear, concise descriptions of the task",
+    choice3: "Asking multiple tasks in one prompt",
+    choice4: "Avoiding punctuation",
+    answer: 2,
+    explanation: "Clear task descriptions help the model understand and act accurately on the user’s intent."
+  },
+  {
+    question: "How does prompt chaining help with summarization?",
+    choice1: "It replaces summarization",
+    choice2: "It allows the model to hallucinate",
+    choice3: "It breaks down the text into parts and summarizes each step",
+    choice4: "It removes important content",
+    answer: 3,
+    explanation: "Prompt chaining enables summarizing large content by breaking it down into manageable steps."
+  },
+  {
+    question: "In prompt chaining, what is the role of each chain link?",
+    choice1: "Reset the task",
+    choice2: "Generate final results directly",
+    choice3: "Perform a sub-task toward solving the main task",
+    choice4: "Confuse the model",
+    answer: 3,
+    explanation: "Each link in the chain handles a part of the process, contributing to the full solution."
+  },
+  {
+    question: "Which of these is not a benefit of prompt chaining?",
+    choice1: "Enhanced control",
+    choice2: "Better interpretability",
+    choice3: "Reduces complexity",
+    choice4: "Increased hallucination",
+    answer: 4,
+    explanation: "Prompt chaining often reduces hallucination by guiding the model step-by-step."
+  },
+  {
+    question: "A user wants the model to summarize, then analyze tone. Which technique is suitable?",
+    choice1: "Zero-shot learning",
+    choice2: "Prompt chaining",
+    choice3: "Token padding",
+    choice4: "Context removal",
+    answer: 2,
+    explanation: "First summarize (prompt 1), then feed that into a second prompt to analyze tone (prompt 2)."
+  }
+];
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='conlev2.html'">Go to Level 2 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'conlev1.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Context Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 8</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions=[
+{
+  question: "A multi-step task requires you to generate 3 different summaries of an article in sequence. If each summary step requires 350 tokens, how many total tokens will be used for the task (excluding the initial input)?",
+  choice1: "1050",
+  choice2: "1200",
+  choice3: "1100",
+  choice4: "1150",
+  answer: 1,
+  explanation: "3 × 350 = 1050 tokens used for the summaries."
+},
+{
+  question: "If you need to chain 5 prompts with 80 tokens each, how many tokens will be consumed for the entire task, assuming a 200-token context?",
+  choice1: "700",
+  choice2: "900",
+  choice3: "1000",
+  choice4: "1200",
+  answer: 2,
+  explanation: "5 × 80 = 400 tokens for prompts. 200 tokens for context. 400 + 200 = 900 tokens total."
+},
+{
+  question: "A prompt uses 300 tokens for context. If each chained step uses 100 tokens, how many steps can you fit within a 2048-token model limit?",
+  choice1: "15",
+  choice2: "16",
+  choice3: "17",
+  choice4: "18",
+  answer: 2,
+  explanation: "2048 - 300 = 1748 tokens for output. 1748 ÷ 100 = 17 steps (round down to 16)."
+},
+{
+  question: "What happens if the prompt chaining process exceeds the token limit?",
+  choice1: "The task will fail, and no output is generated",
+  choice2: "The prompt context will be truncated",
+  choice3: "The model will stop generating responses",
+  choice4: "The model will automatically reduce the output length",
+  answer: 2,
+  explanation: "If the token limit is exceeded, the model truncates the context to fit within the limit."
+},
+{
+  question: "If each chained prompt requires 150 tokens and you chain 8 prompts together, how many tokens will be consumed?",
+  choice1: "1200",
+  choice2: "1100",
+  choice3: "1300",
+  choice4: "1400",
+  answer: 1,
+  explanation: "8 × 150 = 1200 tokens used for chaining."
+},
+{
+  question: "A complex task requires 100 tokens for input and 100 tokens for context. If the model allows 2048 tokens, how many tokens are available for output?",
+  choice1: "1848",
+  choice2: "1700",
+  choice3: "2000",
+  choice4: "1900",
+  answer: 1,
+  explanation: "2048 - (100 + 100) = 1848 tokens remain for output."
+},
+{
+  question: "How many steps can be chained if each step consumes 90 tokens and the total token limit is 4096 with a 500-token input?",
+  choice1: "40",
+  choice2: "45",
+  choice3: "46",
+  choice4: "43",
+  answer: 2,
+  explanation: "4096 - 500 = 3596 tokens left. 3596 ÷ 90 = 39.95 → 45 steps can fit."
+},
+{
+  question: "What happens when chained prompts exceed the model’s token limit?",
+  choice1: "The output becomes random",
+  choice2: "The context is truncated and may lose essential information",
+  choice3: "The prompt is discarded",
+  choice4: "The model resets and starts over",
+  answer: 2,
+  explanation: "Truncation of context can cause loss of information, resulting in incomplete or inaccurate responses."
+},
+{
+  question: "If each prompt in a chain requires 200 tokens and you have 1500 tokens available after context, how many prompts can you chain?",
+  choice1: "6",
+  choice2: "7",
+  choice3: "8",
+  choice4: "5",
+  answer: 2,
+  explanation: "1500 ÷ 200 = 7 full prompts can be chained."
+},
+{
+  question: "How would reducing context by 50 tokens in a task with a 1000-token output affect the total token consumption for a prompt chain of 10 steps?",
+  choice1: "It will allow for 5 more steps",
+  choice2: "It will reduce output",
+  choice3: "It will reduce total token usage",
+  choice4: "It will have no effect",
+  answer: 3,
+  explanation: "Reducing context frees up tokens for other parts of the prompt, reducing overall consumption."
+}
+
+
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='conlev9.html'">Go to Level 9 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'conlev8.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>

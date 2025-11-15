@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Context Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+    const questions=[
+  {
+    question: "In a chain of 4 steps, each using 300 tokens, if the total token budget is 8192, how many tokens are left for output after allocating 800 tokens for context?",
+    choice1: "4700",
+    choice2: "4600",
+    choice3: "5000",
+    choice4: "4900",
+    answer: 1,
+    explanation: "4 × 300 = 1200 tokens for the steps. 800 tokens for context. 8192 - (1200 + 800) = 4700 tokens left for output."
+  },
+  {
+    question: "If a model’s token limit is 4096 and you allocate 600 tokens for input and 300 tokens per step in a chain of 7 steps, how many tokens are left for output?",
+    choice1: "1546",
+    choice2: "1300",
+    choice3: "1400",
+    choice4: "1200",
+    answer: 1,
+    explanation: "7 × 300 = 2100 tokens for the steps. 600 tokens for input. 4096 - (2100 + 600) = 1546 tokens left for output."
+  },
+  {
+    question: "If each prompt in a chain uses 500 tokens and the model has a token limit of 8192, how many prompts can be chained if you allocate 1000 tokens for input?",
+    choice1: "12",
+    choice2: "13",
+    choice3: "14",
+    choice4: "15",
+    answer: 2,
+    explanation: "8192 - 1000 = 7192 tokens for the prompts. 7192 ÷ 500 = 14.38 → 13 full prompts can be chained."
+  },
+  {
+    question: "A model’s token limit is 2048, and you need to chain 5 steps, each consuming 350 tokens. If 200 tokens are reserved for context, how many tokens will be used for the entire process?",
+    choice1: "1500",
+    choice2: "1600",
+    choice3: "1700",
+    choice4: "1800",
+    answer: 3,
+    explanation: "5 × 350 = 1750 tokens for steps. 200 tokens for context. 1750 + 200 = 1950 tokens for the entire process."
+  },
+  {
+    question: "In a task with a token limit of 4096, each chained step requires 300 tokens, and the task uses 500 tokens for input. How many tokens will remain for the output?",
+    choice1: "1896",
+    choice2: "1900",
+    choice3: "2000",
+    choice4: "2100",
+    answer: 1,
+    explanation: "4096 - 500 = 3596 tokens for output. 3596 - (8 × 300) = 1896 tokens for output."
+  },
+  {
+    question: "A task uses 150 tokens for context. If each prompt in a chain consumes 250 tokens and the model allows 8192 tokens, how many prompts can be chained?",
+    choice1: "30",
+    choice2: "31",
+    choice3: "32",
+    choice4: "33",
+    answer: 2,
+    explanation: "8192 - 150 = 8042 tokens for chaining. 8042 ÷ 250 = 32.17 → 31 full prompts can be chained."
+  },
+  {
+    question: "If the task requires 500 tokens for input, each prompt in a chain consumes 200 tokens, and the total token budget is 4096, how many prompts can you chain?",
+    choice1: "17",
+    choice2: "18",
+    choice3: "19",
+    choice4: "20",
+    answer: 1,
+    explanation: "4096 - 500 = 3596 tokens for chaining. 3596 ÷ 200 = 17.98 → 17 full prompts can be chained."
+  },
+  {
+    question: "If each chained step requires 150 tokens, and the model has a token limit of 2048, how many steps can be chained if you reserve 250 tokens for context?",
+    choice1: "13",
+    choice2: "14",
+    choice3: "15",
+    choice4: "16",
+    answer: 2,
+    explanation: "2048 - 250 = 1798 tokens for steps. 1798 ÷ 150 = 11.99 → 14 full steps can be chained."
+  },
+  {
+    question: "If each chained prompt consumes 200 tokens, how many total tokens will be used for a task consisting of 10 chained prompts with 500 tokens for context?",
+    choice1: "3000",
+    choice2: "3200",
+    choice3: "3300",
+    choice4: "3500",
+    answer: 2,
+    explanation: "10 × 200 = 2000 tokens for the prompts. 500 tokens for context. 2000 + 500 = 3200 tokens used."
+  },
+  {
+    question: "A task uses 400 tokens for context and requires 300 tokens per step. If the model allows 8192 tokens, how many steps can be chained?",
+    choice1: "26",
+    choice2: "27",
+    choice3: "28",
+    choice4: "29",
+    answer: 1,
+    explanation: "8192 - 400 = 7792 tokens for chaining. 7792 ÷ 300 = 25.97 → 26 steps can be chained."
+  }
+];
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='prompt_engineer.html'">Wowww You Aced it ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'conlev10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
