@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Probability Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is the primary role of a loss function in machine learning?",
+    choice1: "A) To train the model faster",
+    choice2: "B) To normalize the dataset",
+    choice3: "C) To measure the model's prediction error",
+    choice4: "D) To adjust the learning rate",
+    answer: 3,
+    explanation: "A loss function measures how far the model’s predictions are from the actual values. Lower values indicate better performance."
+  },
+  {
+    question: "What is the most commonly used loss function for regression tasks?",
+    choice1: "A) Cross-Entropy Loss",
+    choice2: "B) Mean Squared Error (MSE)",
+    choice3: "C) Hinge Loss",
+    choice4: "D) Binary Loss",
+    answer: 2,
+    explanation: "MSE (Mean Squared Error) is widely used for regression. It penalizes larger errors more by squaring the differences between predicted and actual values."
+  },
+  {
+    question: "Which evaluation metric is appropriate for a classification problem?",
+    choice1: "A) RMSE",
+    choice2: "B) Accuracy",
+    choice3: "C) R² Score",
+    choice4: "D) Mean Absolute Error",
+    answer: 2,
+    explanation: "Accuracy is used in classification tasks to measure the proportion of correct predictions out of total predictions."
+  },
+  {
+    question: "What does the term “bias” refer to in the context of machine learning?",
+    choice1: "A) The size of the training dataset",
+    choice2: "B) Error due to overly complex models",
+    choice3: "C) Error due to overly simplistic assumptions",
+    choice4: "D) Error from too many iterations",
+    answer: 3,
+    explanation: "Bias refers to errors introduced by approximating a real-world problem with a simplified model. High bias can lead to underfitting."
+  },
+  {
+    question: "What is “variance” in the bias-variance tradeoff?",
+    choice1: "A) Error due to too few data points",
+    choice2: "B) Error from inconsistent predictions across datasets",
+    choice3: "C) Error from a constant model",
+    choice4: "D) Error due to low complexity",
+    answer: 2,
+    explanation: "Variance refers to the model’s sensitivity to small fluctuations in the training data. High variance = overfitting."
+  },
+  {
+    question: "Why is the gradient of a loss function important in training models?",
+    choice1: "A) It helps encode the labels",
+    choice2: "B) It tells the model when to stop",
+    choice3: "C) It guides how model parameters should be updated",
+    choice4: "D) It provides data normalization",
+    answer: 3,
+    explanation: "The gradient of the loss function shows the direction and rate of change of the loss with respect to the weights, guiding the optimization process."
+  },
+  {
+    question: "Which metric would be most useful for evaluating imbalanced classification problems?",
+    choice1: "A) Accuracy",
+    choice2: "B) Precision",
+    choice3: "C) Recall",
+    choice4: "D) F1 Score",
+    answer: 4,
+    explanation: "When classes are imbalanced, F1 Score gives a balanced view by combining precision and recall, helping assess true performance."
+  },
+  {
+    question: "What is regularization used for in machine learning models?",
+    choice1: "A) To reduce model bias",
+    choice2: "B) To reduce overfitting by penalizing large weights",
+    choice3: "C) To increase the number of features",
+    choice4: "D) To speed up predictions",
+    answer: 2,
+    explanation: "Regularization (like L1 or L2) adds a penalty for large weight values in the cost function, helping to prevent overfitting."
+  },
+  {
+    question: "Which of the following is a convex loss function?",
+    choice1: "A) Accuracy",
+    choice2: "B) Mean Squared Error",
+    choice3: "C) Hinge Loss",
+    choice4: "D) Both B and C",
+    answer: 4,
+    explanation: "Both MSE and Hinge Loss are convex, which makes them suitable for optimization since convex functions have global minima."
+  },
+  {
+    question: "Why are eigenvalues and eigenvectors useful in machine learning?",
+    choice1: "A) They make models run faster",
+    choice2: "B) They help with data visualization",
+    choice3: "C) They are used in dimensionality reduction (e.g., PCA)",
+    choice4: "D) They eliminate bias in models",
+    answer: 3,
+    explanation: "Eigenvalues and eigenvectors are essential in Principal Component Analysis (PCA), which reduces dimensionality while preserving data variance."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='data_scientist.html'">Wowww You Aced it ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'problev10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

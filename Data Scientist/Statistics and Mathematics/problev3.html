@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Probability Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 3</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What does a 95% confidence interval mean?",
+    choice1: "A) 95% of the population is in the interval",
+    choice2: "B) The sample mean will always fall in the interval",
+    choice3: "C) There's a 95% chance the population parameter lies within the interval",
+    choice4: "D) The sample is 95% accurate",
+    answer: 3,
+    explanation: "A 95% confidence interval means that if we repeated the experiment many times, 95% of the intervals would contain the true population parameter."
+  },
+  {
+    question: "What happens to the width of a confidence interval if the sample size increases?",
+    choice1: "A) It becomes wider",
+    choice2: "B) It remains the same",
+    choice3: "C) It becomes narrower",
+    choice4: "D) It becomes zero",
+    answer: 3,
+    explanation: "Larger samples give more accurate estimates → smaller standard error → narrower confidence intervals."
+  },
+  {
+    question: "What is a p-value in hypothesis testing?",
+    choice1: "A) The chance the null is true",
+    choice2: "B) The chance the alternative is false",
+    choice3: "C) The probability of observing the data, assuming the null is true",
+    choice4: "D) The probability of a Type II error",
+    answer: 3,
+    explanation: "P-value is the probability of obtaining results as extreme as the observed, under the assumption that the null hypothesis is true."
+  },
+  {
+    question: "If the p-value is 0.03 and the significance level (α) is 0.05, what should you do?",
+    choice1: "A) Accept the null hypothesis",
+    choice2: "B) Increase the sample size",
+    choice3: "C) Reject the null hypothesis",
+    choice4: "D) Do nothing",
+    answer: 3,
+    explanation: "Since 0.03 < 0.05, the result is statistically significant → reject the null hypothesis."
+  },
+  {
+    question: "What is the purpose of a sampling distribution?",
+    choice1: "A) To show the population distribution",
+    choice2: "B) To describe variability of sample statistics",
+    choice3: "C) To visualize raw data",
+    choice4: "D) To calculate mean of population",
+    answer: 2,
+    explanation: "Sampling distribution shows how a statistic (like the mean) varies from sample to sample."
+  },
+  {
+    question: "In which case is the Central Limit Theorem most useful?",
+    choice1: "A) When population is small",
+    choice2: "B) When population is normally distributed",
+    choice3: "C) When sampling from any distribution with a large sample size",
+    choice4: "D) When variance is unknown",
+    answer: 3,
+    explanation: "Central Limit Theorem: As sample size increases, the distribution of the sample mean becomes approximately normal, regardless of population shape."
+  },
+  {
+    question: "What does a large p-value (e.g., 0.85) suggest about the null hypothesis?",
+    choice1: "A) Strong evidence against it",
+    choice2: "B) Strong evidence for the alternative",
+    choice3: "C) Not enough evidence to reject it",
+    choice4: "D) Null is definitely true",
+    answer: 3,
+    explanation: "A large p-value suggests we fail to reject the null hypothesis because the observed data is likely under the null."
+  },
+  {
+    question: "Which of the following affects the margin of error in a confidence interval?",
+    choice1: "A) Confidence level",
+    choice2: "B) Sample size",
+    choice3: "C) Population variance",
+    choice4: "D) All of the above",
+    answer: 4,
+    explanation: "Margin of error is influenced by confidence level (z-value), sample size (n), and population variance (σ²)."
+  },
+  {
+    question: "What is the relationship between confidence level and precision?",
+    choice1: "A) Higher confidence = higher precision",
+    choice2: "B) Higher confidence = lower precision",
+    choice3: "C) No relationship",
+    choice4: "D) Precision is not measurable",
+    answer: 2,
+    explanation: "Higher confidence → wider interval → less precision."
+  },
+  {
+    question: "You are testing a new drug. The null hypothesis says the drug has no effect. A small p-value (e.g., 0.01) means:",
+    choice1: "A) The drug definitely works",
+    choice2: "B) There's strong evidence the drug has some effect",
+    choice3: "C) The drug is harmful",
+    choice4: "D) The test is inconclusive",
+    answer: 2,
+    explanation: "A small p-value indicates strong evidence against the null, suggesting the drug does have an effect."
+  }
+];
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='problev4.html'">Go to Level 4 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'problev3.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
+

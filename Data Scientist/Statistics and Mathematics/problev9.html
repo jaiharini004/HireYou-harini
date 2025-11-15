@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Probability Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is the primary goal of gradient descent in machine learning?",
+    choice1: "A) To increase the cost function",
+    choice2: "B) To find the optimal learning rate",
+    choice3: "C) To minimize the cost/loss function",
+    choice4: "D) To perform feature scaling",
+    answer: 3,
+    explanation: "Gradient descent is an optimization algorithm that minimizes the cost function by adjusting model parameters iteratively in the direction of the negative gradient."
+  },
+  {
+    question: "What is a cost (or loss) function?",
+    choice1: "A) A measure of accuracy",
+    choice2: "B) A function to calculate model complexity",
+    choice3: "C) A function to evaluate how well the model performs",
+    choice4: "D) A preprocessing step",
+    answer: 3,
+    explanation: "The cost function quantifies how well a machine learning model is performing by calculating the error between predicted and actual values."
+  },
+  {
+    question: "Which of the following best describes the gradient in gradient descent?",
+    choice1: "A) A scalar indicating the error rate",
+    choice2: "B) A vector pointing toward the local minimum",
+    choice3: "C) A vector pointing in the direction of steepest increase",
+    choice4: "D) A scalar that controls the learning rate",
+    answer: 3,
+    explanation: "The gradient is a vector that points in the direction of steepest ascent. In gradient descent, we move in the opposite direction to minimize the cost."
+  },
+  {
+    question: "What happens if the learning rate is too high?",
+    choice1: "A) The model will converge slowly",
+    choice2: "B) The cost function will always be minimized",
+    choice3: "C) The model may overshoot and never converge",
+    choice4: "D) Training will be more accurate",
+    answer: 3,
+    explanation: "A high learning rate can cause the algorithm to overshoot the minimum, potentially causing it to diverge or bounce around the optimal point."
+  },
+  {
+    question: "Which term refers to reaching the lowest point of a cost function?",
+    choice1: "A) Overfitting",
+    choice2: "B) Convergence",
+    choice3: "C) Gradient explosion",
+    choice4: "D) Epoch completion",
+    answer: 2,
+    explanation: "Convergence occurs when the gradient descent algorithm has found a minimum value of the cost function (ideally global, or at least local)."
+  },
+  {
+    question: "What is the role of the learning rate (α) in gradient descent?",
+    choice1: "A) It defines the number of iterations",
+    choice2: "B) It controls the step size during weight updates",
+    choice3: "C) It measures model accuracy",
+    choice4: "D) It selects features for training",
+    answer: 2,
+    explanation: "The learning rate (α) determines how big the steps are when updating weights — too small = slow, too big = instability."
+  },
+  {
+    question: "What kind of gradient descent computes the gradient over the entire training dataset before each update?",
+    choice1: "A) Mini-batch Gradient Descent",
+    choice2: "B) Stochastic Gradient Descent (SGD)",
+    choice3: "C) Batch Gradient Descent",
+    choice4: "D) Adaptive Gradient Descent",
+    answer: 3,
+    explanation: "Batch Gradient Descent calculates the gradient using the whole dataset for each step, leading to stable but slower updates."
+  },
+  {
+    question: "Which variation of gradient descent is generally faster and more noise-tolerant?",
+    choice1: "A) Newton’s Method",
+    choice2: "B) Stochastic Gradient Descent (SGD)",
+    choice3: "C) Linear Descent",
+    choice4: "D) Full-batch Descent",
+    answer: 2,
+    explanation: "Stochastic Gradient Descent (SGD) updates weights after each training sample, making it faster and more scalable but noisier."
+  },
+  {
+    question: "Why might gradient descent get stuck in a local minimum?",
+    choice1: "A) Because the learning rate is zero",
+    choice2: "B) Because the cost function is non-convex",
+    choice3: "C) Because too many features are used",
+    choice4: "D) Because the dataset is too small",
+    answer: 2,
+    explanation: "In non-convex cost functions, there may be multiple local minima, and gradient descent might converge to a local rather than the global minimum."
+  },
+  {
+    question: "Which optimization technique adapts the learning rate for each parameter during training?",
+    choice1: "A) Linear Regression",
+    choice2: "B) Batch Gradient Descent",
+    choice3: "C) Adam Optimizer",
+    choice4: "D) Polynomial Regression",
+    answer: 3,
+    explanation: "Adam (Adaptive Moment Estimation) automatically adjusts the learning rate for each parameter, improving convergence in complex models."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='problev10.html'">Go to Level 10 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'problev9.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
+

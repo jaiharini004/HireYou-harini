@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Probability Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 5</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "Which of the following is a characteristic of a normal distribution?",
+    choice1: "A) Skewed to the right",
+    choice2: "B) Bell-shaped and symmetric",
+    choice3: "C) Only takes positive values",
+    choice4: "D) Has two peaks",
+    answer: 2,
+    explanation: "The normal distribution is a continuous, bell-shaped, and symmetric distribution centered around the mean."
+  },
+  {
+    question: "The binomial distribution is used when:",
+    choice1: "A) Trials are dependent and infinite",
+    choice2: "B) Each trial has more than two outcomes",
+    choice3: "C) Trials are independent with two possible outcomes",
+    choice4: "D) The data is continuous",
+    answer: 3,
+    explanation: "The binomial distribution models the number of successes in a fixed number of independent Bernoulli trials with two outcomes (success/failure)."
+  },
+  {
+    question: "In a Poisson distribution, the parameter λ represents:",
+    choice1: "A) Mean only",
+    choice2: "B) Variance only",
+    choice3: "C) Both mean and variance",
+    choice4: "D) Standard deviation",
+    answer: 3,
+    explanation: "In a Poisson distribution, the mean (λ) is equal to the variance, making λ the key parameter for both."
+  },
+  {
+    question: "A uniform distribution is best described as:",
+    choice1: "A) Data clustered around the mean",
+    choice2: "B) Skewed right",
+    choice3: "C) Every value in a range has an equal probability",
+    choice4: "D) Increasing probability over time",
+    answer: 3,
+    explanation: "A uniform distribution assigns equal probability to all values within a specified range."
+  },
+  {
+    question: "Which distribution would best model the number of customer calls in a call center per hour?",
+    choice1: "A) Binomial",
+    choice2: "B) Normal",
+    choice3: "C) Poisson",
+    choice4: "D) Uniform",
+    answer: 3,
+    explanation: "The Poisson distribution models the number of events (like phone calls) occurring in a fixed time interval."
+  },
+  {
+    question: "If a variable is normally distributed, about 95% of the data lies within how many standard deviations of the mean?",
+    choice1: "A) 1",
+    choice2: "B) 1.96",
+    choice3: "C) 2",
+    choice4: "D) 3",
+    answer: 3,
+    explanation: "Approximately 95% of data in a normal distribution lies within 2 standard deviations of the mean."
+  },
+  {
+    question: "A binomial experiment has 10 trials and the probability of success is 0.5. What is the expected number of successes?",
+    choice1: "A) 2",
+    choice2: "B) 5",
+    choice3: "C) 10",
+    choice4: "D) 0.5",
+    answer: 2,
+    explanation: "Expected value of a binomial distribution is n × p = 10 × 0.5 = 5."
+  },
+  {
+    question: "Which distribution is discrete and used for modeling rare events?",
+    choice1: "A) Normal",
+    choice2: "B) Uniform",
+    choice3: "C) Poisson",
+    choice4: "D) Exponential",
+    answer: 3,
+    explanation: "The Poisson distribution is discrete and is ideal for modeling rare events over a time or space interval."
+  },
+  {
+    question: "A continuous distribution where all outcomes in a range are equally likely is:",
+    choice1: "A) Binomial",
+    choice2: "B) Normal",
+    choice3: "C) Uniform",
+    choice4: "D) Poisson",
+    answer: 3,
+    explanation: "The uniform distribution (continuous version) gives equal probability to any value in a given range."
+  },
+  {
+    question: "Which of these is NOT true about the normal distribution?",
+    choice1: "A) Mean = Median = Mode",
+    choice2: "B) It’s skewed right",
+    choice3: "C) It is symmetric",
+    choice4: "D) It follows the empirical rule",
+    answer: 2,
+    explanation: "The normal distribution is not skewed. It's perfectly symmetric about its mean, and mean = median = mode."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='problev6.html'">Go to Level 6 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'problev5.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
+
