@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 6 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+
+const questions=[
+{
+  question: "What is the difference between online learning and batch learning in machine learning?",
+  choice1: "A) Online learning uses large datasets, batch uses real-time updates",
+  choice2: "B) Online learning updates models incrementally, batch learning trains all at once",
+  choice3: "C) Batch learning uses streaming data, online uses stored data",
+  choice4: "D) Online learning is less scalable than batch learning",
+  answer: 2,
+  explanation: "Online learning updates the model continuously as new data comes in, while batch learning trains the model on the entire dataset at once."
+},
+{
+  question: "Which of the following is NOT a dimensionality reduction technique?",
+  choice1: "A) PCA",
+  choice2: "B) t-SNE",
+  choice3: "C) One-hot encoding",
+  choice4: "D) LDA",
+  answer: 3,
+  explanation: "One-hot encoding increases dimensionality; it is a feature encoding technique, not a dimensionality reduction method."
+},
+{
+  question: "What is the main objective of backpropagation in a neural network?",
+  choice1: "A) To initialize weights",
+  choice2: "B) To forward propagate inputs",
+  choice3: "C) To minimize the loss function by updating weights",
+  choice4: "D) To store data",
+  answer: 3,
+  explanation: "Backpropagation calculates the gradients to update model weights and minimize the loss function."
+},
+{
+  question: "In which layer of a CNN do you typically apply the ReLU activation function?",
+  choice1: "A) Output layer",
+  choice2: "B) Fully connected layer",
+  choice3: "C) After each convolutional layer",
+  choice4: "D) Before input layer",
+  answer: 3,
+  explanation: "ReLU is applied after convolutional layers to introduce non-linearity."
+},
+{
+  question: "What is overfitting in the context of machine learning models?",
+  choice1: "A) The model performs poorly on both training and test data",
+  choice2: "B) The model learns patterns in training data and generalizes well",
+  choice3: "C) The model memorizes training data and performs poorly on unseen data",
+  choice4: "D) The model trains too quickly",
+  answer: 3,
+  explanation: "Overfitting happens when a model performs well on training data but poorly on new, unseen data."
+},
+{
+  question: "Which optimization algorithm uses a combination of momentum and adaptive learning rates?",
+  choice1: "A) SGD",
+  choice2: "B) RMSProp",
+  choice3: "C) Adam",
+  choice4: "D) AdaGrad",
+  answer: 3,
+  explanation: "Adam combines momentum and adaptive learning rates, making it a popular optimizer."
+},
+{
+  question: "What is the purpose of dropout in deep neural networks?",
+  choice1: "A) Increase the number of neurons",
+  choice2: "B) Reduce training time",
+  choice3: "C) Prevent overfitting by randomly dropping neurons",
+  choice4: "D) Make the model deterministic",
+  answer: 3,
+  explanation: "Dropout prevents overfitting by randomly deactivating neurons during training."
+},
+{
+  question: "What is Federated Learning?",
+  choice1: "A) Learning without a server",
+  choice2: "B) A decentralized learning method that keeps data on edge devices",
+  choice3: "C) Centralized learning with a single dataset",
+  choice4: "D) Learning with multiple output layers",
+  answer: 2,
+  explanation: "Federated learning enables training across decentralized data sources without transferring the data to a central server."
+},
+{
+  question: "Which framework is primarily used for experiment tracking and model versioning?",
+  choice1: "A) TensorFlow",
+  choice2: "B) PyTorch",
+  choice3: "C) MLflow",
+  choice4: "D) XGBoost",
+  answer: 3,
+  explanation: "MLflow provides tools for tracking experiments, logging parameters, and versioning models."
+},
+{
+  question: "What does ROC-AUC represent in classification evaluation?",
+  choice1: "A) Ratio of correct classifications",
+  choice2: "B) Measure of regression accuracy",
+  choice3: "C) Trade-off between true positive rate and false positive rate",
+  choice4: "D) Model bias measure",
+  answer: 3,
+  explanation: "ROC-AUC evaluates classification performance by plotting the true positive rate against the false positive rate."
+}
+
+]
+
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "amt7.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

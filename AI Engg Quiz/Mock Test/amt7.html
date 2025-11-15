@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 7 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+    const questions=[
+{
+    
+  question: "What is a cold start problem in recommender systems?",
+  choice1: "A) Recommendations that change too often",
+  choice2: "B) No prior user ratings or behavior data available",
+  choice3: "C) High model latency",
+  choice4: "D) Overloaded servers",
+  answer: 2,
+  explanation: "Cold start refers to difficulty making recommendations for new users or items with no prior data."
+},
+{
+  question: "In XGBoost, which regularization techniques are used?",
+  choice1: "A) Only L1",
+  choice2: "B) Only L2",
+  choice3: "C) Both L1 and L2",
+  choice4: "D) Dropout",
+  answer: 3,
+  explanation: "XGBoost includes both L1 and L2 regularization to reduce overfitting."
+},
+{
+  question: "What kind of tasks are best suited for RNNs?",
+  choice1: "A) Image classification",
+  choice2: "B) Static tabular data",
+  choice3: "C) Sequential data like time series or text",
+  choice4: "D) Object detection",
+  answer: 3,
+  explanation: "RNNs are specialized for processing sequences where context and order matter."
+},
+{
+  question: "What is the difference between bagging and boosting?",
+  choice1: "A) Bagging is sequential, boosting is parallel",
+  choice2: "B) Bagging reduces variance, boosting reduces bias",
+  choice3: "C) Boosting uses independent models, bagging uses dependent models",
+  choice4: "D) They are the same",
+  answer: 2,
+  explanation: "Bagging reduces variance by training multiple models independently, boosting reduces bias via sequential training."
+},
+{
+  question: "What is SHAP used for?",
+  choice1: "A) Model compression",
+  choice2: "B) Hyperparameter tuning",
+  choice3: "C) Model explainability",
+  choice4: "D) Data augmentation",
+  answer: 3,
+  explanation: "SHAP assigns each feature an importance value for a particular prediction, aiding in explainability."
+},
+{
+  question: "Which component handles orchestration in an ML pipeline?",
+  choice1: "A) Keras",
+  choice2: "B) Apache Airflow",
+  choice3: "C) NumPy",
+  choice4: "D) TensorBoard",
+  answer: 2,
+  explanation: "Apache Airflow helps manage and schedule complex ML workflows and pipelines."
+},
+{
+  question: "What is concept drift in model monitoring?",
+  choice1: "A) Loss of model weights",
+  choice2: "B) When the model performance increases over time",
+  choice3: "C) Change in underlying data distribution",
+  choice4: "D) Lack of data storage",
+  answer: 3,
+  explanation: "Concept drift occurs when the statistical properties of the target variable change, degrading model performance."
+},
+{
+  question: "Which is a valid method of hyperparameter tuning?",
+  choice1: "A) Feature encoding",
+  choice2: "B) Random Search",
+  choice3: "C) Dropout",
+  choice4: "D) Data normalization",
+  answer: 2,
+  explanation: "Random Search is a popular method for hyperparameter tuning, often faster than Grid Search."
+},
+{
+  question: "What does a confusion matrix evaluate?",
+  choice1: "A) Regression error",
+  choice2: "B) Data imbalance",
+  choice3: "C) Classification performance",
+  choice4: "D) Neural network layers",
+  answer: 3,
+  explanation: "A confusion matrix displays true vs. predicted labels to evaluate classification performance."
+},
+{
+  question: "Which technology is most commonly used to containerize ML models?",
+  choice1: "A) Flask",
+  choice2: "B) Apache Beam",
+  choice3: "C) Docker",
+  choice4: "D) Pandas",
+  answer: 3,
+  explanation: "Docker packages ML models and dependencies into containers for consistent deployment."
+}
+
+
+    ]
+        
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "amt8.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

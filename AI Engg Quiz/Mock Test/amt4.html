@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 4 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+    const questions=[
+
+    {
+  question: "Which metric is appropriate for evaluating a classification model?",
+  choice1: "A) Mean Squared Error",
+  choice2: "B) R-squared",
+  choice3: "C) Accuracy",
+  choice4: "D) Adjusted R-squared",
+  answer: 3,
+  explanation: "Accuracy measures the proportion of correct predictions in classification tasks."
+},
+{
+  question: "What does a high precision indicate in a classification model?",
+  choice1: "A) High true positive rate",
+  choice2: "B) Low false positive rate",
+  choice3: "C) High recall",
+  choice4: "D) Low false negative rate",
+  answer: 2,
+  explanation: "High precision indicates that the model has a low false positive rate."
+},
+{
+  question: "What is the ROC curve used for?",
+  choice1: "A) Evaluating regression models",
+  choice2: "B) Visualizing the trade-off between true positive rate and false positive rate",
+  choice3: "C) Measuring clustering performance",
+  choice4: "D) Feature selection",
+  answer: 2,
+  explanation: "The ROC curve illustrates the diagnostic ability of a binary classifier system as its discrimination threshold is varied."
+},
+{
+  question: "What does the F1 score represent?",
+  choice1: "A) Harmonic mean of precision and recall",
+  choice2: "B) Geometric mean of accuracy and recall",
+  choice3: "C) Arithmetic mean of precision and accuracy",
+  choice4: "D) Difference between precision and recall",
+  answer: 1,
+  explanation: "The F1 score is the harmonic mean of precision and recall, providing a balance between the two."
+},
+{
+  question: "When is the AUC-ROC metric most useful?",
+  choice1: "A) For multi-class classification",
+  choice2: "B) When classes are balanced",
+  choice3: "C) For evaluating probabilistic models",
+  choice4: "D) For regression problems",
+  answer: 3,
+  explanation: "The AUC-ROC curve is ideal for evaluating probabilistic models, showing the trade-off between TPR and FPR across thresholds."
+},
+{
+  question: "Which algorithm is known for its use of information gain?",
+  choice1: "A) K-Nearest Neighbors",
+  choice2: "B) Decision Trees",
+  choice3: "C) Naive Bayes",
+  choice4: "D) SVM",
+  answer: 2,
+  explanation: "Decision Trees use information gain or Gini index to split the nodes based on the best attribute."
+},
+{
+  question: "What does the 'kernel trick' help with in SVM?",
+  choice1: "A) Reducing data size",
+  choice2: "B) Converting non-linear to linear problems",
+  choice3: "C) Increasing bias",
+  choice4: "D) Preventing overfitting",
+  answer: 2,
+  explanation: "The kernel trick enables SVM to classify data that is not linearly separable by transforming it into a higher dimension."
+},
+{
+  question: "Which ML algorithm is most sensitive to feature scaling?",
+  choice1: "A) Decision Trees",
+  choice2: "B) K-Nearest Neighbors",
+  choice3: "C) Naive Bayes",
+  choice4: "D) Random Forest",
+  answer: 2,
+  explanation: "KNN uses distance metrics like Euclidean distance, which are sensitive to feature scales."
+},
+{
+  question: "Which ensemble method combines weak learners sequentially?",
+  choice1: "A) Random Forest",
+  choice2: "B) AdaBoost",
+  choice3: "C) Bagging",
+  choice4: "D) Gradient Boosting",
+  answer: 2,
+  explanation: "AdaBoost adds weak classifiers in sequence, each trying to correct the mistakes of the previous."
+},
+{
+  question: "Which method uses majority voting among models?",
+  choice1: "A) Boosting",
+  choice2: "B) Stacking",
+  choice3: "C) Bagging",
+  choice4: "D) Dropout",
+  answer: 3,
+  explanation: "Bagging aggregates predictions through majority voting or averaging in ensemble models like Random Forest."
+}
+
+    ]
+
+        
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "amt5.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

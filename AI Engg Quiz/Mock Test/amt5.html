@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 5 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+    const questions=[
+    {
+  question: "What is Federated Learning?",
+  choice1: "A) Centralized learning using a single dataset",
+  choice2: "B) Using ensemble methods across networks",
+  choice3: "C) Distributed training without sharing raw data",
+  choice4: "D) Blockchain-based model sharing",
+  answer: 3,
+  explanation: "Federated Learning trains models across multiple decentralized devices or servers without exchanging raw data."
+},
+{
+  question: "What does SHAP explain?",
+  choice1: "A) Neural network architecture",
+  choice2: "B) Global feature importance",
+  choice3: "C) Local model predictions",
+  choice4: "D) Model training time",
+  answer: 3,
+  explanation: "SHAP (SHapley Additive exPlanations) helps explain individual predictions by showing feature contributions."
+},
+{
+  question: "Which type of noise is most associated with adversarial attacks?",
+  choice1: "A) Gaussian noise",
+  choice2: "B) Label noise",
+  choice3: "C) Imperceptible input perturbations",
+  choice4: "D) Salt and pepper noise",
+  answer: 3,
+  explanation: "Adversarial attacks typically involve small, imperceptible changes to inputs that fool models."
+},
+{
+  question: "What is the main goal of PCA?",
+  choice1: "A) Increasing accuracy",
+  choice2: "B) Removing outliers",
+  choice3: "C) Reducing dimensionality",
+  choice4: "D) Normalizing features",
+  answer: 3,
+  explanation: "PCA projects data into a lower-dimensional space while preserving variance."
+},
+{
+  question: "What does a high ROC-AUC score indicate?",
+  choice1: "A) High false positive rate",
+  choice2: "B) Poor model calibration",
+  choice3: "C) Good classifier performance across thresholds",
+  choice4: "D) Overfitting",
+  answer: 3,
+  explanation: "A high ROC-AUC indicates the classifier performs well over various thresholds."
+},
+{
+  question: "In CNNs, what is max pooling used for?",
+  choice1: "A) Increasing feature size",
+  choice2: "B) Reducing spatial dimensions",
+  choice3: "C) Avoiding overfitting",
+  choice4: "D) Batch normalization",
+  answer: 2,
+  explanation: "Max pooling reduces dimensionality and computation by summarizing features."
+},
+{
+  question: "Which tool helps manage feature consistency across training and production?",
+  choice1: "A) MLflow",
+  choice2: "B) TensorBoard",
+  choice3: "C) Feast",
+  choice4: "D) DVC",
+  answer: 3,
+  explanation: "Feast is a feature store for managing and serving machine learning features consistently."
+},
+{
+  question: "What does Docker provide in ML deployment?",
+  choice1: "A) Model explainability",
+  choice2: "B) Interactive dashboards",
+  choice3: "C) Isolated environments for reproducibility",
+  choice4: "D) Data annotation tools",
+  answer: 3,
+  explanation: "Docker containers provide consistent environments, ensuring reproducibility in model deployment."
+},
+{
+  question: "In FastAPI, how are models served?",
+  choice1: "A) Using cron jobs",
+  choice2: "B) Through REST endpoints",
+  choice3: "C) Over FTP",
+  choice4: "D) With scheduled notebooks",
+  answer: 2,
+  explanation: "FastAPI is a web framework used to serve ML models via REST APIs."
+},
+{
+  question: "Which method is used in GitHub Actions to automate ML model testing?",
+  choice1: "A) YAML workflows",
+  choice2: "B) Jupyter notebooks",
+  choice3: "C) Model pipelines",
+  choice4: "D) CSV configs",
+  answer: 1,
+  explanation: "GitHub Actions uses YAML workflows to define CI/CD automation, including testing."
+}
+
+    ]
+
+        
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "amt6.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

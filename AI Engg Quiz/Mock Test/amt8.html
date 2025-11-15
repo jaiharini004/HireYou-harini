@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 8 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+
+const questions=[
+{
+  question: "What is backpropagation in neural networks used for?",
+  choice1: "A) Initializing weights",
+  choice2: "B) Computing gradients for updating weights",
+  choice3: "C) Normalizing inputs",
+  choice4: "D) Reducing overfitting",
+  answer: 2,
+  explanation: "Backpropagation is a key algorithm used to compute gradients of the loss function with respect to weights during training."
+},
+{
+  question: "Which algorithm uses multiple weak learners to create a strong learner?",
+  choice1: "A) KNN",
+  choice2: "B) Logistic Regression",
+  choice3: "C) Gradient Boosting",
+  choice4: "D) PCA",
+  answer: 3,
+  explanation: "Gradient Boosting is an ensemble method that builds models sequentially to correct errors of previous models."
+},
+{
+  question: "In federated learning, where does model training primarily occur?",
+  choice1: "A) On a central server",
+  choice2: "B) On edge devices",
+  choice3: "C) In a data warehouse",
+  choice4: "D) In the cloud",
+  answer: 2,
+  explanation: "Federated learning enables model training on edge devices while keeping data local, preserving privacy."
+},
+{
+  question: "What is the role of activation functions in neural networks?",
+  choice1: "A) Reduce overfitting",
+  choice2: "B) Introduce non-linearity",
+  choice3: "C) Standardize input",
+  choice4: "D) Compute error",
+  answer: 2,
+  explanation: "Activation functions add non-linear properties to the network, allowing it to learn complex patterns."
+},
+{
+  question: "What is an advantage of using XGBoost over traditional decision trees?",
+  choice1: "A) Slower computation",
+  choice2: "B) Reduced accuracy",
+  choice3: "C) Regularization support",
+  choice4: "D) No need for tuning",
+  answer: 3,
+  explanation: "XGBoost includes regularization to control model complexity and prevent overfitting."
+},
+{
+  question: "Which of the following is a disadvantage of KNN?",
+  choice1: "A) Requires model training",
+  choice2: "B) Sensitive to irrelevant features",
+  choice3: "C) High bias",
+  choice4: "D) Uses hyperplanes",
+  answer: 2,
+  explanation: "KNN is sensitive to feature scaling and irrelevant features, which can distort distance calculations."
+},
+{
+  question: "What is the purpose of a validation set in ML training?",
+  choice1: "A) Train the model",
+  choice2: "B) Prevent overfitting by early stopping",
+  choice3: "C) Test the final model",
+  choice4: "D) Normalize data",
+  answer: 2,
+  explanation: "The validation set is used to tune hyperparameters and prevent overfitting using techniques like early stopping."
+},
+{
+  question: "Which metric is most appropriate for imbalanced classification problems?",
+  choice1: "A) Accuracy",
+  choice2: "B) Precision",
+  choice3: "C) ROC-AUC",
+  choice4: "D) R-squared",
+  answer: 3,
+  explanation: "ROC-AUC captures the trade-off between true positive and false positive rates, making it useful for imbalanced data."
+},
+{
+  question: "What is the function of SHAP values in AI models?",
+  choice1: "A) Encrypt data",
+  choice2: "B) Visualize loss curves",
+  choice3: "C) Explain model predictions",
+  choice4: "D) Improve training speed",
+  answer: 3,
+  explanation: "SHAP values help explain the contribution of each feature to a particular prediction, improving transparency."
+},
+{
+  question: "What is concept drift?",
+  choice1: "A) Changes in model parameters during training",
+  choice2: "B) Shifts in the underlying data distribution over time",
+  choice3: "C) Overfitting due to high complexity",
+  choice4: "D) The need for feature scaling",
+  answer: 2,
+  explanation: "Concept drift occurs when the statistical properties of target variables change over time, degrading model performance."
+}
+
+]
+
+    
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "amt9.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

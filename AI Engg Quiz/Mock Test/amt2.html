@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mock Test </title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    .question h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #333;
+    }
+    .options button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      background-color: #90caf9;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #64b5f6;
+    }
+    .explanation {
+      display: none;
+      margin-top: 12px;
+      color: #0d47a1;
+      background: #e3f2fd;
+      padding: 12px;
+      border-left: 5px solid #2196f3;
+      border-radius: 6px;
+      font-style: italic;
+    }
+    .submit-btn, .next-btn {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background-color: #42a5f5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .submit-btn:hover, .next-btn:hover {
+      background-color: #1e88e5;
+    }
+    .score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1565c0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Mock Test - Level 2 </h1>
+    <div id="quiz"></div>
+    <div class="score-box" id="scoreBox"></div>
+    <button class="submit-btn" id="submitBtn" onclick="showFinalScore()">Submit Test ✅</button>
+    <button class="next-btn" id="nextBtn" onclick="goToNextLevel()">Next ➡️</button>
+  </div>
+
+  <script>
+
+    const questions=[
+    {
+      question: "What does Bayes' theorem describe?",
+      choice1: "A) Probability of A given B",
+      choice2: "B) Joint probability of A and B",
+      choice3: "C) Posterior probability of A given B",
+      choice4: "D) Marginal probability of A",
+      answer: 3,
+      explanation: "Bayes' theorem calculates the posterior probability P(A|B) based on prior knowledge."
+    },
+    {
+      question: "What is the expected value of a discrete random variable?",
+      choice1: "A) Most probable value",
+      choice2: "B) Average outcome weighted by probabilities",
+      choice3: "C) Median of the distribution",
+      choice4: "D) Mode of the distribution",
+      answer: 2,
+      explanation: "The expected value is the sum of all possible values weighted by their probabilities."
+    },
+    {
+      question: "Which distribution is used to model the number of successes in a fixed number of independent trials?",
+      choice1: "A) Poisson",
+      choice2: "B) Binomial",
+      choice3: "C) Normal",
+      choice4: "D) Exponential",
+      answer: 2,
+      explanation: "The binomial distribution models the number of successes in a fixed number of independent Bernoulli trials."
+    },
+    {
+      question: "What does the standard deviation measure?",
+      choice1: "A) Central tendency",
+      choice2: "B) Spread of data around the mean",
+      choice3: "C) Skewness of the distribution",
+      choice4: "D) Peakness of the distribution",
+      answer: 2,
+      explanation: "Standard deviation quantifies the amount of variation or dispersion in a set of values."
+    },
+    {
+      question: "What is the probability density function (PDF)?",
+      choice1: "A) Cumulative probability up to a point",
+      choice2: "B) Probability of a discrete outcome",
+      choice3: "C) Function that describes the likelihood of a continuous random variable",
+      choice4: "D) Mean of a distribution",
+      answer: 3,
+      explanation: "The PDF describes the relative likelihood for a continuous random variable to take on a given value."
+    },
+    {
+      question: "What is the purpose of numerical integration?",
+      choice1: "A) Solve differential equations",
+      choice2: "B) Approximate definite integrals",
+      choice3: "C) Find roots of equations",
+      choice4: "D) Perform matrix multiplication",
+      answer: 2,
+      explanation: "Numerical integration approximates the value of definite integrals when an analytical solution is difficult."
+    },
+    {
+      question: "Which method is used to find roots of nonlinear equations?",
+      choice1: "A) Euler's method",
+      choice2: "B) Newton-Raphson method",
+      choice3: "C) Trapezoidal rule",
+      choice4: "D) Simpson's rule",
+      answer: 2,
+      explanation: "The Newton-Raphson method is an iterative technique for finding successively better approximations to the roots of a real-valued function."
+    },
+    {
+      question: "Which method is commonly used to solve systems of linear equations?",
+      choice1: "A) Newton-Raphson",
+      choice2: "B) Gaussian Elimination",
+      choice3: "C) Gradient Descent",
+      choice4: "D) Euler's Method",
+      answer: 2,
+      explanation: "Gaussian Elimination is a direct method for solving systems of linear equations by reducing the system to row-echelon form."
+    },
+    {
+      question: "What is the primary purpose of the Newton-Raphson method?",
+      choice1: "A) Solving linear equations",
+      choice2: "B) Numerical integration",
+      choice3: "C) Finding roots of nonlinear equations",
+      choice4: "D) Matrix inversion",
+      answer: 3,
+      explanation: "The Newton-Raphson method is an iterative technique for finding successively better approximations to the roots of a real-valued function."
+    },
+    {
+      question: "Which numerical method is used for solving ordinary differential equations (ODEs)?",
+      choice1: "A) Simpson's Rule",
+      choice2: "B) Trapezoidal Rule",
+      choice3: "C) Euler's Method",
+      choice4: "D) Newton-Raphson",
+      answer: 3,
+      explanation: "Euler's Method is a first-order numerical procedure for solving ordinary differential equations with a given initial value."
+    }
+
+
+    ]
+
+        
+let score = 0;
+
+function renderQuiz() {
+  const quiz = document.getElementById("quiz");
+  questions.forEach((q, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+
+    const qTitle = document.createElement("h3");
+    qTitle.textContent = `${index + 1}. ${q.question}`;
+    qDiv.appendChild(qTitle);
+
+    const opts = document.createElement("div");
+    opts.className = "options";
+
+    for (let i = 1; i <= 4; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`choice${i}`];
+      btn.onclick = () => handleAnswer(qDiv, i, q.answer, q.explanation);
+      opts.appendChild(btn);
+    }
+
+    const exp = document.createElement("div");
+    exp.className = "explanation";
+    exp.id = `exp${index}`;
+
+    qDiv.appendChild(opts);
+    qDiv.appendChild(exp);
+    quiz.appendChild(qDiv);
+  });
+}
+
+function handleAnswer(qDiv, selected, correct, explanation) {
+  const explanationEl = qDiv.querySelector(".explanation");
+  if (selected === correct) {
+    score += 2;
+    explanationEl.innerHTML = `✅ Correct!<br>${explanation}`;
+  } else {
+    explanationEl.innerHTML = `❌ Incorrect.<br>${explanation}`;
+  }
+  explanationEl.style.display = 'block';
+  qDiv.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+  const allAnswered = [...document.querySelectorAll('.explanation')].every(e => e.style.display === 'block');
+  if (allAnswered) document.getElementById("submitBtn").style.display = 'block';
+}
+
+function showFinalScore() {
+  document.getElementById("scoreBox").innerText = `🎯 Your Score: ${score} / 20`;
+  document.getElementById("submitBtn").style.display = 'none';
+  document.getElementById("nextBtn").style.display = 'block';
+}
+
+function goToNextLevel() {
+  window.location.href = "amt3.html"; // next level page
+}
+
+renderQuiz();
+</script>
+</body>
+</html>
