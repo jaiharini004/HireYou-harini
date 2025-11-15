@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>deep learning Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+
+const questions = [
+  {
+    question: "What is the purpose of gradient clipping during backpropagation in RNNs?",
+    choice1: "A) To increase learning rate",
+    choice2: "B) To prevent exploding gradients",
+    choice3: "C) To reduce model size",
+    choice4: "D) To speed up convergence",
+    answer: 2,
+    explanation: "Gradient clipping ensures stability by capping gradients when they exceed a threshold—important for training deep or recurrent networks."
+  },
+  {
+    question: "Given a batch size of 64, input shape (64, 100), weight matrix W with shape (100, 50), what will be the output shape after a dense layer?",
+    choice1: "A) (64, 100)",
+    choice2: "B) (64, 50)",
+    choice3: "C) (100, 50)",
+    choice4: "D) (50, 100)",
+    answer: 2,
+    explanation: "Matrix multiplication of (64×100) and (100×50) yields output (64×50)."
+  },
+  {
+    question: "What would be the output of this PyTorch snippet?\n\nimport torch.nn as nn\nlstm = nn.LSTM(input_size=10, hidden_size=20, num_layers=2, batch_first=True)\ninput = torch.randn(5, 7, 10)\nout, (h, c) = lstm(input)\nprint(out.shape)",
+    choice1: "A) torch.Size([5, 7, 10])",
+    choice2: "B) torch.Size([5, 20])",
+    choice3: "C) torch.Size([5, 7, 20])",
+    choice4: "D) torch.Size([5, 2, 20])",
+    answer: 3,
+    explanation: "LSTM outputs a sequence per timestep, so shape is (batch, seq_len, hidden_size) → (5, 7, 20)."
+  },
+  {
+    question: "A CNN uses a 3×3 kernel with padding=1 and stride=1 on a 32×32 image. What is the output size?",
+    choice1: "A) 30×30",
+    choice2: "B) 33×33",
+    choice3: "C) 32×32",
+    choice4: "D) 31×31",
+    answer: 3,
+    explanation: "With padding=1 and stride=1, spatial dimensions are preserved. Output remains 32×32."
+  },
+  {
+    question: "You are training a GAN, and your discriminator loss drops to zero quickly. What is most likely the issue?",
+    choice1: "A) Generator is too strong",
+    choice2: "B) Discriminator is too strong",
+    choice3: "C) Generator is underfitting",
+    choice4: "D) Discriminator has high bias",
+    answer: 2,
+    explanation: "If the discriminator wins too quickly, it stops providing useful gradients to the generator."
+  },
+  {
+    question: "Given ReLU activation, which of the following is a potential downside?",
+    choice1: "A) Saturation at both ends",
+    choice2: "B) Gradient vanishing",
+    choice3: "C) Dying ReLU problem",
+    choice4: "D) Exponential outputs",
+    answer: 3,
+    explanation: "ReLU can 'die' when it always outputs 0 for negative inputs, making the neuron inactive."
+  },
+  {
+    question: "Consider a Transformer model with 8 attention heads and model dimension 512. What is the dimensionality per head?",
+    choice1: "A) 512",
+    choice2: "B) 64",
+    choice3: "C) 128",
+    choice4: "D) 32",
+    answer: 2,
+    explanation: "512 model dimensions / 8 heads = 64 dimensions per head in multi-head attention."
+  },
+  {
+    question: "What does the KL divergence measure in Variational Autoencoders (VAEs)?",
+    choice1: "A) Mean squared error",
+    choice2: "B) Log-likelihood",
+    choice3: "C) Difference between predicted and true distributions",
+    choice4: "D) Similarity between learned and prior latent distributions",
+    answer: 4,
+    explanation: "KL divergence encourages the latent distribution to stay close to a standard normal prior."
+  },
+  {
+    question: "Write a function to implement Xavier initialization for a given shape in NumPy:\n\nimport numpy as np\n\ndef xavier_init(shape):\n    in_dim, out_dim = shape\n    stddev = np.sqrt(2 / (in_dim + out_dim))\n    return np.random.randn(in_dim, out_dim) * stddev\n\nw = xavier_init((128, 64))\nprint(w.shape)\n\nWhat does this initialization do?",
+    choice1: "A) It adds noise to the weights",
+    choice2: "B) It increases training speed by forcing zeros",
+    choice3: "C) It keeps the variance of activations consistent across layers",
+    choice4: "D) It multiplies weights by zero",
+    answer: 3,
+    explanation: "Xavier initialization balances input/output variance to avoid vanishing/exploding gradients."
+  },
+  {
+    question: "In LSTM, what role does the forget gate play?",
+    choice1: "A) Adds new memory",
+    choice2: "B) Removes irrelevant past information",
+    choice3: "C) Computes output",
+    choice4: "D) Controls the activation function",
+    answer: 2,
+    explanation: "The forget gate decides which information from the previous cell state should be discarded."
+  }
+];
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='deelev10.html'">Go to Level 10 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'deelev9.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

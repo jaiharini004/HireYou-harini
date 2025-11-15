@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "Which of the following best describes the vanishing gradient problem in RNNs?",
+    choice1: "A) Gradients become excessively large",
+    choice2: "B) Gradients do not exist",
+    choice3: "C) Gradients diminish exponentially during backpropagation",
+    choice4: "D) Gradients oscillate randomly",
+    answer: 3,
+    explanation: "In RNNs, repeated multiplication of small derivatives causes gradients to shrink, leading to little or no learning."
+  },
+  {
+    question: "What is the benefit of residual connections in deep networks?",
+    choice1: "A) Reduce model depth",
+    choice2: "B) Introduce non-linearity",
+    choice3: "C) Help gradient flow through layers",
+    choice4: "D) Add noise for regularization",
+    answer: 3,
+    explanation: "Residual (skip) connections allow gradients to bypass layers, solving vanishing gradient issues in very deep nets."
+  },
+  {
+    question: "Compute the number of parameters in a Conv2D layer with 3 input channels, 64 filters, kernel size (5,5), no bias.",
+    choice1: "A) 4800",
+    choice2: "B) 3200",
+    choice3: "C) 4803",
+    choice4: "D) 9600",
+    answer: 1,
+    explanation: "Conv2D params = filters × channels × height × width = 64×3×5×5 = 4800."
+  },
+  {
+    question: "What is the output of the softmax layer used for?",
+    choice1: "A) Normalizing weights",
+    choice2: "B) Producing probabilities",
+    choice3: "C) One-hot encoding",
+    choice4: "D) ReLU transformation",
+    answer: 2,
+    explanation: "Softmax transforms raw logits into probabilities that sum to 1 for classification."
+  },
+  {
+    question: "What is label smoothing in classification?",
+    choice1: "A) Making classes harder to distinguish",
+    choice2: "B) Reducing confidence in one-hot targets",
+    choice3: "C) Increasing learning rate",
+    choice4: "D) Adding noise to inputs",
+    answer: 2,
+    explanation: "Label smoothing avoids overconfident predictions by distributing some probability mass to all classes."
+  },
+  {
+    question: "Implement dropout in a simple NumPy forward pass:\n\ndef dropout_forward(x, drop_prob=0.5):\n    mask = (np.random.rand(*x.shape) > drop_prob) / (1 - drop_prob)\n    return x * mask\n\nx = np.array([1.0, 2.0, 3.0])\nprint(dropout_forward(x))\n\nWhat is the purpose of this dropout?",
+    choice1: "A) Increases accuracy",
+    choice2: "B) Improves gradient flow",
+    choice3: "C) Prevents overfitting by randomly zeroing out units during training",
+    choice4: "D) Scales input up",
+    answer: 3,
+    explanation: "Dropout is a regularization technique that deactivates units during training to prevent co-adaptation."
+  },
+  {
+    question: "What technique does BatchNorm use during training?",
+    choice1: "A) Whitening",
+    choice2: "B) Min-max scaling",
+    choice3: "C) Standardization using batch mean and variance",
+    choice4: "D) Gradient clipping",
+    answer: 3,
+    explanation: "BatchNorm stabilizes learning by normalizing inputs using mini-batch statistics."
+  },
+  {
+    question: "Compute cross-entropy loss: y_true=[0,1,0], y_pred=[0.2, 0.7, 0.1].",
+    choice1: "A) −log(0.2)",
+    choice2: "B) −log(0.7)",
+    choice3: "C) −log(0.1)",
+    choice4: "D) log(0.7)",
+    answer: 2,
+    explanation: "Since true class is index 1, loss = −log(0.7)."
+  },
+  {
+    question: "What is the challenge of using deeper networks in DL?",
+    choice1: "A) More memory",
+    choice2: "B) Fewer parameters",
+    choice3: "C) Slower convergence and vanishing gradients",
+    choice4: "D) Faster training",
+    answer: 3,
+    explanation: "Deeper networks struggle with vanishing gradients and longer training unless using techniques like skip connections or batch norm."
+  },
+  {
+    question: "Which technique is most used in Neural Architecture Search (NAS)?",
+    choice1: "A) Random sampling",
+    choice2: "B) Grid search",
+    choice3: "C) Reinforcement learning",
+    choice4: "D) Cross-validation",
+    answer: 3,
+    explanation: "Reinforcement learning is often used in NAS to guide the search toward better architectures."
+  }
+];
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='ml_engineer.html'">Wowww You Aced it ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'deelev10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

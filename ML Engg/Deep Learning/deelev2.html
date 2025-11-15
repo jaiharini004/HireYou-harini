@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>deep learning Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 2</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "In neural networks, what does the weight represent?",
+    choice1: "A) Neuron strength",
+    choice2: "B) Learning speed",
+    choice3: "C) Strength of connection",
+    choice4: "D) Epoch count",
+    answer: 3,
+    explanation: "Weights control how much influence one neuron has on another."
+  },
+  {
+    question: "What is forward propagation?",
+    choice1: "A) Adjusting weights",
+    choice2: "B) Backward pass",
+    choice3: "C) Calculating output of a network",
+    choice4: "D) Saving weights",
+    answer: 3,
+    explanation: "Forward propagation means passing input data through layers to get output."
+  },
+  {
+    question: "What does backpropagation do?",
+    choice1: "A) Makes predictions",
+    choice2: "B) Adjusts biases",
+    choice3: "C) Calculates loss",
+    choice4: "D) Updates weights by propagating error backwards",
+    answer: 4,
+    explanation: "Backpropagation adjusts weights to minimize the loss function."
+  },
+  {
+    question: "How does gradient descent help train neural networks?",
+    choice1: "A) Increases activation",
+    choice2: "B) Finds the global max",
+    choice3: "C) Minimizes the loss function",
+    choice4: "D) Computes activation",
+    answer: 3,
+    explanation: "Gradient descent helps find minimum loss by iteratively updating weights."
+  },
+  {
+    question: "What’s the output of ReLU if the input is -5?",
+    choice1: "A) -5",
+    choice2: "B) 0",
+    choice3: "C) 1",
+    choice4: "D) 5",
+    answer: 2,
+    explanation: "ReLU outputs 0 for negative values: 𝑓(𝑥)=max(0,𝑥)"
+  },
+  {
+    question: "Basic Python code to define a single-layer model with Keras:\n\nfrom tensorflow.keras.models import Sequential\nfrom tensorflow.keras.layers import Dense\n\nmodel = Sequential()\nmodel.add(Dense(10, input_dim=5, activation='relu'))\nWhat does Dense(10, input_dim=5) represent?",
+    choice1: "A) 5 outputs, 10 inputs",
+    choice2: "B) 10 layers",
+    choice3: "C) 10 neurons receiving 5 inputs",
+    choice4: "D) 5 layers of 10 neurons",
+    answer: 3,
+    explanation: "10 neurons, each with 5 input connections."
+  },
+  {
+    question: "What does model.compile(optimizer='adam', loss='binary_crossentropy') do?",
+    choice1: "A) Trains the model",
+    choice2: "B) Saves weights",
+    choice3: "C) Configures model for training",
+    choice4: "D) Activates neurons",
+    answer: 3,
+    explanation: "Compile sets up the model with optimizer and loss."
+  },
+  {
+    question: "What is an epoch in training?",
+    choice1: "A) One forward pass",
+    choice2: "B) One backward pass",
+    choice3: "C) One full cycle through the dataset",
+    choice4: "D) A type of activation",
+    answer: 3,
+    explanation: "Epoch = one full pass through all training data."
+  },
+  {
+    question: "In classification, which metric is best to measure accuracy?",
+    choice1: "A) MAE",
+    choice2: "B) Precision",
+    choice3: "C) Accuracy Score",
+    choice4: "D) MSE",
+    answer: 3,
+    explanation: "Accuracy Score = total correct predictions / total predictions."
+  },
+  {
+    question: "What does the following output shape mean? Dense(3, activation='softmax')",
+    choice1: "A) 3 classes",
+    choice2: "B) 3 layers",
+    choice3: "C) 3 samples",
+    choice4: "D) 3 errors",
+    answer: 1,
+    explanation: "Output layer with 3 neurons for a 3-class classification using Softmax."
+  }
+];
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='deelev3.html'">Go to Level 3 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'deelev2.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

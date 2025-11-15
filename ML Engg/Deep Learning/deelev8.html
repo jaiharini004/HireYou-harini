@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>deep learning Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 8</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "What is a vanishing gradient problem?",
+    choice1: "A) Gradient values grow too large",
+    choice2: "B) Gradients become zero or very small during backpropagation",
+    choice3: "C) Loss becomes NaN",
+    choice4: "D) Gradients alternate signs",
+    answer: 2,
+    explanation: "Vanishing gradients occur in deep networks when derivatives become too small to update weights significantly, halting learning."
+  },
+  {
+    question: "Which optimizer is most sensitive to learning rate tuning?",
+    choice1: "A) SGD",
+    choice2: "B) Adam",
+    choice3: "C) RMSProp",
+    choice4: "D) Adagrad",
+    answer: 1,
+    explanation: "SGD without momentum needs precise learning rate tuning; too small leads to slow learning, too high causes divergence."
+  },
+  {
+    question: "Compute the total parameters in this Keras model:\n\nmodel = Sequential([\n  Dense(64, input_shape=(100,)),\n  Dense(10)\n])",
+    choice1: "A) 7114",
+    choice2: "B) 6500",
+    choice3: "C) 6410",
+    choice4: "D) 7050",
+    answer: 1,
+    explanation: "Layer1: 100*64 + 64 = 6464; Layer2: 64*10 + 10 = 650 → Total = 6464 + 650 = 7114"
+  },
+  {
+    question: "In a ResNet architecture, what do skip connections do?",
+    choice1: "A) Flatten input",
+    choice2: "B) Introduce dropout",
+    choice3: "C) Help gradient flow by bypassing layers",
+    choice4: "D) Increase model size",
+    answer: 3,
+    explanation: "Skip (residual) connections allow gradients to flow through identity paths, reducing degradation in deep nets."
+  },
+  {
+    question: "What is the main advantage of using Batch Normalization?",
+    choice1: "A) Adds regularization",
+    choice2: "B) Speeds up training and stabilizes learning",
+    choice3: "C) Reduces model size",
+    choice4: "D) Makes model sparse",
+    answer: 2,
+    explanation: "BatchNorm stabilizes layer activations by normalizing them, allowing higher learning rates and faster convergence."
+  },
+  {
+    question: "Compute output shape: MaxPooling2D(pool_size=(2,2)) on (28,28,64)",
+    choice1: "A) (28, 28, 64)",
+    choice2: "B) (14, 14, 64)",
+    choice3: "C) (13, 13, 32)",
+    choice4: "D) (56, 56, 64)",
+    answer: 2,
+    explanation: "MaxPooling2D with (2,2) reduces spatial dimensions by half: 28 → 14. Channels remain unchanged → (14, 14, 64)."
+  },
+  {
+    question: "Which component of the model is updated during backpropagation?",
+    choice1: "A) Weights only",
+    choice2: "B) Bias only",
+    choice3: "C) Activations",
+    choice4: "D) Weights and biases",
+    answer: 4,
+    explanation: "Both weights and biases are trainable parameters; both are updated using gradients during backprop."
+  },
+  {
+    question: "Which activation is best suited for the final layer in a binary classification task?",
+    choice1: "A) ReLU",
+    choice2: "B) Softmax",
+    choice3: "C) Sigmoid",
+    choice4: "D) Tanh",
+    answer: 3,
+    explanation: "Sigmoid outputs values between 0 and 1 and is ideal for binary output probabilities."
+  },
+  {
+    question: "What does the following Keras model summary imply?\n\nLayer (type)                 Output Shape              Param #\ndense (Dense)                (None, 128)               1280",
+    choice1: "A) Input shape is (10,)",
+    choice2: "B) Input shape is (100,)",
+    choice3: "C) Number of neurons is 128",
+    choice4: "D) 1280 is incorrect",
+    answer: 1,
+    explanation: "Param = input_dim × units + units = 10×128 + 128 = 1280 → input shape must be (10,)"
+  },
+  {
+    question: "When should model.eval() be used in PyTorch?",
+    choice1: "A) During training",
+    choice2: "B) Before backpropagation",
+    choice3: "C) During inference/evaluation",
+    choice4: "D) When loading weights",
+    answer: 3,
+    explanation: "model.eval() disables layers like dropout and batch norm updates, ensuring consistent behavior for evaluation."
+  }
+];
+
+
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='deelev9.html'">Go to Level 9 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'deelev8.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

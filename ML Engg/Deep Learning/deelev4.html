@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>deep learning Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 4</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "What does the following code return?\n\nimport numpy as np\ndef sigmoid(x):\n    return 1 / (1 + np.exp(-x))\nprint(sigmoid(0))",
+    choice1: "A) 0",
+    choice2: "B) 0.5",
+    choice3: "C) 1",
+    choice4: "D) -1",
+    answer: 2,
+    explanation: "It returns 0.5 since sigmoid(0) = 1 / (1 + 1)."
+  },
+  {
+    question: "Why is ReLU preferred over sigmoid in deep networks?",
+    choice1: "A) It is slower",
+    choice2: "B) It avoids vanishing gradient",
+    choice3: "C) It overfits data",
+    choice4: "D) It is used only in output layers",
+    answer: 2,
+    explanation: "ReLU does not saturate for large positive values and allows faster learning."
+  },
+  {
+    question: "What is the dimensionality of output of Dense(10) layer with input of shape (None, 5)?",
+    choice1: "A) (None, 10)",
+    choice2: "B) (None, 5)",
+    choice3: "C) (10, 5)",
+    choice4: "D) (5, 10)",
+    answer: 1,
+    explanation: "The Dense layer maps input of shape (None, 5) to (None, 10)."
+  },
+  {
+    question: "What does softmax activation do?",
+    choice1: "A) Adds noise",
+    choice2: "B) Outputs multiple 0s and 1s",
+    choice3: "C) Converts logits to probabilities",
+    choice4: "D) Normalizes data",
+    answer: 3,
+    explanation: "Softmax converts a vector to a probability distribution summing to 1."
+  },
+  {
+    question: "Which of the following tasks is best for using softmax?",
+    choice1: "A) Binary classification",
+    choice2: "B) Regression",
+    choice3: "C) Multiclass classification",
+    choice4: "D) Data normalization",
+    answer: 3,
+    explanation: "Softmax is used for multi-class classification problems."
+  },
+  {
+    question: "Which Keras layer is used to reduce overfitting?",
+    choice1: "A) Dense",
+    choice2: "B) Conv2D",
+    choice3: "C) Dropout",
+    choice4: "D) Flatten",
+    answer: 3,
+    explanation: "Dropout randomly disables neurons during training to prevent overfitting."
+  },
+  {
+    question: "What does this code print?\n\nimport tensorflow as tf\nlayer = tf.keras.layers.Dense(3, activation='relu')\noutput = layer(tf.constant([[1.0, 2.0]]))\nprint(output.shape)",
+    choice1: "A) (2, 1)",
+    choice2: "B) (1, 3)",
+    choice3: "C) (3, 3)",
+    choice4: "D) (2, 2)",
+    answer: 2,
+    explanation: "Dense(3) maps input of shape (1, 2) to output of shape (1, 3)."
+  },
+  {
+    question: "The process of adjusting weights using the derivative of the loss function is called:",
+    choice1: "A) Cross-validation",
+    choice2: "B) Hyperparameter tuning",
+    choice3: "C) Backpropagation",
+    choice4: "D) Data augmentation",
+    answer: 3,
+    explanation: "Backpropagation uses gradients to adjust weights to minimize the loss."
+  },
+  {
+    question: "What is the role of the loss function?",
+    choice1: "A) Measures training time",
+    choice2: "B) Evaluates the optimizer",
+    choice3: "C) Quantifies model error",
+    choice4: "D) Checks the number of layers",
+    answer: 3,
+    explanation: "The loss function tells how well the model predictions match the ground truth."
+  },
+  {
+    question: "What does the following code define?\n\nfrom keras.models import Sequential\nfrom keras.layers import Dense\n\nmodel = Sequential([\n  Dense(8, input_shape=(4,), activation='relu'),\n  Dense(3, activation='softmax')\n])",
+    choice1: "A) Regression model",
+    choice2: "B) Binary classifier",
+    choice3: "C) Multi-class classifier",
+    choice4: "D) CNN",
+    answer: 3,
+    explanation: "It outputs 3 classes (softmax), making it a multi-class classification model."
+  }
+];
+
+
+
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='deelev5.html'">Go to Level 5 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'deelev4.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
