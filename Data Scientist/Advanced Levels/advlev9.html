@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "What is the primary purpose of a GitHub portfolio in data science?",
+    choice1: "A) To store large datasets",
+    choice2: "B) To share memes with colleagues",
+    choice3: "C) To showcase your projects, code, and collaboration skills",
+    choice4: "D) To host your resume only",
+    answer: 3,
+    explanation: "A GitHub portfolio demonstrates your technical skills, project experience, coding style, and version control proficiency — all crucial for data science roles."
+  },
+  {
+    question: "Which of the following should you definitely include in a project README?",
+    choice1: "A) A selfie",
+    choice2: "B) Problem statement, data source, methodology, results",
+    choice3: "C) Just your contact info",
+    choice4: "D) Only the model accuracy",
+    answer: 2,
+    explanation: "A good README tells a full story — from the problem you're solving to how you solved it and the outcome. It’s like your project’s elevator pitch."
+  },
+  {
+    question: "What’s a good format for naming your GitHub repositories?",
+    choice1: "A) final-final-version3-project",
+    choice2: "B) project1",
+    choice3: "C) house-price-prediction",
+    choice4: "D) ds_proj",
+    answer: 3,
+    explanation: "Repository names should be clear, concise, and descriptive, e.g., house-price-prediction, customer-segmentation, etc."
+  },
+  {
+    question: "Which platform can be used to host interactive data dashboards or ML apps?",
+    choice1: "A) Canva",
+    choice2: "B) Streamlit",
+    choice3: "C) Microsoft Word",
+    choice4: "D) WhatsApp",
+    answer: 2,
+    explanation: "Tools like Streamlit, Dash, or Gradio are popular for hosting interactive ML dashboards and apps."
+  },
+  {
+    question: "How can you visually present your analysis or model results in a portfolio?",
+    choice1: "A) By adding colorful emojis",
+    choice2: "B) By uploading a screenshot of your terminal",
+    choice3: "C) By embedding charts and dashboards",
+    choice4: "D) By hiding the code",
+    answer: 3,
+    explanation: "Visualizations (charts, plots, dashboards) help viewers quickly understand insights and results — essential in storytelling."
+  },
+  {
+    question: "What’s a good practice when structuring your project folders on GitHub?",
+    choice1: "A) Put everything in one folder",
+    choice2: "B) Use clear folders like data, notebooks, scripts, models",
+    choice3: "C) Don’t use folders at all",
+    choice4: "D) Only keep the final output",
+    answer: 2,
+    explanation: "Organizing your project makes it easier to navigate and demonstrates professionalism."
+  },
+  {
+    question: "Why is version control important in data science projects?",
+    choice1: "A) It looks fancy",
+    choice2: "B) It lets you track changes, collaborate, and revert easily",
+    choice3: "C) It speeds up model training",
+    choice4: "D) It's required by Kaggle",
+    answer: 2,
+    explanation: "Version control with Git/GitHub helps manage updates, track experiments, and collaborate with teams smoothly."
+  },
+  {
+    question: "What is the best way to make a Jupyter Notebook portfolio-ready?",
+    choice1: "A) Include all raw outputs",
+    choice2: "B) Make sure it’s clean, well-commented, and has a clear narrative",
+    choice3: "C) Keep code only without any explanation",
+    choice4: "D) Use dark theme only",
+    answer: 2,
+    explanation: "A polished notebook has clear headings, clean code, helpful comments, and a flow that explains your approach and results."
+  },
+  {
+    question: "Why should you host your portfolio projects (dashboards or notebooks) publicly?",
+    choice1: "A) So they can be copied",
+    choice2: "B) To impress recruiters and demonstrate skills",
+    choice3: "C) It improves model accuracy",
+    choice4: "D) It lets you skip interviews",
+    answer: 2,
+    explanation: "A public portfolio showcases your capabilities to hiring managers and increases visibility."
+  },
+  {
+    question: "Which of the following is a sign of a strong data science GitHub profile?",
+    choice1: "A) Lots of starred repos from others",
+    choice2: "B) Many forks from other developers",
+    choice3: "C) Personal, original projects with clear READMEs and commits",
+    choice4: "D) A large number of followers",
+    answer: 3,
+    explanation: "Recruiters care about the quality of your personal work — real projects with clear documentation and consistent contributions."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='advlev10.html'">Go to Level 10 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'advlev9.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>

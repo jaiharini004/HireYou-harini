@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 8</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "What is the first and most crucial step in any data science project?",
+    choice1: "A) Model training",
+    choice2: "B) Data visualization",
+    choice3: "C) Problem definition",
+    choice4: "D) Deployment",
+    answer: 3,
+    explanation: "Clearly defining the problem helps guide all further steps — from data collection to modeling — ensuring the solution meets the business or research goals."
+  },
+  {
+    question: "Why is data preprocessing critical in the ML workflow?",
+    choice1: "A) It makes the deployment easier",
+    choice2: "B) It reduces model interpretability",
+    choice3: "C) It improves model performance and accuracy",
+    choice4: "D) It replaces the need for modeling",
+    answer: 3,
+    explanation: "Preprocessing (handling missing values, encoding, scaling) ensures that the model gets clean and usable data, directly impacting accuracy and efficiency."
+  },
+  {
+    question: "Which of the following correctly represents the logical sequence in a machine learning project?",
+    choice1: "A) Data → Problem → Model → Deployment",
+    choice2: "B) Problem → Model → Data → Deployment",
+    choice3: "C) Problem → Data → Model → Deployment",
+    choice4: "D) Model → Data → Problem → Deployment",
+    answer: 3,
+    explanation: "The standard pipeline starts with identifying the problem, collecting/processing data, modeling, and finally deploying the solution."
+  },
+  {
+    question: "What is an important reason to split data into training and testing sets?",
+    choice1: "A) To save computation time",
+    choice2: "B) To test the speed of the model",
+    choice3: "C) To evaluate model performance on unseen data",
+    choice4: "D) To avoid using too much memory",
+    answer: 3,
+    explanation: "Splitting data allows us to evaluate how well the model generalizes by testing it on data it has not seen during training."
+  },
+  {
+    question: "What role does EDA (Exploratory Data Analysis) play in a capstone project?",
+    choice1: "A) It builds the model",
+    choice2: "B) It visualizes trends and detects patterns or anomalies in data",
+    choice3: "C) It deploys the API",
+    choice4: "D) It evaluates model performance",
+    answer: 2,
+    explanation: "EDA helps uncover patterns, relationships, and insights from the data, which guide feature engineering and model selection."
+  },
+  {
+    question: "Why should the final model be saved before deployment?",
+    choice1: "A) To make it look complete",
+    choice2: "B) To store it in memory permanently",
+    choice3: "C) To reuse it for inference without retraining",
+    choice4: "D) To export the dataset",
+    answer: 3,
+    explanation: "Saving the model allows you to use it for making predictions later without the need to retrain, which is essential for deployment."
+  },
+  {
+    question: "Which file format is commonly used to save ML models in Python for deployment?",
+    choice1: "A) .csv",
+    choice2: "B) .pkl",
+    choice3: "C) .json",
+    choice4: "D) .txt",
+    answer: 2,
+    explanation: ".pkl (Pickle) is commonly used in Python to serialize and save models for later use or deployment."
+  },
+  {
+    question: "In a project presentation, what is the most effective way to communicate your findings to a non-technical audience?",
+    choice1: "A) Show code snippets",
+    choice2: "B) Use detailed loss curves",
+    choice3: "C) Use clear visuals, summary metrics, and real-world implications",
+    choice4: "D) Describe hyperparameter tuning in detail",
+    answer: 3,
+    explanation: "Tailoring your presentation to the audience means focusing on high-level insights, visuals, and business impact rather than technical jargon."
+  },
+  {
+    question: "What is a key feature of a strong capstone project portfolio?",
+    choice1: "A) Use of complicated algorithms",
+    choice2: "B) Emphasis on model accuracy only",
+    choice3: "C) Clear storytelling with documentation of each step",
+    choice4: "D) Avoiding data cleaning to show raw skills",
+    answer: 3,
+    explanation: "A well-structured portfolio showcases not just results, but the full process — from understanding the problem to deploying the solution."
+  },
+  {
+    question: "Which deployment method is often used to allow others to test your ML model via a simple interface?",
+    choice1: "A) REST API with Flask or FastAPI",
+    choice2: "B) Jupyter Notebook",
+    choice3: "C) TensorBoard",
+    choice4: "D) Matplotlib",
+    answer: 1,
+    explanation: "REST APIs using Flask or FastAPI allow external systems or users to send input and receive predictions, making them ideal for testing models via interfaces."
+  }
+];
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='advlev9.html'">Go to Level 9 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'advlev8.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>

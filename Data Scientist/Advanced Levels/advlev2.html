@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 2</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What is the main idea behind the Bag of Words model?",
+    choice1: "A) It captures word order and context",
+    choice2: "B) It converts text into numeric vectors based on word frequencies",
+    choice3: "C) It uses neural networks to generate word meanings",
+    choice4: "D) It removes all stopwords from the text",
+    answer: 2,
+    explanation: "The Bag of Words model represents text as a collection of words and their frequencies, ignoring grammar and word order."
+  },
+  {
+    question: "Which of the following is a limitation of the Bag of Words model?",
+    choice1: "A) It captures semantic relationships",
+    choice2: "B) It requires labeled data",
+    choice3: "C) It ignores the order and context of words",
+    choice4: "D) It cannot be used for classification tasks",
+    answer: 3,
+    explanation: "Bag of Words does not consider the order or semantics of words, which can lead to a loss of meaning."
+  },
+  {
+    question: "What does TF-IDF stand for?",
+    choice1: "A) Term-Frequency Inverse-Document-Frequency",
+    choice2: "B) Token-Frequency Inverse-Dataset-Frequency",
+    choice3: "C) Text-Frequency Inverse-Depth-Feature",
+    choice4: "D) Term-Factor Internal-Document-Frequency",
+    answer: 1,
+    explanation: "TF-IDF is a weighting technique that reflects how important a word is in a document relative to the whole corpus."
+  },
+  {
+    question: "Why is the IDF component used in TF-IDF?",
+    choice1: "A) To increase frequency of stopwords",
+    choice2: "B) To penalize common words that appear in many documents",
+    choice3: "C) To boost rare punctuation usage",
+    choice4: "D) To eliminate numerical data",
+    answer: 2,
+    explanation: "IDF (Inverse Document Frequency) gives lower weight to common words that appear across many documents, reducing their influence."
+  },
+  {
+    question: "Which of the following is true about TF-IDF?",
+    choice1: "A) High TF-IDF score indicates a common word",
+    choice2: "B) TF-IDF scores are always negative",
+    choice3: "C) It improves over Bag of Words by considering document frequency",
+    choice4: "D) It can only be applied to labeled datasets",
+    answer: 3,
+    explanation: "TF-IDF improves on Bag of Words by reducing the weight of frequently occurring words that add little value."
+  },
+  {
+    question: "What does Word2Vec aim to capture that Bag of Words and TF-IDF cannot?",
+    choice1: "A) Spelling errors",
+    choice2: "B) Semantic meaning and context",
+    choice3: "C) Sentence length",
+    choice4: "D) Stopword removal",
+    answer: 2,
+    explanation: "Word2Vec creates dense vectors where words used in similar contexts have similar embeddings, capturing semantic relationships."
+  },
+  {
+    question: "In Word2Vec, what are the two main model architectures?",
+    choice1: "A) CBOW and Skip-gram",
+    choice2: "B) GloVe and FastText",
+    choice3: "C) RNN and LSTM",
+    choice4: "D) TF-IDF and BERT",
+    answer: 1,
+    explanation: "Continuous Bag of Words (CBOW) predicts a word given its context, and Skip-gram predicts context words given a target word."
+  },
+  {
+    question: "What is the key idea behind the GloVe model?",
+    choice1: "A) It relies on character-level embeddings",
+    choice2: "B) It builds embeddings using global word co-occurrence statistics",
+    choice3: "C) It only works with tweets",
+    choice4: "D) It uses word frequencies without context",
+    answer: 2,
+    explanation: "GloVe (Global Vectors for Word Representation) creates embeddings by analyzing the frequency with which words appear together in a corpus."
+  },
+  {
+    question: "Which of the following is NOT a feature extraction method from text?",
+    choice1: "A) TF-IDF",
+    choice2: "B) Word2Vec",
+    choice3: "C) PCA",
+    choice4: "D) Bag of Words",
+    answer: 3,
+    explanation: "PCA is a dimensionality reduction technique, not a direct text feature extraction method like TF-IDF or Word2Vec."
+  },
+  {
+    question: "What is one benefit of using word embeddings like Word2Vec or GloVe over TF-IDF?",
+    choice1: "A) They require more preprocessing",
+    choice2: "B) They create sparse high-dimensional vectors",
+    choice3: "C) They capture the meaning and similarity of words",
+    choice4: "D) They ignore grammar and syntax",
+    answer: 3,
+    explanation: "Word embeddings create dense vectors that retain semantic similarity, unlike sparse TF-IDF vectors which ignore context."
+  }
+];
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='advlev3.html'">Go to Level 3 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'advlev2.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>

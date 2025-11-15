@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 5</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  // ... (original 10 questions remain unchanged)
+
+  {
+    question: "What is Spark Streaming used for?",
+    choice1: "A) Processing batch data only",
+    choice2: "B) Real-time data processing",
+    choice3: "C) Managing HDFS",
+    choice4: "D) Handling SQL queries only",
+    answer: 2,
+    explanation: "Spark Streaming is used for real-time or near real-time data processing by dividing the incoming data into small batches and processing them."
+  },
+  {
+    question: "In Spark Streaming, what is a DStream?",
+    choice1: "A) A static table",
+    choice2: "B) A sequence of RDDs representing a stream",
+    choice3: "C) A database view",
+    choice4: "D) A single data point in a stream",
+    answer: 2,
+    explanation: "DStream (Discretized Stream) is the basic abstraction in Spark Streaming, representing a continuous stream of data as a series of RDDs."
+  },
+  {
+    question: "What component is typically used to ingest data into Spark Streaming?",
+    choice1: "A) Apache Hive",
+    choice2: "B) Apache Kafka",
+    choice3: "C) MySQL",
+    choice4: "D) Tableau",
+    answer: 2,
+    explanation: "Kafka is a popular choice for ingesting real-time data into Spark Streaming applications due to its high throughput and fault tolerance."
+  },
+  {
+    question: "What is the default processing model in Spark Streaming?",
+    choice1: "A) Micro-batch processing",
+    choice2: "B) Continuous row-by-row processing",
+    choice3: "C) SQL-based streaming",
+    choice4: "D) GPU-accelerated stream execution",
+    answer: 1,
+    explanation: "Spark Streaming uses a micro-batch model where streaming data is divided into small batches and then processed."
+  },
+  {
+    question: "Which Spark component supports large-scale machine learning?",
+    choice1: "A) Spark SQL",
+    choice2: "B) Spark MLlib",
+    choice3: "C) Spark GraphX",
+    choice4: "D) Spark Core",
+    answer: 2,
+    explanation: "Spark MLlib is the scalable machine learning library for Spark, supporting algorithms for classification, regression, clustering, etc."
+  },
+  {
+    question: "What is one advantage of using Spark for ML at scale?",
+    choice1: "A) Only works with small datasets",
+    choice2: "B) Requires no memory",
+    choice3: "C) Can handle distributed training across clusters",
+    choice4: "D) Doesn't support feature engineering",
+    answer: 3,
+    explanation: "Spark’s distributed architecture allows machine learning tasks to scale horizontally, efficiently handling very large datasets."
+  },
+  {
+    question: "What is the role of the transform() function in DStreams?",
+    choice1: "A) Converts a DStream into a DataFrame",
+    choice2: "B) Applies RDD operations to each batch in the stream",
+    choice3: "C) Converts DStream to SQL",
+    choice4: "D) Ingests data from external sources",
+    answer: 2,
+    explanation: "The transform() method allows applying arbitrary RDD operations to each RDD in a DStream, enabling advanced stream transformations."
+  },
+  {
+    question: "What does checkpointing do in Spark Streaming?",
+    choice1: "A) Clears the stream state",
+    choice2: "B) Saves the progress and state for fault-tolerance",
+    choice3: "C) Stops the job automatically",
+    choice4: "D) Saves data in a database",
+    answer: 2,
+    explanation: "Checkpointing stores metadata and state data periodically so the system can recover in case of failures."
+  },
+  {
+    question: "What is Structured Streaming in Spark?",
+    choice1: "A) A real-time processing engine using SQL on DataFrames",
+    choice2: "B) A replacement for MapReduce",
+    choice3: "C) A static batch framework",
+    choice4: "D) A Python-only library for Spark",
+    answer: 1,
+    explanation: "Structured Streaming allows developers to use SQL/DataFrame APIs for streaming, providing better optimization and easier development."
+  },
+  {
+    question: "Why is Spark preferred for distributed ML tasks over traditional tools like Scikit-learn?",
+    choice1: "A) Scikit-learn is faster",
+    choice2: "B) Spark requires no programming",
+    choice3: "C) Spark handles distributed data and parallel computation better",
+    choice4: "D) Scikit-learn supports real-time learning",
+    answer: 3,
+    explanation: "Spark can scale across clusters, processing data in parallel, whereas Scikit-learn is limited to in-memory single-machine computations."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='advlev6.html'">Go to Level 6 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'advlev5.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
