@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>token level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 5</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+    {
+        question: "A prompt has 1200 tokens. If the model's total token limit is 4096, what % of the total budget is left for output?",
+        choice1: "75%",
+        choice2: "40%",
+        choice3: "70.7%",
+        choice4: "70%",
+        answer: 4,
+        explanation: "(4096 - 1200) / 4096 = 2896 / 4096 ≈ 0.707 → 70% left for output."
+    },
+    {
+        question: "Which prompt is more token-efficient?",
+        choice1: "Please provide a detailed explanation of the following topic.",
+        choice2: "Explain this.",
+        answer: 2,
+        explanation: "Fewer words = fewer tokens = higher efficiency."
+    },
+    {
+        question: "You want to generate a 1500-token answer. How many tokens can your prompt use in a 4096-token model?",
+        choice1: "2596",
+        choice2: "4096",
+        choice3: "1500",
+        choice4: "2000",
+        answer: 1,
+        explanation: "4096 - 1500 = 2596 tokens available for input."
+    },
+    {
+        question: "If 1 English word ≈ 1.3 tokens, how many tokens is a 200-word article?",
+        choice1: "200",
+        choice2: "220",
+        choice3: "260",
+        choice4: "300",
+        answer: 3,
+        explanation: "200 × 1.3 = 260 tokens."
+    },
+    {
+        question: "What is the benefit of keeping instructions specific and short in relation to token use?",
+        choice1: "Saves on API cost and token usage",
+        choice2: "Makes the model slower",
+        choice3: "Reduces creativity",
+        choice4: "Increases confusion",
+        answer: 1,
+        explanation: "Short and specific prompts consume fewer tokens, saving cost and increasing clarity."
+    },
+    {
+        question: "If a user prompt is 1024 tokens and the max output is set to 2000 tokens, is it valid for a 4096-token model?",
+        choice1: "Yes",
+        choice2: "No",
+        answer: 1,
+        explanation: "1024 + 2000 = 3024 < 4096 → ✅ valid."
+    },
+    {
+        question: "Which of the following adds the most tokens to a prompt?",
+        choice1: "Headers",
+        choice2: "Instructions",
+        choice3: "Repetition of phrases",
+        choice4: "Emojis",
+        answer: 3,
+        explanation: "Repeating phrases unnecessarily increases token count quickly."
+    },
+    {
+        question: "How many tokens remain if the input is 64% of a 4096-token limit?",
+        choice1: "1310",
+        choice2: "1474",
+        choice3: "1240",
+        choice4: "1000",
+        answer: 2,
+        explanation: "4096 × 0.36 = 1474.56 → 1474 tokens left."
+    },
+    {
+        question: "If a prompt is too long, how might it affect the model's output?",
+        choice1: "It will improve response length",
+        choice2: "It may cut off or truncate the answer",
+        choice3: "It will provide multiple answers",
+        choice4: "It uses fewer tokens",
+        answer: 2,
+        explanation: "Exceeding token limits leads to incomplete outputs."
+    },
+    {
+        question: "Which prompt is better for token-efficient summarization?",
+        choice1: "In 5 bullet points, summarize the article below.",
+        choice2: "Please provide a thorough and verbose explanation of all major themes in this article.",
+        answer: 1,
+        explanation: "It’s shorter, clear, and uses fewer tokens."
+    }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='toklevel6.html'">Go to Level 6 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'toklevel5.html'; // Redirect to Level 2 directly
+}
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
+

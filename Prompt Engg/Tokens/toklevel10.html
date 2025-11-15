@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>token level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "A long-form generation task fails due to token overflow. If your prompt was 1800 and model max is 4096, how many tokens were attempted for output?",
+    choice1: "2296",
+    choice2: "2500",
+    choice3: "2600",
+    choice4: "3000",
+    answer: 3,
+    explanation: "Max allowed = 4096; Input = 1800; Attempted output = >4096 → output > 2296. Next plausible = 2600"
+  },
+  {
+    question: "Your summary goal is 1/3rd the token length of input (3900 tokens). What's the target output size?",
+    choice1: "1300",
+    choice2: "1200",
+    choice3: "1400",
+    choice4: "1500",
+    answer: 1,
+    explanation: "3900 ÷ 3 = 1300 tokens"
+  },
+  {
+    question: "You embed 10 documents each with 800 words. If avg token per word = 1.2, what’s the total token size?",
+    choice1: "9600",
+    choice2: "9000",
+    choice3: "8800",
+    choice4: "9200",
+    answer: 1,
+    explanation: "10 × 800 = 8000 words; 8000 × 1.2 = 9600 tokens"
+  },
+  {
+    question: "If token compression adds 10% processing time per 1000 tokens compressed, how long to compress 4000 tokens? Base time = 1.5s.",
+    choice1: "2.1s",
+    choice2: "1.9s",
+    choice3: "2.4s",
+    choice4: "2.0s",
+    answer: 1,
+    explanation: "4 × 10% = 40% overhead; 1.5 × 1.4 = 2.1 seconds"
+  },
+  {
+    question: "You batch a job of 3 queries: Q1 = 1800 tokens, Q2 = 1200 tokens, Q3 = 600 tokens. Model limit = 4096. Can they run together?",
+    choice1: "Yes",
+    choice2: "No",
+    answer: 1,
+    explanation: "1800 + 1200 + 600 = 3600 < 4096 → ✅"
+  },
+  {
+    question: "A system prompt takes 350 tokens. You want 65% of your 4096-token budget left for outputs. Max input token size?",
+    choice1: "1042",
+    choice2: "1096",
+    choice3: "1200",
+    choice4: "1350",
+    answer: 1,
+    explanation: "4096 × 0.35 = 1433; 1433 - 350 = 1083 tokens input available → A"
+  },
+  {
+    question: "You want to create a 5-part story. Each part is 600 tokens prompt + 800 tokens response. Model limit = 4096. How many parts fit?",
+    choice1: "2",
+    choice2: "3",
+    choice3: "4",
+    choice4: "5",
+    answer: 1,
+    explanation: "1 part = 600 + 800 = 1400; 4096 ÷ 1400 ≈ 2.9 → 2 full parts"
+  },
+  {
+    question: "You need to fit 3 tasks in one batch: 1000, 1200, and 1600 tokens. What is the model size required? Add 10% buffer.",
+    choice1: "4096",
+    choice2: "4300",
+    choice3: "4200",
+    choice4: "4400",
+    answer: 4,
+    explanation: "1000 + 1200 + 1600 = 3800; Add 10% → 3800 × 1.1 = 4180 → rounded up = 4400"
+  },
+  {
+    question: "A system prompt uses 200 tokens. You want 85% of your model’s 4096 limit used for generation. Can prompt + user input be 700 tokens?",
+    choice1: "Yes",
+    choice2: "No",
+    answer: 2,
+    explanation: "85% of 4096 = 3481; Available for input = 4096 - 3481 = 615; 200 + 700 = 900 → ❌ too much"
+  },
+  {
+    question: "If tokens per word = 1.25, how many words are needed to hit a 4096-token limit exactly (ignoring system tokens)?",
+    choice1: "3276",
+    choice2: "3200",
+    choice3: "3300",
+    choice4: "3400",
+    answer: 1,
+    explanation: "4096 ÷ 1.25 = 3276.8 → 3276 words"
+  }
+];
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='prompt-engineer.html'">Hurreyyy! You Aced it 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'toklevel10.html'; // Redirect to Level 2 directly
+}
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
+

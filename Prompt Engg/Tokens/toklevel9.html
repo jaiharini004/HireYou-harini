@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>token level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "A token budget is split as: system (15%), user input (25%), assistant memory (30%). If the model limit is 8192, what’s the max allowed for the final response?",
+    choice1: "2457",
+    choice2: "2048",
+    choice3: "2293",
+    choice4: "1638",
+    answer: 1,
+    explanation: "15% + 25% + 30% = 70% used. 30% left → 8192 × 0.30 = 2457.6 → 2457 tokens"
+  },
+  {
+    question: "A loop runs 8 times. Each prompt iteration consumes 600 tokens (input) and produces 900 tokens (output). What’s the total usage?",
+    choice1: "12,000",
+    choice2: "10,800",
+    choice3: "11,200",
+    choice4: "9,600",
+    answer: 1,
+    explanation: "600 + 900 = 1500 per iteration. 8 × 1500 = 12,000 tokens"
+  },
+  {
+    question: "If a 20-token system prompt boosts response quality by 8%, and a 100-token prompt boosts it by 20%, what is the improvement per token in each case?",
+    choice1: "0.4%, 0.2%",
+    choice2: "0.25%, 0.20%",
+    choice3: "0.5%, 0.4%",
+    choice4: "0.3%, 0.2%",
+    answer: 1,
+    explanation: "20 → 8% → 8 ÷ 20 = 0.4%; 100 → 20% → 20 ÷ 100 = 0.2% improvement/token"
+  },
+  {
+    question: "You are building a multi-turn agent:\nSystem prompt = 300 tokens\nEach round (user+assistant) = 600 tokens\nBudget = 4096\nHow many rounds can fit before truncation starts?",
+    choice1: "5",
+    choice2: "6",
+    choice3: "7",
+    choice4: "8",
+    answer: 2,
+    explanation: "Available for rounds = 4096 - 300 = 3796; 3796 ÷ 600 ≈ 6.32 → 6 full rounds"
+  },
+  {
+    question: "You compress a context of 1600 tokens by 40% to make room. How many tokens are saved? What’s the new length?",
+    choice1: "640 saved; 960 remaining",
+    choice2: "600 saved; 1000 remaining",
+    choice3: "800 saved; 800 remaining",
+    choice4: "640 saved; 1060 remaining",
+    answer: 1,
+    explanation: "40% of 1600 = 640 saved; 1600 - 640 = 960 remaining"
+  },
+  {
+    question: "You need at least 2000 tokens for summarization output. Your current input is 1500. What’s the minimum model size you need?",
+    choice1: "4096",
+    choice2: "3584",
+    choice3: "3500",
+    choice4: "3200",
+    answer: 2,
+    explanation: "1500 + 2000 = 3500. Add ~2.5% buffer → 3500 × 1.025 ≈ 3587.5 → 3584"
+  },
+  {
+    question: "You batch 10 prompts each 750 tokens, to get parallel outputs of 800 tokens. What’s the cumulative token usage?",
+    choice1: "15,000",
+    choice2: "16,000",
+    choice3: "14,500",
+    choice4: "17,500",
+    answer: 2,
+    explanation: "(750 + 800) × 10 = 1550 × 10 = 15,500 tokens"
+  },
+  {
+    question: "A summary compression reduces token length from 3000 to 1800. What’s the compression ratio and percent saved?",
+    choice1: "0.6, 40%",
+    choice2: "0.7, 30%",
+    choice3: "0.75, 25%",
+    choice4: "0.65, 35%",
+    answer: 1,
+    explanation: "Compression ratio = 1800/3000 = 0.6; Saved = 1200/3000 = 40%"
+  },
+  {
+    question: "A prompt + history uses 3120 tokens. You want to increase history by 25% while keeping total < 4096. What is the new limit for prompt?",
+    choice1: "816",
+    choice2: "900",
+    choice3: "850",
+    choice4: "780",
+    answer: 4,
+    explanation: "Let prompt = x → x + 1.25(3120 - x) = 4096 → x ≈ 784 → Closest = 780"
+  },
+  {
+    question: "You use a prompt that varies from 950 to 1050 tokens. To guarantee a response of 2500 tokens always fits, what's the minimum model size needed?",
+    choice1: "3500",
+    choice2: "3600",
+    choice3: "3550",
+    choice4: "3700",
+    answer: 4,
+    explanation: "Max prompt = 1050; 1050 + 2500 = 3550; Add 4% buffer → 3692 → 3700"
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='toklevel10.html'">Go to Level 10 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'toklevel9.html'; // Redirect to Level 2 directly
+}
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
+
