@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 5 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 6</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "What is the primary goal of Responsible AI?",
+    choice1: "A) To reduce model accuracy",
+    choice2: "B) To deploy faster models",
+    choice3: "C) To ensure ethical, transparent, and fair AI systems",
+    choice4: "D) To remove all human intervention",
+    answer: 3,
+    explanation: "Responsible AI focuses on ensuring AI systems are fair, transparent, explainable, and aligned with ethical standards and societal values."
+  },
+  {
+    question: "Which of the following is a fairness metric that ensures equal true positive and false positive rates across groups?",
+    choice1: "A) Demographic Parity",
+    choice2: "B) Precision",
+    choice3: "C) Equalized Odds",
+    choice4: "D) Log Loss",
+    answer: 3,
+    explanation: "Equalized Odds requires that the classifier’s true positive and false positive rates are equal across different demographic groups."
+  },
+  {
+    question: "What does Demographic Parity require from a model’s predictions?",
+    choice1: "A) Equal model size for all groups",
+    choice2: "B) Equal prediction rates across demographic groups",
+    choice3: "C) Equal training time for all users",
+    choice4: "D) Equal F1-score",
+    answer: 2,
+    explanation: "Demographic Parity (or statistical parity) requires that the outcome (e.g., positive prediction) is equally likely regardless of group membership."
+  },
+  {
+    question: "Which of the following is an example of bias in training data?",
+    choice1: "A) Random initialization",
+    choice2: "B) Balanced class distribution",
+    choice3: "C) Underrepresentation of a minority group",
+    choice4: "D) Cross-validation",
+    answer: 3,
+    explanation: "When certain groups are underrepresented in the dataset, the model may learn biased patterns that unfairly impact those groups."
+  },
+  {
+    question: "What technique helps mitigate bias by changing the dataset distribution?",
+    choice1: "A) Overfitting",
+    choice2: "B) Data reweighting or resampling",
+    choice3: "C) Dimensionality reduction",
+    choice4: "D) Backpropagation",
+    answer: 2,
+    explanation: "Reweighting or resampling adjusts the dataset to ensure balanced representation of different groups, helping reduce bias."
+  },
+  {
+    question: "What is a common post-processing bias mitigation technique?",
+    choice1: "A) Removing dropout layers",
+    choice2: "B) Adjusting decision thresholds by group",
+    choice3: "C) Data augmentation",
+    choice4: "D) Feature scaling",
+    answer: 2,
+    explanation: "Post-processing often involves changing thresholds per group to equalize performance metrics like false positive rates."
+  },
+  {
+    question: "Which algorithm attempts to achieve fairness during model training by adjusting the loss function?",
+    choice1: "A) Fairlearn",
+    choice2: "B) Bagging",
+    choice3: "C) Naive Bayes",
+    choice4: "D) t-SNE",
+    answer: 1,
+    explanation: "Fairlearn is a Python toolkit that integrates fairness constraints (like Demographic Parity) directly into the model training process."
+  },
+  {
+    question: "What is the potential drawback of enforcing strict fairness constraints on ML models?",
+    choice1: "A) It improves interpretability",
+    choice2: "B) It always increases accuracy",
+    choice3: "C) It may reduce overall accuracy",
+    choice4: "D) It removes the need for model evaluation",
+    answer: 3,
+    explanation: "Ensuring fairness often involves a tradeoff with accuracy because the model may have to sacrifice performance to ensure equal treatment across groups."
+  },
+  {
+    question: "Which type of bias occurs when the algorithm performs better on one group due to unequal representation?",
+    choice1: "A) Label bias",
+    choice2: "B) Algorithmic bias",
+    choice3: "C) Selection bias",
+    choice4: "D) Representation bias",
+    answer: 4,
+    explanation: "Representation bias arises when the training data does not fairly represent all groups, leading to uneven performance across demographics."
+  },
+  {
+    question: "Which of the following is NOT a typical component of Responsible AI?",
+    choice1: "A) Explainability",
+    choice2: "B) Fairness",
+    choice3: "C) Reproducibility",
+    choice4: "D) Random initialization",
+    answer: 4,
+    explanation: "Random initialization is a technical aspect of model training and is unrelated to core Responsible AI principles like fairness, explainability, and reproducibility."
+  }
+];
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='5l7.html'">Go to Level 7 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '5l6.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

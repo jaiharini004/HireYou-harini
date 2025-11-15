@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 5 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 7</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "What does SHAP stand for in the context of explainable AI?",
+    choice1: "A) Sample Hierarchical Adaptive Partitioning",
+    choice2: "B) SHapley Additive exPlanations",
+    choice3: "C) Sequential Hybrid Algorithmic Process",
+    choice4: "D) Statistical Hierarchical Algorithm for Prediction",
+    answer: 2,
+    explanation: "SHAP (SHapley Additive exPlanations) is based on game theory and explains predictions by computing the contribution of each feature."
+  },
+  {
+    question: "What is the main goal of LIME?",
+    choice1: "A) To reduce model size",
+    choice2: "B) To encrypt training data",
+    choice3: "C) To locally explain individual predictions",
+    choice4: "D) To optimize hyperparameters",
+    answer: 3,
+    explanation: "LIME (Local Interpretable Model-agnostic Explanations) builds local surrogate models around specific predictions to explain them."
+  },
+  {
+    question: "Which of the following best defines global interpretability?",
+    choice1: "A) Understanding one prediction deeply",
+    choice2: "B) Explaining individual decision boundaries",
+    choice3: "C) Understanding the overall behavior of the model",
+    choice4: "D) Randomly sampling model features",
+    answer: 3,
+    explanation: "Global interpretability involves understanding how the model works in general — across the entire dataset, not just one instance."
+  },
+  {
+    question: "Which technique is used to understand how changing one feature impacts the model output while keeping others constant?",
+    choice1: "A) PCA",
+    choice2: "B) Gradient descent",
+    choice3: "C) Partial Dependence Plot (PDP)",
+    choice4: "D) Dropout",
+    answer: 3,
+    explanation: "PDPs visualize the relationship between one or two features and the model’s predicted outcome."
+  },
+  {
+    question: "What is a common limitation of LIME?",
+    choice1: "A) It cannot be used on tabular data",
+    choice2: "B) It requires model retraining",
+    choice3: "C) It may provide unstable explanations for small input changes",
+    choice4: "D) It cannot visualize feature importance",
+    answer: 3,
+    explanation: "LIME can be sensitive to small changes in input, leading to varying explanations because it's based on local approximations."
+  },
+  {
+    question: "Which concept describes a model’s ability to provide understandable output to a human?",
+    choice1: "A) Precision",
+    choice2: "B) Transparency",
+    choice3: "C) Accuracy",
+    choice4: "D) Regularization",
+    answer: 2,
+    explanation: "Transparency refers to how easily a human can understand the internal mechanics of a model."
+  },
+  {
+    question: "SHAP values are based on which mathematical concept?",
+    choice1: "A) Linear regression",
+    choice2: "B) Decision boundaries",
+    choice3: "C) Shapley values from cooperative game theory",
+    choice4: "D) Euclidean distance",
+    answer: 3,
+    explanation: "SHAP values are derived from Shapley values in game theory, assigning a contribution value to each feature."
+  },
+  {
+    question: "Which of the following models is typically considered more interpretable?",
+    choice1: "A) Deep Neural Network",
+    choice2: "B) Gradient Boosting Trees",
+    choice3: "C) Decision Tree",
+    choice4: "D) Random Forest",
+    answer: 3,
+    explanation: "Decision trees are inherently interpretable due to their hierarchical structure, which can be visualized and easily followed."
+  },
+  {
+    question: "Which of the following statements is TRUE about local interpretability?",
+    choice1: "A) It provides general model performance metrics",
+    choice2: "B) It explains the model's architecture",
+    choice3: "C) It focuses on how a model made a single prediction",
+    choice4: "D) It always improves model accuracy",
+    answer: 3,
+    explanation: "Local interpretability techniques explain the specific reasoning behind one individual prediction."
+  },
+  {
+    question: "Why is model explainability important in high-stakes domains like healthcare or finance?",
+    choice1: "A) It guarantees higher accuracy",
+    choice2: "B) It speeds up training time",
+    choice3: "C) It helps ensure fairness, trust, and accountability",
+    choice4: "D) It reduces hardware requirements",
+    answer: 3,
+    explanation: "Explainability is critical in high-stakes areas because it fosters trust, ensures transparency, and supports compliance with ethical and legal standards."
+  }
+];
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='5l8.html'">Go to Level 8 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '5l7.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 5 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "Which of the following is NOT a commonly recognized AI ethical principle?",
+    choice1: "A) Transparency",
+    choice2: "B) Profitability",
+    choice3: "C) Accountability",
+    choice4: "D) Fairness",
+    answer: 2,
+    explanation: "While profitability may be a business goal, it's not an ethical principle. Key AI ethics principles include transparency, accountability, fairness, and privacy."
+  },
+  {
+    question: "What is the primary objective of the EU AI Act?",
+    choice1: "A) Promote AI startups in Europe",
+    choice2: "B) Ban all high-risk AI systems",
+    choice3: "C) Establish a risk-based regulatory framework for AI in the EU",
+    choice4: "D) Replace GDPR for AI",
+    answer: 3,
+    explanation: "The EU AI Act proposes a risk-based approach to regulate AI, categorizing applications into unacceptable, high, limited, and minimal risk levels with appropriate obligations."
+  },
+  {
+    question: "What does 'model transparency' refer to in AI governance?",
+    choice1: "A) Open-sourcing the code",
+    choice2: "B) The ability to understand how a model makes decisions",
+    choice3: "C) Making models publicly accessible",
+    choice4: "D) Encrypting the model",
+    answer: 2,
+    explanation: "Transparency means stakeholders can understand, interpret, and audit how a model works, especially in decision-making processes."
+  },
+  {
+    question: "Which organization released the AI Risk Management Framework (AI RMF)?",
+    choice1: "A) Google",
+    choice2: "B) NIST (National Institute of Standards and Technology)",
+    choice3: "C) OpenAI",
+    choice4: "D) EU Commission",
+    answer: 2,
+    explanation: "The U.S. NIST released the AI RMF to guide the development and use of trustworthy AI systems."
+  },
+  {
+    question: "Which of the following best defines 'algorithmic accountability'?",
+    choice1: "A) Making AI decisions automatically",
+    choice2: "B) Avoiding documentation of AI models",
+    choice3: "C) Holding stakeholders responsible for AI decisions",
+    choice4: "D) Removing human-in-the-loop",
+    answer: 3,
+    explanation: "Algorithmic accountability ensures that the creators and users of AI systems are responsible for outcomes, especially in high-stakes domains."
+  },
+  {
+    question: "What is a 'model audit' in the context of AI governance?",
+    choice1: "A) Reviewing code performance",
+    choice2: "B) Examining how frequently a model is trained",
+    choice3: "C) Systematic review of a model's behavior, inputs, and risks",
+    choice4: "D) Backing up model weights",
+    answer: 3,
+    explanation: "A model audit involves reviewing the model for bias, fairness, robustness, and legal compliance to ensure it adheres to governance standards."
+  },
+  {
+    question: "Which principle emphasizes protecting individuals from AI-based harms or discrimination?",
+    choice1: "A) Fairness",
+    choice2: "B) Efficiency",
+    choice3: "C) Scalability",
+    choice4: "D) Profit Maximization",
+    answer: 1,
+    explanation: "Fairness ensures that AI systems do not disproportionately disadvantage or discriminate against certain groups or individuals."
+  },
+  {
+    question: "What is the goal of explainable AI (XAI) in the context of regulation?",
+    choice1: "A) To improve model training speed",
+    choice2: "B) To allow regulators and users to understand decisions made by AI systems",
+    choice3: "C) To build black-box systems",
+    choice4: "D) To encrypt sensitive data",
+    answer: 2,
+    explanation: "Explainable AI helps stakeholders and regulators understand and trust model decisions, a key requirement in regulated industries."
+  },
+  {
+    question: "What is the potential consequence of using an 'unacceptable risk' AI system under the EU AI Act?",
+    choice1: "A) Heavier computational cost",
+    choice2: "B) Mandatory re-training of the model",
+    choice3: "C) Prohibition of the system’s use",
+    choice4: "D) Recommendation for best practices",
+    answer: 3,
+    explanation: "The EU AI Act bans unacceptable-risk systems (like social scoring) due to their potential to violate rights or cause harm."
+  },
+  {
+    question: "Which of these tools is often used to track model development and compliance for audits?",
+    choice1: "A) TensorBoard",
+    choice2: "B) MLflow",
+    choice3: "C) Jupyter Notebook",
+    choice4: "D) PyTorch Profiler",
+    answer: 2,
+    explanation: "MLflow helps track model parameters, training runs, and metrics—essential for audit trails and regulatory compliance in MLOps."
+  }
+];
+
+
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='ai_engineer.html'">Hurreyy ! You Aced it 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '5l10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

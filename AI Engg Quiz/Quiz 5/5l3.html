@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 5 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 3</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+
+
+const questions = [
+  {
+    question: "What is the core idea behind collaborative filtering?",
+    choice1: "A) Use of user preferences and item features",
+    choice2: "B) Recommendations based on similar user behavior",
+    choice3: "C) Assigning random weights to each product",
+    choice4: "D) Filtering items by date",
+    answer: 2,
+    explanation: "Collaborative filtering makes recommendations based on users with similar behaviors or preferences. It doesn’t require item content but relies on interactions like ratings or clicks."
+  },
+  {
+    question: "In content-based filtering, recommendations are generated based on:",
+    choice1: "A) Similar items' metadata and features",
+    choice2: "B) Other users' preferences",
+    choice3: "C) Popular items only",
+    choice4: "D) Random sampling",
+    answer: 1,
+    explanation: "Content-based filtering uses item features (e.g., genre, author) to recommend similar items that a user has liked before."
+  },
+  {
+    question: "Which of the following is a challenge in collaborative filtering?",
+    choice1: "A) It doesn’t personalize results",
+    choice2: "B) Cold start for new users or items",
+    choice3: "C) Too much dependence on content",
+    choice4: "D) High memory usage from item vectors",
+    answer: 2,
+    explanation: "Collaborative filtering struggles with cold start situations, where either users or items lack sufficient interaction history to make meaningful recommendations."
+  },
+  {
+    question: "What is a hybrid recommender system?",
+    choice1: "A) System using only user demographics",
+    choice2: "B) Combining collaborative and content-based filtering",
+    choice3: "C) System that works without user interaction",
+    choice4: "D) A deprecated type of filtering",
+    answer: 2,
+    explanation: "Hybrid systems combine multiple recommendation techniques (e.g., collaborative and content-based) to improve accuracy and reduce individual method limitations."
+  },
+  {
+    question: "What type of data is implicit feedback?",
+    choice1: "A) Ratings from surveys",
+    choice2: "B) Thumbs-up/down responses",
+    choice3: "C) Actions like clicks, views, or purchases",
+    choice4: "D) Comments or reviews",
+    answer: 3,
+    explanation: "Implicit feedback refers to behavioral signals such as page views, purchases, or time spent, which imply preference without explicit user input."
+  },
+  {
+    question: "Which matrix factorization method is commonly used in collaborative filtering?",
+    choice1: "A) PCA",
+    choice2: "B) SVD (Singular Value Decomposition)",
+    choice3: "C) K-means",
+    choice4: "D) Random Forest",
+    answer: 2,
+    explanation: "SVD is often used in collaborative filtering to reduce dimensionality of the user-item interaction matrix and find latent features representing users and items."
+  },
+  {
+    question: "In content-based systems, which technique helps measure item similarity?",
+    choice1: "A) Euclidean distance",
+    choice2: "B) Cosine similarity",
+    choice3: "C) Manhattan distance",
+    choice4: "D) Pearson correlation",
+    answer: 2,
+    explanation: "Cosine similarity is widely used in content-based systems to calculate the similarity between item feature vectors, especially when working with text or tag-based data."
+  },
+  {
+    question: "What is the main cause of the “cold start” problem in recommender systems?",
+    choice1: "A) Excessive user engagement",
+    choice2: "B) Lack of item or user interaction data",
+    choice3: "C) Too much training data",
+    choice4: "D) Overfitting of models",
+    answer: 2,
+    explanation: "Cold start occurs when there is not enough user or item interaction data to make accurate recommendations, particularly for new users or products."
+  },
+  {
+    question: "How do hybrid systems handle cold start issues?",
+    choice1: "A) They avoid user profiles",
+    choice2: "B) They ignore feedback",
+    choice3: "C) They combine content-based filtering with collaborative methods to fill in gaps",
+    choice4: "D) They limit recommendations to popular items",
+    answer: 3,
+    explanation: "Hybrid systems use content-based methods to make initial recommendations when interaction data is sparse, and gradually shift toward collaborative methods as more data becomes available."
+  },
+  {
+    question: "What differentiates explicit feedback from implicit feedback?",
+    choice1: "A) It uses more memory",
+    choice2: "B) It is collected from user behavior",
+    choice3: "C) It requires direct user input like ratings or reviews",
+    choice4: "D) It is used only in hybrid systems",
+    answer: 3,
+    explanation: "Explicit feedback comes directly from users, such as ratings or comments. It is deliberate and reflects user preferences more clearly than implicit feedback."
+  }
+];
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='5l4.html'">Go to Level 4 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '5l3.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

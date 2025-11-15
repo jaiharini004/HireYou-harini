@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 5 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+
+
+const questions = [
+  {
+    question: "What is an adversarial attack in machine learning?",
+    choice1: "A) A denial-of-service (DoS) on training servers",
+    choice2: "B) Injecting malware into the training script",
+    choice3: "C) Slight input modifications to fool the model",
+    choice4: "D) Using high-quality data to improve model accuracy",
+    answer: 3,
+    explanation: "Adversarial attacks involve making small, intentional perturbations to input data that lead to incorrect model predictions, often undetected by humans."
+  },
+  {
+    question: "Which technique helps defend against adversarial attacks?",
+    choice1: "A) Cross-validation",
+    choice2: "B) Adversarial training",
+    choice3: "C) PCA (Principal Component Analysis)",
+    choice4: "D) Bagging",
+    answer: 2,
+    explanation: "Adversarial training involves training the model on adversarial examples to improve robustness against such inputs."
+  },
+  {
+    question: "What is model robustness?",
+    choice1: "A) The ability to detect adversaries",
+    choice2: "B) The model’s performance on a single dataset",
+    choice3: "C) The model’s resilience to input variations or attacks",
+    choice4: "D) How fast the model trains",
+    answer: 3,
+    explanation: "Robustness measures how well a model maintains performance when faced with noise, attacks, or input distribution shifts."
+  },
+  {
+    question: "What is a data poisoning attack?",
+    choice1: "A) Injecting irrelevant data during preprocessing",
+    choice2: "B) Encrypting the training dataset",
+    choice3: "C) Inserting malicious data points to corrupt model behavior",
+    choice4: "D) Reducing training data quality",
+    answer: 3,
+    explanation: "Data poisoning refers to injecting malicious samples into the training data to bias or corrupt the model’s predictions."
+  },
+  {
+    question: "Which of these is a secure model deployment practice?",
+    choice1: "A) Exposing model internals through APIs",
+    choice2: "B) Limiting access to inference endpoints",
+    choice3: "C) Allowing write access to training data via API",
+    choice4: "D) Using public S3 buckets for sensitive models",
+    answer: 2,
+    explanation: "Limiting access to APIs/endpoints reduces the risk of misuse or exploitation of the deployed model."
+  },
+  {
+    question: "Which of the following is a black-box attack strategy?",
+    choice1: "A) Accessing model weights directly",
+    choice2: "B) Analyzing gradients of the model",
+    choice3: "C) Querying the model repeatedly to guess its behavior",
+    choice4: "D) Reading training data",
+    answer: 3,
+    explanation: "Black-box attacks don’t require internal access; they rely on repeated queries and responses to infer the model’s logic."
+  },
+  {
+    question: "What is gradient masking, and why can it be problematic?",
+    choice1: "A) A regularization method to reduce overfitting",
+    choice2: "B) Obscuring gradients to defend against attacks, but may give a false sense of security",
+    choice3: "C) A training trick to speed up computation",
+    choice4: "D) Masking gradients to improve accuracy",
+    answer: 2,
+    explanation: "Gradient masking hides gradients to confuse attackers but often results in poor generalization and does not truly protect against stronger adversaries."
+  },
+  {
+    question: "What kind of model is particularly vulnerable to adversarial perturbations?",
+    choice1: "A) Rule-based models",
+    choice2: "B) Linear regression models",
+    choice3: "C) Deep neural networks",
+    choice4: "D) Random forests",
+    answer: 3,
+    explanation: "Deep neural networks, due to their high dimensionality and complex decision boundaries, are particularly susceptible to adversarial inputs."
+  },
+  {
+    question: "Which technique improves both robustness and generalization?",
+    choice1: "A) Overfitting",
+    choice2: "B) Adversarial training",
+    choice3: "C) Feature selection",
+    choice4: "D) Increasing model depth",
+    answer: 2,
+    explanation: "Adversarial training introduces perturbed samples during training, which helps the model generalize better and withstand attacks."
+  },
+  {
+    question: "What is the role of input sanitization in AI model security?",
+    choice1: "A) To increase inference time",
+    choice2: "B) To reduce training loss",
+    choice3: "C) To validate and clean input data to avoid malicious inputs",
+    choice4: "D) To normalize labels",
+    answer: 3,
+    explanation: "Input sanitization ensures that inputs are checked and cleaned before being processed by the model, preventing harmful or manipulated data from affecting the system."
+  }
+];
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='5l10.html'">Go to Level 10 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '5l9.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

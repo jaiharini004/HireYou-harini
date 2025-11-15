@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 5 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 2</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "What is the primary purpose of a Convolutional Neural Network (CNN) in computer vision?",
+    choice1: "A) Data normalization",
+    choice2: "B) Dimensionality reduction",
+    choice3: "C) Image classification and feature extraction",
+    choice4: "D) Sequence modeling",
+    answer: 3,
+    explanation: "CNNs are designed to process pixel data. They extract spatial hierarchies of features from images using convolutional layers, making them ideal for image classification and object recognition."
+  },
+  {
+    question: "Which of the following best describes the role of pooling layers in CNNs?",
+    choice1: "A) Increase the number of parameters",
+    choice2: "B) Convert images into grayscale",
+    choice3: "C) Reduce spatial dimensions and computation",
+    choice4: "D) Normalize the image",
+    answer: 3,
+    explanation: "Pooling layers (e.g., max pooling) downsample feature maps, reducing spatial dimensions and computation, and help in controlling overfitting."
+  },
+  {
+    question: "What is YOLO commonly used for in computer vision?",
+    choice1: "A) Image compression",
+    choice2: "B) Object detection in real-time",
+    choice3: "C) Face recognition",
+    choice4: "D) Style transfer",
+    answer: 2,
+    explanation: "YOLO (You Only Look Once) is a real-time object detection system that predicts bounding boxes and class probabilities directly from full images."
+  },
+  {
+    question: "What is transfer learning in computer vision?",
+    choice1: "A) Learning multiple tasks at once",
+    choice2: "B) Applying pre-trained models to new tasks",
+    choice3: "C) Sharing GPU memory between models",
+    choice4: "D) Using ensemble methods for images",
+    answer: 2,
+    explanation: "Transfer learning involves reusing a model trained on one dataset (e.g., ImageNet) for another similar task, saving training time and improving performance on smaller datasets."
+  },
+  {
+    question: "Which pre-trained model is commonly used for image classification tasks?",
+    choice1: "A) BERT",
+    choice2: "B) YOLOv5",
+    choice3: "C) ResNet",
+    choice4: "D) GPT-4",
+    answer: 3,
+    explanation: "ResNet (Residual Network) is a deep CNN model known for using skip connections to prevent vanishing gradients, and it's widely used in image classification."
+  },
+  {
+    question: "In OpenCV, which function is used to read an image file?",
+    choice1: "A) cv2.open()",
+    choice2: "B) cv2.imshow()",
+    choice3: "C) cv2.imread()",
+    choice4: "D) cv2.load()",
+    answer: 3,
+    explanation: "cv2.imread() is used in OpenCV to load an image from a file path into a matrix (NumPy array) for further processing."
+  },
+  {
+    question: "What does the stride parameter in a convolution operation control?",
+    choice1: "A) The number of filters",
+    choice2: "B) The overlap between images",
+    choice3: "C) The step size for moving the filter",
+    choice4: "D) The depth of the input image",
+    answer: 3,
+    explanation: "Stride defines how much the filter moves across the input image. A stride of 1 means the filter moves 1 pixel at a time, affecting output dimensions."
+  },
+  {
+    question: "What is the primary difference between object detection and image classification?",
+    choice1: "A) Object detection uses grayscale images",
+    choice2: "B) Image classification identifies where objects are located",
+    choice3: "C) Object detection localizes and classifies objects; classification only assigns a label to an image",
+    choice4: "D) Image classification is used for video",
+    answer: 3,
+    explanation: "Image classification assigns a single label to an entire image, while object detection identifies and classifies multiple objects within the image using bounding boxes."
+  },
+  {
+    question: "What advantage do CNNs have over fully connected neural networks for images?",
+    choice1: "A) They require more parameters",
+    choice2: "B) They are not suitable for image data",
+    choice3: "C) They exploit spatial relationships in images using local connections",
+    choice4: "D) They use more dropout layers",
+    answer: 3,
+    explanation: "CNNs reduce the number of parameters through shared weights and local connectivity, effectively capturing spatial hierarchies in image data."
+  },
+  {
+    question: "Which of the following layers is typically used at the end of a CNN for classification?",
+    choice1: "A) ReLU",
+    choice2: "B) Convolutional",
+    choice3: "C) Pooling",
+    choice4: "D) Softmax",
+    answer: 4,
+    explanation: "The softmax layer outputs a probability distribution over classes and is commonly used as the final layer in classification tasks to interpret predictions."
+  }
+];
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='5l3.html'">Go to Level 3 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '5l2.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
