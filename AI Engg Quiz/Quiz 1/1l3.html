@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 1 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 3</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "Which of the following is the correct formula for the trace of a matrix?",
+    choice1: "A) Sum of diagonal elements",
+    choice2: "B) Sum of all elements",
+    choice3: "C) Sum of row elements",
+    choice4: "D) Sum of column elements",
+    answer: 1,
+    explanation: "Trace refers to the sum of diagonal elements of a square matrix."
+  },
+  {
+    question: "The dot product of two vectors A = [2, 3] and B = [4, -1] is:",
+    choice1: "A) 10",
+    choice2: "B) 5",
+    choice3: "C) 12",
+    choice4: "D) 6",
+    answer: 2,
+    explanation: "Dot product = (2×4) + (3×-1) = 8 - 3 = 5."
+  },
+  {
+    question: "If A = [1 2; 3 4], what is Aᵗ (transpose of A)?",
+    choice1: "A) [2 3; 1 4]",
+    choice2: "B) [1 3; 2 4]",
+    choice3: "C) [4 3; 2 1]",
+    choice4: "D) [3 1; 4 2]",
+    answer: 2,
+    explanation: "Transpose of a matrix is obtained by flipping rows into columns."
+  },
+  {
+    question: "What is the second derivative of f(x) = x³ + 2x² + x?",
+    choice1: "A) 6x² + 4x + 1",
+    choice2: "B) 6x + 4",
+    choice3: "C) 3x² + 2x",
+    choice4: "D) 3x³ + 2x²",
+    answer: 2,
+    explanation: "First derivative: f'(x) = 3x² + 4x + 1\nSecond derivative: f''(x) = 6x + 4"
+  },
+  {
+    question: "Which probability distribution is used for modeling the number of successes in a fixed number of trials?",
+    choice1: "A) Normal Distribution",
+    choice2: "B) Binomial Distribution",
+    choice3: "C) Poisson Distribution",
+    choice4: "D) Exponential Distribution",
+    answer: 2,
+    explanation: "Binomial distribution models the number of successes in a fixed number of independent Bernoulli trials."
+  },
+  {
+    question: "What is the rank of the matrix [1 2; 3 4]?",
+    choice1: "A) 3",
+    choice2: "B) 2",
+    choice3: "C) 2",
+    choice4: "D) 1",
+    answer: 3,
+    explanation: "Rank of a matrix is the number of linearly independent rows or columns. Here, both rows are linearly independent."
+  },
+  {
+    question: "If P(A) = 0.6 and P(B) = 0.5, what is P(A ∪ B) if P(A ∩ B) = 0.3?",
+    choice1: "A) 1.1",
+    choice2: "B) 0.8",
+    choice3: "C) 0.5",
+    choice4: "D) 0.3",
+    answer: 2,
+    explanation: "P(A ∪ B) = P(A) + P(B) - P(A ∩ B) = 0.6 + 0.5 - 0.3 = 0.8"
+  },
+  {
+    question: "The Jacobian matrix of a vector function represents:",
+    choice1: "A) The function’s second derivative",
+    choice2: "B) The function’s first derivative",
+    choice3: "C) The total sum of derivatives",
+    choice4: "D) The matrix of all first-order partial derivatives",
+    answer: 4,
+    explanation: "Jacobian is a matrix of all first-order partial derivatives of a vector-valued function."
+  },
+  {
+    question: "What is the determinant of the matrix [2 4; 1 3]?",
+    choice1: "A) 10",
+    choice2: "B) 2",
+    choice3: "C) 3",
+    choice4: "D) 6",
+    answer: 2,
+    explanation: "Determinant = (2×3) - (4×1) = 6 - 4 = 2"
+  },
+  {
+    question: "The softmax function converts a vector of values into what?",
+    choice1: "A) A binary vector",
+    choice2: "B) A vector with values between 0 and 1",
+    choice3: "C) A probability distribution",
+    choice4: "D) A unit vector",
+    answer: 3,
+    explanation: "Softmax outputs probabilities summing to 1, making it suitable for classification tasks."
+  }
+];
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='1l4.html'">Go to Level 4 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '1l3.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

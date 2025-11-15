@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 1 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 4</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "In deep learning, the vanishing gradient problem occurs when:",
+    choice1: "A) The gradient becomes too large, causing overflow",
+    choice2: "B) The gradient becomes small and ineffective for weight updates during backpropagation",
+    choice3: "C) The gradient becomes small and ineffective for weight updates during backpropagation",
+    choice4: "D) The gradient does not change with the number of epochs",
+    answer: 3,
+    explanation: "The vanishing gradient problem happens when gradients become too small to effectively update weights, especially in deep neural networks."
+  },
+  {
+    question: "In the context of stochastic processes, which of the following is a property of a Poisson process?",
+    choice1: "A) It is continuous and has normally distributed increments",
+    choice2: "B) The increments are independent, and the rate parameter is constant over time",
+    choice3: "C) The increments are independent, and the rate parameter is constant over time",
+    choice4: "D) It is used only for modeling continuous signals",
+    answer: 3,
+    explanation: "A Poisson process has independent increments, and events occur at a constant average rate over time."
+  },
+  {
+    question: "The concept of a \"conjugate prior\" in Bayesian statistics refers to:",
+    choice1: "A) A prior that results in a posterior distribution of the same form",
+    choice2: "B) A prior that results in a posterior distribution of the same form",
+    choice3: "C) A prior that is independent of the likelihood function",
+    choice4: "D) A prior that maximizes the likelihood function",
+    answer: 2,
+    explanation: "A conjugate prior is chosen such that the posterior distribution is in the same family as the prior, simplifying Bayesian inference."
+  },
+  {
+    question: "In optimization, which of the following algorithms is most commonly used for finding the saddle points in deep learning models?",
+    choice1: "A) Newton’s method",
+    choice2: "B) Adam optimizer",
+    choice3: "C) Stochastic Gradient Descent (SGD) with momentum",
+    choice4: "D) Conjugate Gradient Descent",
+    answer: 3,
+    explanation: "SGD with momentum helps escape saddle points and accelerates training by smoothing the optimization path."
+  },
+  {
+    question: "In information theory, the mutual information between two random variables is used to measure:",
+    choice1: "A) The total entropy of the system",
+    choice2: "B) The difference between the joint and marginal entropies",
+    choice3: "C) The amount of information shared between the variables",
+    choice4: "D) The conditional probability of one variable given the other",
+    answer: 3,
+    explanation: "Mutual information quantifies the amount of information obtained about one variable through observing another."
+  },
+  {
+    question: "The concept of \"regularization\" in machine learning refers to:",
+    choice1: "A) Adding a penalty term to the objective function to prevent overfitting",
+    choice2: "B) Adding a penalty term to the objective function to prevent overfitting",
+    choice3: "C) Increasing the size of the training data to improve model performance",
+    choice4: "D) Decreasing the number of features in the model",
+    answer: 2,
+    explanation: "Regularization techniques like L1 or L2 help control model complexity and prevent overfitting."
+  },
+  {
+    question: "In the Expectation-Maximization (EM) algorithm, the E-step involves:",
+    choice1: "A) Maximizing the likelihood function with respect to the model parameters",
+    choice2: "B) Computing the expected value of the latent variables given the observed data",
+    choice3: "C) Estimating the distribution of the observed data",
+    choice4: "D) Updating the model parameters based on the data",
+    answer: 2,
+    explanation: "The E-step estimates the missing data (latent variables) based on current parameter values."
+  },
+  {
+    question: "Which of the following is the main limitation of the K-means clustering algorithm?",
+    choice1: "A) It cannot handle large datasets",
+    choice2: "B) It requires labeled data",
+    choice3: "C) It is sensitive to the initial choice of centroids",
+    choice4: "D) It cannot handle categorical data",
+    answer: 3,
+    explanation: "K-means may converge to suboptimal solutions depending on the initial centroids chosen."
+  },
+  {
+    question: "The Fokker-Planck equation is used to model:",
+    choice1: "A) The distribution of random variables in a deterministic system",
+    choice2: "B) The transition probabilities in a Markov chain",
+    choice3: "C) The time evolution of the probability density function of a stochastic process",
+    choice4: "D) The optimization of a stochastic cost function",
+    answer: 3,
+    explanation: "The Fokker-Planck equation describes how the probability density of a stochastic process evolves over time."
+  },
+  {
+    question: "The No Free Lunch (NFL) theorem in optimization and machine learning states that:",
+    choice1: "A) No single algorithm can perform best on all possible tasks",
+    choice2: "B) No single algorithm can perform best on all possible tasks",
+    choice3: "C) All machine learning algorithms are equally effective",
+    choice4: "D) Optimization techniques will always converge to the global minimum",
+    answer: 2,
+    explanation: "The NFL theorem asserts that performance averages out over all problems—no one algorithm wins universally."
+  }
+];
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='1l5.html'">Go to Level 5 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '1l4.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

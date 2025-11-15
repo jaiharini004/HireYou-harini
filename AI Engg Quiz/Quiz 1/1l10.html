@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 1 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "In the context of optimization, what is the primary purpose of using the Newton-Raphson method?",
+    choice1: "A) To find the optimal weights in neural networks",
+    choice2: "B) To find the roots of a real-valued function using second-order derivatives",
+    choice3: "C) To minimize the cost function in logistic regression",
+    choice4: "D) To perform linear regression analysis",
+    answer: 2,
+    explanation: "Newton-Raphson is an iterative root-finding algorithm that uses the function's derivative and second derivative to converge to a solution quickly."
+  },
+  {
+    question: "In the context of machine learning, what is the purpose of the Jacobian matrix?",
+    choice1: "A) To compute the gradient of a scalar function with respect to the input",
+    choice2: "B) To describe the rate of change of a vector function with respect to its variables",
+    choice3: "C) To compute the loss function",
+    choice4: "D) To update the model parameters in gradient descent",
+    answer: 2,
+    explanation: "The Jacobian matrix is used for functions that map vectors to vectors and is important in sensitivity analysis and backpropagation."
+  },
+  {
+    question: "What is the primary objective of the variational inference method in Bayesian statistics?",
+    choice1: "A) To find the exact posterior distribution of the model parameters",
+    choice2: "B) To approximate the likelihood function of the model",
+    choice3: "C) To approximate the posterior distribution using simpler distributions",
+    choice4: "D) To minimize the loss function in a probabilistic model",
+    answer: 3,
+    explanation: "Variational inference approximates complex posterior distributions by optimizing over a family of simpler distributions."
+  },
+  {
+    question: "In gradient-based optimization, what does the learning rate control?",
+    choice1: "A) The size of the dataset used in each iteration",
+    choice2: "B) The step size taken in the direction of the gradient",
+    choice3: "C) The number of hidden layers in a neural network",
+    choice4: "D) The output range of the activation function",
+    answer: 2,
+    explanation: "The learning rate determines how large a step is taken toward the minimum of the loss function during each iteration of optimization."
+  },
+  {
+    question: "Which of the following is true about a Markov Decision Process (MDP)?",
+    choice1: "A) The state of the system is determined solely by its past states",
+    choice2: "B) The future state depends only on the current state and action",
+    choice3: "C) The rewards in the MDP are independent of the actions taken",
+    choice4: "D) It does not involve any transition probabilities",
+    answer: 2,
+    explanation: "MDPs satisfy the Markov property: future states depend only on the present state and action, not past states."
+  },
+  {
+    question: "The Wiener process is a type of:",
+    choice1: "A) Stochastic differential equation",
+    choice2: "B) Discrete-time random walk",
+    choice3: "C) Continuous-time stochastic process",
+    choice4: "D) Probability distribution function",
+    answer: 3,
+    explanation: "The Wiener process (or Brownian motion) is a fundamental continuous-time stochastic process used in modeling random movement."
+  },
+  {
+    question: "The value function in reinforcement learning represents:",
+    choice1: "A) The total reward the agent will receive from its actions",
+    choice2: "B) The expected cumulative reward the agent will receive from a given state",
+    choice3: "C) The probability of the agent transitioning between states",
+    choice4: "D) The immediate reward the agent receives from a specific action",
+    answer: 2,
+    explanation: "The value function measures how good it is to be in a state, considering expected future rewards."
+  },
+  {
+    question: "In a Gaussian mixture model (GMM), the responsibility of a cluster is calculated using:",
+    choice1: "A) Maximum likelihood estimation",
+    choice2: "B) Expectation-Maximization (EM) algorithm",
+    choice3: "C) The posterior probability of each data point belonging to a specific Gaussian component",
+    choice4: "D) The distance between the data points and the cluster centroid",
+    answer: 3,
+    explanation: "The responsibility is the probability that a data point belongs to a particular Gaussian component in the mixture."
+  },
+  {
+    question: "In reinforcement learning, the Bellman equation describes:",
+    choice1: "A) The optimal policy for taking actions in each state",
+    choice2: "B) The relationship between the current value of a state and the expected future value",
+    choice3: "C) The relationship between the current value of a state and the expected future value",
+    choice4: "D) The reward function for an agent’s actions",
+    answer: 3,
+    explanation: "The Bellman equation provides a recursive decomposition for computing the value function."
+  },
+  {
+    question: "The Laplace approximation is used in Bayesian inference to:",
+    choice1: "A) Compute the exact posterior distribution",
+    choice2: "B) Approximate the posterior distribution as a Gaussian distribution around the mode",
+    choice3: "C) Approximate the posterior distribution as a Gaussian distribution around the mode",
+    choice4: "D) Maximize the likelihood function",
+    answer: 3,
+    explanation: "Laplace approximation simplifies complex posteriors by fitting a Gaussian distribution centered at the mode."
+  }
+];
+
+
+
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='ai_engineer.html'">Hurreyy ! You Aced it 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '1l10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 1 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 5</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "The rank of a matrix is the number of:",
+    choice1: "A) Non-zero elements",
+    choice2: "B) Linearly independent rows or columns",
+    choice3: "C) Diagonal elements",
+    choice4: "D) Linearly independent rows or columns",
+    answer: 4,
+    explanation: "The rank of a matrix is defined as the maximum number of linearly independent row or column vectors in the matrix."
+  },
+  {
+    question: "Which of the following is the matrix form of the system of equations:\n2x + 3y = 5\n4x + 5y = 6",
+    choice1: "A) [2 3] * [x] = [5]    [4 5] [y]  [6]",
+    choice2: "B) [2 5] * [x] = [5]    [4 3] [y]  [6]",
+    choice3: "C) [2 4] * [x] = [5]    [3 5] [y]  [6]",
+    choice4: "D) [2 4] * [x] = [5]    [3 4] [y]  [6]",
+    answer: 1,
+    explanation: "To convert a system of linear equations into matrix form, the coefficient matrix multiplies the variable column matrix to equal the constant matrix."
+  },
+  {
+    question: "What is the integral of f(x) = 3x² + 2x + 1?",
+    choice1: "A) x³ + x² + x",
+    choice2: "B) x³ + x² + x + C",
+    choice3: "C) x³ + x² + x + C",
+    choice4: "D) 2x³ + 2x² + x",
+    answer: 3,
+    explanation: "The integral of 3x² + 2x + 1 is x³ + x² + x + C, where C is the constant of integration."
+  },
+  {
+    question: "Which of the following is the formula for calculating the covariance between two random variables X and Y?",
+    choice1: "A) E[(X + μₓ)(Y + μᵧ)]",
+    choice2: "B) E[(X − μₓ)(Y − μᵧ)]",
+    choice3: "C) E[(X − μᵧ)(Y − μₓ)]",
+    choice4: "D) E[XY] − μₓμᵧ",
+    answer: 2,
+    explanation: "Cov(X, Y) = E[(X − μₓ)(Y − μᵧ)]. It measures how two random variables vary together."
+  },
+  {
+    question: "If a matrix A is invertible, then the determinant of A is:",
+    choice1: "A) 0",
+    choice2: "B) Non-zero",
+    choice3: "C) 1",
+    choice4: "D) -1",
+    answer: 2,
+    explanation: "A matrix is invertible if and only if its determinant is non-zero."
+  },
+  {
+    question: "The Bayes' Theorem provides a method for updating what?",
+    choice1: "A) A probability distribution for a random variable",
+    choice2: "B) An assumption of the likelihood of a feature",
+    choice3: "C) A probability estimate based on new data",
+    choice4: "D) A fixed probability of an event",
+    answer: 3,
+    explanation: "Bayes' Theorem is used to update probabilities based on new evidence."
+  },
+  {
+    question: "In probability theory, what is the expected value of a discrete random variable?",
+    choice1: "A) The value that occurs most frequently",
+    choice2: "B) The sum of the values of the random variable",
+    choice3: "C) The average of the possible outcomes",
+    choice4: "D) The average of the possible outcomes weighted by their probabilities",
+    answer: 4,
+    explanation: "The expected value is the weighted average of all possible values the random variable can take."
+  },
+  {
+    question: "What is the gradient descent optimization technique primarily used for?",
+    choice1: "A) Solving linear equations",
+    choice2: "B) Finding the maximum value of a function",
+    choice3: "C) Minimizing the cost function in machine learning",
+    choice4: "D) Minimizing the cost function in machine learning",
+    answer: 4,
+    explanation: "Gradient descent is an optimization algorithm used to minimize a loss function in machine learning by iteratively moving in the direction of steepest descent."
+  },
+  {
+    question: "What is the first derivative of f(x) = ln(x)?",
+    choice1: "A) 1 / x²",
+    choice2: "B) 1 / x",
+    choice3: "C) ln(x)²",
+    choice4: "D) x ⋅ ln(x)",
+    answer: 2,
+    explanation: "The derivative of ln(x) with respect to x is 1 / x."
+  },
+  {
+    question: "What is the derivative of f(x) = eˣ?",
+    choice1: "A) e^(2x)",
+    choice2: "B) x ⋅ eˣ",
+    choice3: "C) eˣ",
+    choice4: "D) ln(x)",
+    answer: 3,
+    explanation: "The derivative of the exponential function eˣ is eˣ itself."
+  }
+];
+
+
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='1l6.html'">Go to Level 6 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '1l5.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

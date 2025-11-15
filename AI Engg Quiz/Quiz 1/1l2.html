@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 1 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 2</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  // Previous questions (1 to 10)...
+
+  {
+    question: "What is the inverse of the matrix [[1, 2], [3, 4]]?",
+    choice1: "A) [[4, -2], [-3, 1]]",
+    choice2: "B) [[-2, 1], [1.5, -0.5]]",
+    choice3: "C) [[2, -10.5], [-1.5, 0.5]]",
+    choice4: "D) [[1, 2], [1, 3]]",
+    answer: 2,
+    explanation: "The inverse of a 2×2 matrix [[a, b], [c, d]] is (1/(ad − bc)) * [[d, -b], [-c, a]]. Here, ad − bc = -2, giving the correct inverse."
+  },
+  {
+    question: "The sum of a random variable’s probabilities is 1. This property is called?",
+    choice1: "A) Normalization",
+    choice2: "B) Additivity",
+    choice3: "C) Total Probability Rule",
+    choice4: "D) Bayes' Theorem",
+    answer: 3,
+    explanation: "The Total Probability Rule states that the sum of probabilities of all mutually exclusive outcomes equals 1."
+  },
+  {
+    question: "Which of the following is the identity matrix for a 3×3 matrix?",
+    choice1: "A) [[1, 1, 1], [1, 1, 1], [1, 1, 1]]",
+    choice2: "B) [[1, 0, 0], [0, 1, 0], [0, 0, 1]]",
+    choice3: "C) [[0, 1, 0], [1, 0, 1], [0, 0, 1]]",
+    choice4: "D) [[1, 1, 0], [0, 1, 0], [0, 0, 1]]",
+    answer: 2,
+    explanation: "An identity matrix has 1s on the main diagonal and 0s elsewhere."
+  },
+  {
+    question: "If f(x) = 2x² + 3x, what is the derivative f'(x)?",
+    choice1: "A) 4x + 3",
+    choice2: "B) 4x² + 3x",
+    choice3: "C) 4x + 3",
+    choice4: "D) 2x + 3",
+    answer: 3,
+    explanation: "Using basic differentiation: d/dx[2x²] = 4x and d/dx[3x] = 3, so f'(x) = 4x + 3."
+  },
+  {
+    question: "The area of a triangle is (1/2) × base × height. If area = 20 and height = 4, what is the base?",
+    choice1: "A) 4",
+    choice2: "B) 10",
+    choice3: "C) 20",
+    choice4: "D) 2",
+    answer: 2,
+    explanation: "20 = (1/2) × base × 4 ⇒ base = (20 × 2) / 4 = 10."
+  },
+  {
+    question: "If a matrix is square, what does it mean?",
+    choice1: "A) The matrix has equal number of rows and columns.",
+    choice2: "B) The matrix has the same number of rows and columns.",
+    choice3: "C) The matrix is symmetric.",
+    choice4: "D) The matrix is invertible.",
+    answer: 2,
+    explanation: "A square matrix has the same number of rows and columns. Symmetry and invertibility are additional properties, not definitions."
+  },
+  {
+    question: "What is the probability of getting heads in a fair coin flip?",
+    choice1: "A) 1",
+    choice2: "B) 0",
+    choice3: "C) 0.5",
+    choice4: "D) 0.75",
+    answer: 3,
+    explanation: "A fair coin has two outcomes (heads and tails), so the probability of heads is 1/2 = 0.5."
+  },
+  {
+    question: "Which of the following is a common activation function in neural networks?",
+    choice1: "A) ReLU",
+    choice2: "B) Exponential",
+    choice3: "C) Sine",
+    choice4: "D) All of the above",
+    answer: 4,
+    explanation: "ReLU is widely used. Exponential and sine are also used in specific types of networks or experimental architectures."
+  },
+  {
+    question: "If P(A ∪ B) = 0.7 and P(A ∩ B) = 0.3, what is P(A | B)?",
+    choice1: "A) 0.3",
+    choice2: "B) 0.5",
+    choice3: "C) 0.7",
+    choice4: "D) 0.428",
+    answer: 4,
+    explanation: "P(A | B) = P(A ∩ B) / P(B). From P(A ∪ B) = P(A) + P(B) − P(A ∩ B) ⇒ 0.7 = 0.4 + 0.6 − 0.3. So P(B) = 0.7, P(A | B) = 0.3 / 0.7 ≈ 0.428."
+  },
+  {
+    question: "The gradient of a scalar function is a vector that points in the direction of what?",
+    choice1: "A) Largest slope",
+    choice2: "B) Maximum rate of increase",
+    choice3: "C) Smallest slope",
+    choice4: "D) Minimum rate of decrease",
+    answer: 2,
+    explanation: "The gradient always points in the direction of the maximum rate of increase of a scalar function."
+  }
+];
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='1l3.html'">Go to Level 3 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '1l2.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

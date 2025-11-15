@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI ENGG - 1 Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 7</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "Which of the following is the correct formula for the Singular Value Decomposition (SVD) of a matrix A?",
+    choice1: "A) A = UΛVᵀ",
+    choice2: "B) A = UᵀΛV",
+    choice3: "C) A = ΛUVᵀ",
+    choice4: "D) A = UΛVᵀ",
+    answer: 4,
+    explanation: "In SVD, any real or complex matrix A can be decomposed into UΛVᵀ, where U and V are orthogonal (or unitary) matrices, and Λ is a diagonal matrix of singular values."
+  },
+  {
+    question: "Which of the following is true about a symmetric matrix?",
+    choice1: "A) All eigenvalues are complex numbers",
+    choice2: "B) It is always singular",
+    choice3: "C) It has real eigenvalues and orthogonal eigenvectors",
+    choice4: "D) It cannot be diagonalized",
+    answer: 3,
+    explanation: "Symmetric matrices have real eigenvalues and their eigenvectors are orthogonal, making them diagonalizable."
+  },
+  {
+    question: "The Kullback-Leibler (KL) divergence between two probability distributions P and Q is:",
+    choice1: "A) A symmetric measure of distance",
+    choice2: "B) Always zero",
+    choice3: "C) Asymmetric and measures the difference in entropy between two distributions",
+    choice4: "D) A distance metric in machine learning",
+    answer: 3,
+    explanation: "KL divergence is an asymmetric measure that quantifies how one probability distribution diverges from a second expected distribution."
+  },
+  {
+    question: "The optimization problem in linear regression can be solved by minimizing the:",
+    choice1: "A) L1 regularization term",
+    choice2: "B) Mean squared error (MSE)",
+    choice3: "C) Mean squared error (MSE)",
+    choice4: "D) L2 regularization term",
+    answer: 3,
+    explanation: "Linear regression aims to minimize the mean squared error between predicted and actual values to find the best-fit line."
+  },
+  {
+    question: "The Jacobian matrix is used to:",
+    choice1: "A) Solve linear equations",
+    choice2: "B) Calculate the inverse of a matrix",
+    choice3: "C) Describe the rate of change of a vector function with respect to its variables",
+    choice4: "D) Find the determinant of a matrix",
+    answer: 3,
+    explanation: "The Jacobian matrix contains all first-order partial derivatives of a vector-valued function, showing how it changes with respect to its input variables."
+  },
+  {
+    question: "In probability theory, which distribution is used to model the number of events occurring within a fixed interval of time or space?",
+    choice1: "A) Normal Distribution",
+    choice2: "B) Poisson Distribution",
+    choice3: "C) Exponential Distribution",
+    choice4: "D) Binomial Distribution",
+    answer: 2,
+    explanation: "The Poisson distribution models the count of events happening within a fixed period or region when the events occur independently and at a constant average rate."
+  },
+  {
+    question: "The power iteration method is used for:",
+    choice1: "A) Calculating the determinant of a matrix",
+    choice2: "B) Finding the inverse of a matrix",
+    choice3: "C) Finding the dominant eigenvalue and eigenvector of a matrix",
+    choice4: "D) Solving systems of linear equations",
+    answer: 3,
+    explanation: "Power iteration is an algorithm for finding the largest eigenvalue and corresponding eigenvector of a matrix."
+  },
+  {
+    question: "What is the rank of a matrix?",
+    choice1: "A) The number of rows in the matrix",
+    choice2: "B) The number of columns in the matrix",
+    choice3: "C) The maximum number of linearly independent rows or columns",
+    choice4: "D) The number of non-zero entries in the matrix",
+    answer: 3,
+    explanation: "The rank of a matrix is the dimension of the vector space spanned by its rows or columns — i.e., the number of linearly independent rows or columns."
+  },
+  {
+    question: "The Lagrange multiplier method is used to solve:",
+    choice1: "A) Optimization problems without constraints",
+    choice2: "B) Optimization problems with equality constraints",
+    choice3: "C) Optimization problems with equality constraints",
+    choice4: "D) Linear regression models",
+    answer: 3,
+    explanation: "Lagrange multipliers are used to find local maxima and minima of a function subject to equality constraints."
+  },
+  {
+    question: "The central limit theorem states that:",
+    choice1: "A) The mean of a sample will always be normally distributed",
+    choice2: "B) The sum of a large number of independent and identically distributed random variables is normally distributed",
+    choice3: "C) The sum of a large number of independent and identically distributed random variables is normally distributed",
+    choice4: "D) The variance of a sample increases with sample size",
+    answer: 3,
+    explanation: "The Central Limit Theorem states that the distribution of the sample sum (or average) approximates a normal distribution as the sample size becomes large, regardless of the original distribution."
+  }
+];
+
+
+
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='1l8.html'">Go to Level 8 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = '1l7.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
