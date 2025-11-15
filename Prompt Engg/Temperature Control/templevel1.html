@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>temp level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 1</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "What does 'temperature' control in a language model?",
+    choice1: "Speed",
+    choice2: "Output randomness",
+    choice3: "Grammar",
+    choice4: "Typing style",
+    answer: 2,
+    explanation: "Temperature controls how random or creative the model’s responses are."
+  },
+  {
+    question: "What is the default temperature value in most models like GPT?",
+    choice1: "0.1",
+    choice2: "0.7",
+    choice3: "1.5",
+    choice4: "5.0",
+    answer: 2,
+    explanation: "A default temperature of 0.7 balances creativity and coherence."
+  },
+  {
+    question: "A lower temperature (e.g., 0.1) produces responses that are:",
+    choice1: "Wildly creative",
+    choice2: "Very random",
+    choice3: "Highly consistent and deterministic",
+    choice4: "Irrelevant",
+    answer: 3,
+    explanation: "Low temperature leads to predictable and focused outputs."
+  },
+  {
+    question: "A high temperature (e.g., 1.0) makes responses:",
+    choice1: "Less creative",
+    choice2: "More likely to repeat",
+    choice3: "More creative and varied",
+    choice4: "Always the same",
+    answer: 3,
+    explanation: "Higher temperature increases randomness and creativity."
+  },
+  {
+    question: "If you want a factual summary, which temperature is best?",
+    choice1: "0.0",
+    choice2: "0.9",
+    choice3: "1.2",
+    choice4: "2.0",
+    answer: 1,
+    explanation: "A temperature close to 0 gives the most reliable, fact-based output."
+  },
+  {
+    question: "What happens when temperature = 0?",
+    choice1: "Output is random",
+    choice2: "Output is always the same for same prompt",
+    choice3: "Model breaks",
+    choice4: "Faster typing",
+    answer: 2,
+    explanation: "At 0, the model becomes deterministic—same output every time."
+  },
+  {
+    question: "Which temperature value is most suitable for brainstorming ideas?",
+    choice1: "0.1",
+    choice2: "0.3",
+    choice3: "0.5",
+    choice4: "1.0",
+    answer: 4,
+    explanation: "High creativity is preferred for idea generation."
+  },
+  {
+    question: "If you want structured, formal writing, choose temperature:",
+    choice1: "0.0–0.3",
+    choice2: "0.5–1.0",
+    choice3: "1.2",
+    choice4: "2.0",
+    answer: 1,
+    explanation: "Low temperature gives more formal and accurate outputs."
+  },
+  {
+    question: "Temperature is a value between:",
+    choice1: "0–10",
+    choice2: "0–100",
+    choice3: "0–2",
+    choice4: "0–1 (usually)",
+    answer: 4,
+    explanation: "Most models accept temperatures from 0 to 1 (sometimes up to 2)."
+  },
+  {
+    question: "A temperature of 1.5 will likely result in output that is:",
+    choice1: "Very formal",
+    choice2: "Deterministic",
+    choice3: "Creative and unusual",
+    choice4: "Short and simple",
+    answer: 3,
+    explanation: "Temperatures above 1 lead to highly diverse or chaotic responses."
+  }
+];
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='templevel2.html'">Go to Level 2 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'templevel1.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

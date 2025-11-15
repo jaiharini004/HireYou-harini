@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>temp level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "Given logits: [5.0, 2.0, 1.0], compute softmax with T = 1.0.",
+    choice1: "[0.87, 0.09, 0.04]",
+    choice2: "[0.73, 0.15, 0.12]",
+    choice3: "[0.90, 0.07, 0.03]",
+    choice4: "[0.80, 0.10, 0.10]",
+    answer: 1,
+    explanation: "Softmax(x) = exp(x) / ∑exp(x): exp(5) = 148.4, exp(2) = 7.39, exp(1) = 2.72. Total = 158.5 → Prob = [148.4/158.5 ≈ 0.87, 7.39/158.5 ≈ 0.047, 2.72/158.5 ≈ 0.017]"
+  },
+  {
+    question: "Same logits as Q81. Now compute softmax with T = 2.0.",
+    choice1: "[0.71, 0.18, 0.11]",
+    choice2: "[0.59, 0.25, 0.16]",
+    choice3: "[0.45, 0.30, 0.25]",
+    choice4: "[0.35, 0.35, 0.30]",
+    answer: 2,
+    explanation: "Divide logits by T: [2.5, 1.0, 0.5]. exp(2.5) = 12.18, exp(1.0) = 2.72, exp(0.5) = 1.65. Total = ~16.55 → Prob ≈ [0.59, 0.25, 0.16]"
+  },
+  {
+    question: "If entropy at T=1.0 is 1.2 bits, what is expected entropy at T=1.5 (qualitatively)?",
+    choice1: "1.2",
+    choice2: "Less than 1.2",
+    choice3: "Greater than 1.2",
+    choice4: "0",
+    answer: 3,
+    explanation: "Higher T = more randomness = more entropy (uncertainty)."
+  },
+  {
+    question: "What’s the approximate KL-divergence between T=0.7 and T=1.2 distributions (using same logits)?",
+    choice1: "0",
+    choice2: "Small positive value",
+    choice3: "Very high",
+    choice4: "Negative",
+    answer: 2,
+    explanation: "Since temperature changes distribution shape, KL ≠ 0. Not large unless very extreme."
+  },
+  {
+    question: "Compute softmax for logits [1.5, 1.0, 0.0] at T = 0.5",
+    choice1: "[0.71, 0.26, 0.03]",
+    choice2: "[0.64, 0.28, 0.08]",
+    choice3: "[0.55, 0.35, 0.10]",
+    choice4: "[0.75, 0.20, 0.05]",
+    answer: 1,
+    explanation: "Apply softmax after scaling up due to low temperature. exp(3) = 20.09, exp(2) = 7.39, exp(0) = 1. Total = 28.48"
+  },
+  {
+    question: "Why is softmax sensitive to temperature in exponential terms?",
+    choice1: "Because softmax uses logarithms",
+    choice2: "Because it uses linear scaling",
+    choice3: "Because it uses exponentials",
+    choice4: "Because of token count",
+    answer: 3,
+    explanation: "Softmax = exp(logits/T); any change in T changes output exponentially."
+  },
+  {
+    question: "Consider two temperatures: T1 = 0.6 and T2 = 1.2. Which has higher Shannon entropy (on average)?",
+    choice1: "T1",
+    choice2: "T2",
+    choice3: "Equal",
+    choice4: "Cannot tell",
+    answer: 2,
+    explanation: "Higher T flattens probabilities → more uncertainty → higher entropy."
+  },
+  {
+    question: "Model gives softmax: [0.7, 0.2, 0.1] at T = 1. What’s the entropy?",
+    choice1: "≈ 0.92 bits",
+    choice2: "≈ 1.05 bits",
+    choice3: "≈ 1.16 bits",
+    choice4: "≈ 1.23 bits",
+    answer: 3,
+    explanation: "H = −∑p log₂(p) = −(0.7×log₂0.7 + 0.2×log₂0.2 + 0.1×log₂0.1) ≈ 1.16"
+  },
+  {
+    question: "Prompt response is erratic and illogical. Most likely cause?",
+    choice1: "Low temperature",
+    choice2: "Poor training",
+    choice3: "High temperature",
+    choice4: "Not enough tokens",
+    answer: 3,
+    explanation: "High temperature causes random token selection—even illogical ones."
+  },
+  {
+    question: "What effect does increasing temperature from 1.0 to 2.0 have on top-token probability of 0.8?",
+    choice1: "Increases it",
+    choice2: "Keeps it same",
+    choice3: "Reduces it",
+    choice4: "Makes it 1",
+    answer: 3,
+    explanation: "Higher T flattens softmax—top token gets less weight."
+  }
+];
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='templevel10.html'">Go to Level 10 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'templevel9.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

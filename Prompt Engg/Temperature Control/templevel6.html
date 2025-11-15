@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>temp level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 6</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "If temperature is set to 1.0, how are probabilities affected?",
+    choice1: "Sharpened",
+    choice2: "Flattened",
+    choice3: "Unchanged",
+    choice4: "Randomized",
+    answer: 3,
+    explanation: "Temperature of 1 keeps the probability distribution unchanged."
+  },
+  {
+    question: "What’s the expected output behavior if temperature is adjusted from 0.2 to 0.8?",
+    choice1: "Shorter responses",
+    choice2: "Slower response",
+    choice3: "More varied and creative outputs",
+    choice4: "Fewer tokens used",
+    answer: 3,
+    explanation: "Increasing temperature introduces more randomness and diversity."
+  },
+  {
+    question: "A user wants factual answers but a little variety. What temperature should they use?",
+    choice1: "0.0",
+    choice2: "0.3",
+    choice3: "0.7",
+    choice4: "1.5",
+    answer: 2,
+    explanation: "A low-mid range like 0.3 maintains accuracy while allowing slight variation."
+  },
+  {
+    question: "Which output is most likely at temperature 1.4?",
+    choice1: "\"The sun rises in the west.\"",
+    choice2: "\"The sun rises in the east.\"",
+    choice3: "\"Sunset equals sunrise.\"",
+    choice4: "No output",
+    answer: 1,
+    explanation: "At high temperature, the model may hallucinate or generate inaccurate outputs."
+  },
+  {
+    question: "When tuning temperature for a poetry generator, what would be the impact of lowering it from 1.2 to 0.6?",
+    choice1: "More rhyme",
+    choice2: "More structure, less surprise",
+    choice3: "More repetition",
+    choice4: "Longer verses",
+    answer: 2,
+    explanation: "Lower temperature increases coherence and reduces creative risk."
+  },
+  {
+    question: "If two prompts yield very similar outputs at temperature 0.9, what does it imply?",
+    choice1: "Temperature isn't working",
+    choice2: "Prompts are too similar",
+    choice3: "Random seed is broken",
+    choice4: "Model is deterministic",
+    answer: 2,
+    explanation: "Similar prompts often lead to similar outputs, even at higher temperatures."
+  },
+  {
+    question: "Suppose logits = [2.0, 1.0, 0.5]. What happens when temperature is increased from 1.0 to 2.0?",
+    choice1: "First value dominates more",
+    choice2: "Values spread out equally",
+    choice3: "Model prefers lowest value",
+    choice4: "Output becomes binary",
+    answer: 2,
+    explanation: "High temperature reduces the dominance of the highest value and evens out the distribution."
+  },
+  {
+    question: "Why do researchers use temperature in prompt tuning experiments?",
+    choice1: "For API speed",
+    choice2: "To affect memory",
+    choice3: "To control randomness and explore output space",
+    choice4: "To change token length",
+    answer: 3,
+    explanation: "Temperature allows systematic exploration of creativity and control."
+  },
+  {
+    question: "What happens to response length as temperature increases (typically)?",
+    choice1: "Always increases",
+    choice2: "Always decreases",
+    choice3: "May increase due to exploratory generation",
+    choice4: "Stays constant",
+    answer: 3,
+    explanation: "Creative outputs often result in longer, more exploratory responses."
+  },
+  {
+    question: "If response randomness is critical, which combo is most effective?",
+    choice1: "Temperature = 0.0, Top-k = 50",
+    choice2: "Temperature = 1.0, Top-k = 1",
+    choice3: "Temperature = 1.0, Top-k = 50",
+    choice4: "Temperature = 0.1, Top-k = 1",
+    answer: 3,
+    explanation: "A high temperature with a large top-k encourages more diverse responses."
+  }
+];
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='templevel7.html'">Go to Level 7 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'templevel6.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

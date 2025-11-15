@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>temp level Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 7</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+const questions = [
+  {
+    question: "Given logits [3.0, 1.0, 0.5], how does temperature = 0.5 affect the distribution compared to temperature = 1.0?",
+    choice1: "Makes distribution flatter",
+    choice2: "Sharpens the distribution",
+    choice3: "Randomizes the output",
+    choice4: "Has no effect",
+    answer: 2,
+    explanation: "Lower temperatures (e.g., 0.5) sharpen the softmax, making high-probability tokens more dominant."
+  },
+  {
+    question: "A prompt has the following softmax output at T=1.0: [0.6, 0.3, 0.1]. What happens at T=2.0 (approx)?",
+    choice1: "[0.7, 0.2, 0.1]",
+    choice2: "[0.4, 0.35, 0.25]",
+    choice3: "[0.3, 0.4, 0.3]",
+    choice4: "[0.9, 0.05, 0.05]",
+    answer: 2,
+    explanation: "Higher temperature flattens probabilities—top token decreases, others increase."
+  },
+  {
+    question: "If logits are [2.0, 1.0], compute softmax output at temperature = 1.0.\nFormula: softmax(x) = exp(x) / sum(exp(x))",
+    choice1: "[0.8, 0.2]",
+    choice2: "[0.73, 0.27]",
+    choice3: "[0.6, 0.4]",
+    choice4: "[0.5, 0.5]",
+    answer: 2,
+    explanation: "exp(2.0) = 7.39\nexp(1.0) = 2.72\nSum = 10.11\nProbabilities ≈ [7.39/10.11, 2.72/10.11] = [0.73, 0.27]"
+  },
+  {
+    question: "What is the effect of setting temperature < 1 on entropy of the output?",
+    choice1: "Increases entropy",
+    choice2: "Reduces entropy",
+    choice3: "Keeps it the same",
+    choice4: "Makes entropy zero",
+    answer: 2,
+    explanation: "Lower temperature → less randomness → lower entropy."
+  },
+  {
+    question: "At T = 0.0, output is always the same. How can one introduce minimal variation without sacrificing reliability?",
+    choice1: "Use T = 1.5",
+    choice2: "Use T = 0.2",
+    choice3: "Use T = 0.9",
+    choice4: "Use T = 2.0",
+    answer: 2,
+    explanation: "A small increase from 0 (e.g., 0.2) allows slight variation while keeping core structure intact."
+  },
+  {
+    question: "Which behavior best represents temperature = 0.1?",
+    choice1: "Always top choice",
+    choice2: "90% chance of lowest choice",
+    choice3: "Equal chance for all",
+    choice4: "Model is disabled",
+    answer: 1,
+    explanation: "Low temperature ≈ deterministic; top token dominates."
+  },
+  {
+    question: "If logit vector = [4.0, 3.0, 2.0], apply T = 1.5. What happens to probability of 4.0?",
+    choice1: "Increases",
+    choice2: "Decreases",
+    choice3: "Stays same",
+    choice4: "Becomes 1",
+    answer: 2,
+    explanation: "T > 1 flattens the distribution; high logits lose dominance."
+  },
+  {
+    question: "What’s the relation between temperature and token probability sharpness?",
+    choice1: "Linear",
+    choice2: "Logarithmic",
+    choice3: "Inverse",
+    choice4: "Exponential",
+    answer: 4,
+    explanation: "Softmax exponentiates logits—so temperature affects probability exponentially."
+  },
+  {
+    question: "Using T = 0.0 in creative writing leads to what kind of text?",
+    choice1: "Flowing and original",
+    choice2: "Highly diverse",
+    choice3: "Predictable and repetitive",
+    choice4: "Hallucinated facts",
+    answer: 3,
+    explanation: "Temperature 0 gives deterministic, often repetitive outputs—not good for creativity."
+  },
+  {
+    question: "What mathematical property of softmax is directly affected by temperature scaling?",
+    choice1: "Token length",
+    choice2: "Word count",
+    choice3: "Entropy of distribution",
+    choice4: "Prompt length",
+    answer: 3,
+    explanation: "Temperature changes how flat or sharp the softmax distribution is—directly affecting entropy."
+  }
+];
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='templevel8.html'">Go to Level 8 ! 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'templevel7.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
