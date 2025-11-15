@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Machine Level</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 9</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "What does this DNN model output shape imply?\n\nmodel.add(Dense(3, activation='softmax'))",
+    choice1: "A) Regression with 3 outputs",
+    choice2: "B) Binary classifier",
+    choice3: "C) Multi-class classification with 3 classes",
+    choice4: "D) Output must be one-hot",
+    answer: 3,
+    explanation: "A Dense layer with softmax and 3 units indicates a 3-class classification problem."
+  },
+  {
+    question: "Compute R² from SSE = 40 and SST = 100.",
+    choice1: "A) 0.6",
+    choice2: "B) 0.4",
+    choice3: "C) 1.4",
+    choice4: "D) -0.6",
+    answer: 1,
+    explanation: "R² = 1 – (SSE/SST) = 1 – 40/100 = 0.6"
+  },
+  {
+    question: "Which part of this code needs correction?\n\nfrom sklearn.linear_model import LinearRegression  \nmodel = LinearRegression  \nmodel.fit(X_train, y_train)",
+    choice1: "A) LinearRegression is not imported",
+    choice2: "B) Missing (), should be LinearRegression()",
+    choice3: "C) fit() should be train()",
+    choice4: "D) Model type is wrong",
+    answer: 2,
+    explanation: "LinearRegression must be instantiated → model = LinearRegression()"
+  },
+  {
+    question: "Given a highly imbalanced dataset (95:5), which is the most misleading metric?",
+    choice1: "A) Recall",
+    choice2: "B) F1 Score",
+    choice3: "C) Accuracy",
+    choice4: "D) AUC",
+    answer: 3,
+    explanation: "Accuracy can be misleading by predicting all as the majority class (95%)."
+  },
+  {
+    question: "What is the effect of using a very high learning rate in gradient descent?",
+    choice1: "A) Slow convergence",
+    choice2: "B) No effect",
+    choice3: "C) Model never updates",
+    choice4: "D) Overshooting minima and divergence",
+    answer: 4,
+    explanation: "Too high a learning rate may prevent convergence and overshoot optimal weights."
+  },
+  {
+    question: "How many parameters are trained in a neural network layer defined as:\n\nDense(10, input_shape=(5,))",
+    choice1: "A) 50",
+    choice2: "B) 10",
+    choice3: "C) 60",
+    choice4: "D) 55",
+    answer: 3,
+    explanation: "(5 inputs + 1 bias) × 10 neurons = 6×10 = 60"
+  },
+  {
+    question: "What does early stopping in deep learning help prevent?",
+    choice1: "A) Overfitting",
+    choice2: "B) Underfitting",
+    choice3: "C) Gradient vanishing",
+    choice4: "D) GPU overload",
+    answer: 1,
+    explanation: "Early stopping halts training when validation performance deteriorates → prevents overfitting."
+  },
+  {
+    question: "AUC = 0.5 implies what about a model?",
+    choice1: "A) Perfect classifier",
+    choice2: "B) Better than random",
+    choice3: "C) Random guessing",
+    choice4: "D) All classes correct",
+    answer: 3,
+    explanation: "AUC of 0.5 means no discriminative power — same as random."
+  },
+  {
+    question: "What is a major risk of using high-degree polynomial regression?",
+    choice1: "A) Underfitting",
+    choice2: "B) Data leakage",
+    choice3: "C) Overfitting",
+    choice4: "D) Reduced accuracy",
+    answer: 3,
+    explanation: "High-degree polynomials can model training data too well but fail to generalize."
+  },
+  {
+    question: "Interpret the following code:\n\npipeline = Pipeline([\n    ('scaler', StandardScaler()),\n    ('model', LogisticRegression())\n])",
+    choice1: "A) Chains model and scaler together",
+    choice2: "B) Selects best model",
+    choice3: "C) Creates a tree",
+    choice4: "D) Performs grid search",
+    answer: 1,
+    explanation: "A pipeline ensures sequential execution of preprocessing and modeling."
+  }
+];
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='m10.html'">Go to Level 10 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'm9.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

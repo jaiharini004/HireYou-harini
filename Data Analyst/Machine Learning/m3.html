@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Machine Level</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 3</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+const questions = [
+  {
+    question: "Which ML algorithm is best suited for predicting house prices based on size?",
+    choice1: "A) K-Means",
+    choice2: "B) Linear Regression",
+    choice3: "C) Logistic Regression",
+    choice4: "D) Decision Tree Classifier",
+    answer: 2,
+    explanation: "Linear Regression predicts continuous values like house prices."
+  },
+  {
+    question: "What does the following code do? from sklearn.linear_model import LinearRegression model = LinearRegression()",
+    choice1: "A) Trains a model",
+    choice2: "B) Predicts data",
+    choice3: "C) Creates a linear regression object",
+    choice4: "D) Evaluates a model",
+    answer: 3,
+    explanation: "It initializes a linear regression model before training."
+  },
+  {
+    question: "What is the role of a test dataset?",
+    choice1: "A) To train the model",
+    choice2: "B) To clean the data",
+    choice3: "C) To evaluate the model's performance",
+    choice4: "D) To visualize trends",
+    answer: 3,
+    explanation: "A test dataset checks how well the model generalizes to new data."
+  },
+  {
+    question: "What does RMSE stand for in model evaluation?",
+    choice1: "A) Random Mean Split Error",
+    choice2: "B) Root Mean Squared Error",
+    choice3: "C) Regression Mean Simple Error",
+    choice4: "D) Real Model Selection Estimate",
+    answer: 2,
+    explanation: "RMSE measures the average error magnitude between predictions and actual values."
+  },
+  {
+    question: "In which problem would you use a classification model?",
+    choice1: "A) Predicting temperature",
+    choice2: "B) Predicting sales",
+    choice3: "C) Predicting cancer as malignant/benign",
+    choice4: "D) Forecasting price",
+    answer: 3,
+    explanation: "Classification is used for categorical outputs like disease status."
+  },
+  {
+    question: "Which algorithm uses distance to classify data points?",
+    choice1: "A) KNN",
+    choice2: "B) Linear Regression",
+    choice3: "C) Naive Bayes",
+    choice4: "D) Random Forest",
+    answer: 1,
+    explanation: "K-Nearest Neighbors uses distance (e.g., Euclidean) to assign labels."
+  },
+  {
+    question: "What does this code return? import numpy as np y_true = [0, 1, 1, 0] y_pred = [0, 1, 0, 0] from sklearn.metrics import accuracy_score accuracy_score(y_true, y_pred)",
+    choice1: "A) 0.25",
+    choice2: "B) 0.5",
+    choice3: "C) 0.75",
+    choice4: "D) 1.0",
+    answer: 3,
+    explanation: "3/4 predictions are correct → accuracy = 0.75."
+  },
+  {
+    question: "What is the purpose of the fit() method in ML models?",
+    choice1: "A) Predict new data",
+    choice2: "B) Clean data",
+    choice3: "C) Train the model",
+    choice4: "D) Split data",
+    answer: 3,
+    explanation: "fit() trains the model on the provided dataset."
+  },
+  {
+    question: "Which model would you use to segment customers into groups with no labels?",
+    choice1: "A) Decision Tree",
+    choice2: "B) K-Means",
+    choice3: "C) Logistic Regression",
+    choice4: "D) Linear Regression",
+    answer: 2,
+    explanation: "K-Means clustering is used for unsupervised grouping."
+  },
+  {
+    question: "In classification, what is precision?",
+    choice1: "A) TP / (TP + FP)",
+    choice2: "B) TP / (TP + FN)",
+    choice3: "C) TN / (TN + FP)",
+    choice4: "D) (TP + TN) / Total",
+    answer: 1,
+    explanation: "Precision is the ratio of correct positives to all predicted positives."
+  }
+];
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='m4.html'">Go to Level 4 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'm3.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

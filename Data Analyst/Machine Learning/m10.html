@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Machine level</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 10</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+
+
+const questions = [
+  {
+    question: "How many clusters are created in Agglomerative Clustering if n_clusters=1?",
+    choice1: "A) 1",
+    choice2: "B) Error",
+    choice3: "C) 2",
+    choice4: "D) Depends on linkage",
+    answer: 1,
+    explanation: "Setting n_clusters=1 means all data is clustered into a single group."
+  },
+  {
+    question: "What is the output shape of predict_proba() in a 4-class classification?",
+    choice1: "A) (n_samples, 1)",
+    choice2: "B) (n_samples, 2)",
+    choice3: "C) (n_samples, 4)",
+    choice4: "D) (n_samples, )",
+    answer: 3,
+    explanation: "Each row contains 4 probabilities for each class."
+  },
+  {
+    question: "What’s the main idea behind the bias-variance tradeoff?",
+    choice1: "A) Improve complexity",
+    choice2: "B) Reduce noise",
+    choice3: "C) Balance underfitting and overfitting",
+    choice4: "D) Speed up training",
+    answer: 3,
+    explanation: "Models should not be too simple (bias) or too complex (variance)."
+  },
+  {
+    question: "When does gradient descent stop updating weights?",
+    choice1: "A) Loss becomes zero",
+    choice2: "B) Gradient = 0 or very small",
+    choice3: "C) Epochs exceed 100",
+    choice4: "D) Data runs out",
+    answer: 2,
+    explanation: "Training converges when gradient (slope) is near zero."
+  },
+  {
+    question: "Evaluate: If recall = 1 and precision = 0.5, what is F1?",
+    choice1: "A) 0.66",
+    choice2: "B) 0.75",
+    choice3: "C) 0.6",
+    choice4: "D) 1",
+    answer: 1,
+    explanation: "F1 = 2×(0.5×1)/(0.5+1) = 1/1.5 = 0.66"
+  },
+  {
+    question: "In deep learning, what does dropout do?",
+    choice1: "A) Adds more layers",
+    choice2: "B) Randomly turns off neurons during training",
+    choice3: "C) Reduces learning rate",
+    choice4: "D) Normalizes inputs",
+    answer: 2,
+    explanation: "Dropout regularizes the model by randomly disabling neurons."
+  },
+  {
+    question: "What is the gradient of MSE loss with respect to weights?",
+    choice1: "A) 2×X.T × (y_pred – y_true)",
+    choice2: "B) X + y",
+    choice3: "C) Zero always",
+    choice4: "D) y_true – y_pred",
+    answer: 1,
+    explanation: "Gradient of MSE w.r.t weights is derived from chain rule of squared loss."
+  },
+  {
+    question: "Why is MinMaxScaler often used in neural networks?",
+    choice1: "A) Adds regularization",
+    choice2: "B) Increases variance",
+    choice3: "C) Scales features to [0, 1] — helps gradient stability",
+    choice4: "D) Helps dropout",
+    answer: 3,
+    explanation: "Scaling inputs helps neural nets converge faster and more stably."
+  },
+  {
+    question: "What does .fit_transform() do in sklearn pipelines?",
+    choice1: "A) Tests model",
+    choice2: "B) Trains and predicts",
+    choice3: "C) Fits and transforms in one step",
+    choice4: "D) Computes MSE",
+    answer: 3,
+    explanation: "fit_transform() is used to train and apply transformation in one go."
+  },
+  {
+    question: "What’s the complexity of training linear regression with n samples and p features?",
+    choice1: "A) O(n+p)",
+    choice2: "B) O(n)",
+    choice3: "C) O(np²)",
+    choice4: "D) O(p³)",
+    answer: 4,
+    explanation: "The closed-form solution involves matrix inversion → O(p³) for large feature sets."
+  }
+];
+
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='data_analyst.html'">Hureyyy! You Aced it🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'm10.html'; // Redirect to Level 2 directly
+}
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

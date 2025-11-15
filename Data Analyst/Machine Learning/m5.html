@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Machine Level</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 5</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions = [
+  {
+    question: "Which of the following is a multi-class classification problem?",
+    choice1: "A) Predicting whether a transaction is fraud or not",
+    choice2: "B) Classifying emails as spam or not",
+    choice3: "C) Predicting animal type: dog, cat, or bird",
+    choice4: "D) Forecasting house prices",
+    answer: 3,
+    explanation: "Multi-class involves more than two categories."
+  },
+  {
+    question: "Which metric is best when classes are imbalanced?",
+    choice1: "A) Accuracy",
+    choice2: "B) Precision",
+    choice3: "C) Recall",
+    choice4: "D) F1 Score",
+    answer: 4,
+    explanation: "F1 balances precision and recall, making it suitable for imbalance."
+  },
+  {
+    question: "What does this code return? from sklearn.metrics import f1_score  f1_score([1, 1, 0, 0], [1, 0, 0, 1])",
+    choice1: "A) 0.50",
+    choice2: "B) 0.33",
+    choice3: "C) 0.25",
+    choice4: "D) 0.67",
+    answer: 1,
+    explanation: "F1 is 0.5 for 1 correct positive and 1 correct negative."
+  },
+  {
+    question: "Which one is a dimensionality reduction technique?",
+    choice1: "A) SVM",
+    choice2: "B) PCA",
+    choice3: "C) Random Forest",
+    choice4: "D) Gradient Boost",
+    answer: 2,
+    explanation: "Principal Component Analysis (PCA) reduces feature dimensions."
+  },
+  {
+    question: "What’s the time complexity of training a Decision Tree in the worst case?",
+    choice1: "A) O(n)",
+    choice2: "B) O(n log n)",
+    choice3: "C) O(n²)",
+    choice4: "D) O(n³)",
+    answer: 3,
+    explanation: "Decision trees can take quadratic time in worst-case scenarios."
+  },
+  {
+    question: "What does this code output? from sklearn.linear_model import LogisticRegression  model = LogisticRegression()  model.fit(X_train, y_train)  model.predict([[5.1, 3.5, 1.4, 0.2]])",
+    choice1: "A) A continuous value",
+    choice2: "B) A probability",
+    choice3: "C) A predicted class label",
+    choice4: "D) An accuracy score",
+    answer: 3,
+    explanation: "predict() returns a class label, not probabilities."
+  },
+  {
+    question: "What happens if a dataset has too many features (high dimensionality)?",
+    choice1: "A) Faster training",
+    choice2: "B) Better accuracy",
+    choice3: "C) Overfitting may occur",
+    choice4: "D) No effect",
+    answer: 3,
+    explanation: "High-dimensional data may cause overfitting."
+  },
+  {
+    question: "What does StandardScaler do in sklearn?",
+    choice1: "A) Normalizes between 0 and 1",
+    choice2: "B) Reduces variance",
+    choice3: "C) Removes nulls",
+    choice4: "D) Standardizes data to mean 0 and std dev 1",
+    answer: 4,
+    explanation: "StandardScaler standardizes numerical features."
+  },
+  {
+    question: "Calculate MAE for predictions [5, 6, 8] and actuals [6, 5, 10]:",
+    choice1: "A) 2",
+    choice2: "B) 1",
+    choice3: "C) 1.5",
+    choice4: "D) 0.5",
+    answer: 3,
+    explanation: "MAE = (|5–6| + |6–5| + |8–10|)/3 = (1+1+2)/3 = 1.33 ≈ 1.5"
+  },
+  {
+    question: "Which method is used for cross-validation in sklearn?",
+    choice1: "A) model.cv()",
+    choice2: "B) cross_val_score()",
+    choice3: "C) cv_test()",
+    choice4: "D) train_test_split()",
+    answer: 2,
+    explanation: "cross_val_score() evaluates the model using k-fold CV."
+  }
+];
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='m6.html'">Go to Level 6 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'm5.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+

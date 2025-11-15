@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Machine Level</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quiz-box {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .quiz-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      background: #f1f1ff;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .choice:hover {
+      background: #ddd5ff;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .wrong {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    .explanation {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      background: #6a0dad;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #4b0082;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <div class="quiz-title">LEVEL 8</div>
+    <div class="question" id="question">Loading...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+  </div>
+
+  <script>
+
+
+const questions= [
+  {
+    question: "Identify the error in this snippet:\n\nmodel = LogisticRegression()  \nmodel.fit(X_train, y_train)  \nmodel.predict_proba(X_test, y_test)",
+    choice1: "A) Invalid input",
+    choice2: "B) predict_proba doesn't accept y_test",
+    choice3: "C) Wrong model type",
+    choice4: "D) Overfitting issue",
+    answer: 2,
+    explanation: "predict_proba() only takes feature input (X), not target values (y)."
+  },
+  {
+    question: "A model with high precision but low recall implies:",
+    choice1: "A) Many false positives",
+    choice2: "B) Many false negatives",
+    choice3: "C) Good balance",
+    choice4: "D) Poor accuracy",
+    answer: 2,
+    explanation: "High precision + low recall = model misses many positives (high false negatives)."
+  },
+  {
+    question: "What is the time complexity of training a KNN model?",
+    choice1: "A) O(n)",
+    choice2: "B) O(n log n)",
+    choice3: "C) O(1)",
+    choice4: "D) None (no training phase)",
+    answer: 4,
+    explanation: "KNN is a lazy learner and doesn’t involve a training phase."
+  },
+  {
+    question: "Which algorithm is most prone to overfitting without pruning?",
+    choice1: "A) Naive Bayes",
+    choice2: "B) Logistic Regression",
+    choice3: "C) Decision Tree",
+    choice4: "D) SVM",
+    answer: 3,
+    explanation: "Deep trees can memorize training data unless pruned."
+  },
+  {
+    question: "Compute F1 score for precision=0.6 and recall=0.75",
+    choice1: "A) 0.675",
+    choice2: "B) 0.70",
+    choice3: "C) 0.65",
+    choice4: "D) 0.67",
+    answer: 1,
+    explanation: "F1 = 2 * (0.6 × 0.75) / (0.6 + 0.75) = 0.675"
+  },
+  {
+    question: "Which condition leads to multicollinearity in linear regression?",
+    choice1: "A) Low R²",
+    choice2: "B) Categorical data",
+    choice3: "C) Highly correlated independent variables",
+    choice4: "D) Missing values",
+    answer: 3,
+    explanation: "Multicollinearity occurs when features are linearly dependent."
+  },
+  {
+    question: "What is grid search used for in ML?",
+    choice1: "A) Removing noise",
+    choice2: "B) Model stacking",
+    choice3: "C) Hyperparameter tuning",
+    choice4: "D) Encoding categories",
+    answer: 3,
+    explanation: "Grid search finds the best hyperparameter combination via exhaustive search."
+  },
+  {
+    question: "Which kernel is used in SVM to handle nonlinear problems?",
+    choice1: "A) Linear",
+    choice2: "B) Polynomial",
+    choice3: "C) Sigmoid",
+    choice4: "D) All of the above",
+    answer: 4,
+    explanation: "All listed kernels can handle nonlinearity in different ways."
+  },
+  {
+    question: "What is the default value of k in KMeans if not specified?",
+    choice1: "A) 2",
+    choice2: "B) 3",
+    choice3: "C) Must be specified",
+    choice4: "D) 1",
+    answer: 3,
+    explanation: "K (number of clusters) must always be explicitly defined."
+  },
+  {
+    question: "What happens if feature scaling is skipped in algorithms like SVM or KNN?",
+    choice1: "A) Nothing",
+    choice2: "B) Model performs better",
+    choice3: "C) One feature may dominate due to magnitude",
+    choice4: "D) Results are faster",
+    answer: 3,
+    explanation: "Unscaled features with different units distort the model’s perception of distance."
+  }
+];
+
+
+
+let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById('question').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('explanation').textContent = '';
+
+      for (let i = 1; i <= 9; i++) {
+        if (q['choice' + i]) {
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.textContent = q['choice' + i];
+          btn.onclick = () => checkAnswer(i, btn);
+          choicesDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function checkAnswer(selected, element) {
+      const q = questions[current];
+      const allChoices = document.querySelectorAll('.choice');
+
+      allChoices.forEach(c => c.onclick = null);
+
+      if (selected === q.answer) {
+        element.classList.add('correct');
+        score++;
+      } else {
+        element.classList.add('wrong');
+        allChoices[q.answer - 1].classList.add('correct');
+      }
+
+      document.getElementById('explanation').textContent = "📝 " + q.explanation;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        const box = document.querySelector('.quiz-box');
+        if (score === questions.length) {
+          box.innerHTML = `
+            <h2>🎉 Perfect Score: ${score}/${questions.length}</h2>
+            <p>You’re ready for the next level!</p>
+            <button onclick="window.location.href='m9.html'">Go to Level 9 🚀</button>
+
+          `;
+        } else {
+          box.innerHTML = `
+            <h2>😢 You scored ${score}/${questions.length}</h2>
+            <p>You need 10/10 to move on. Try again!</p>
+            <button onclick="restart()">Retry 🔁</button>
+          `;
+        }
+      }
+    }
+
+    function restart() {
+  current = 0; // Reset question index to the beginning of the current level
+  score = 0; // Reset score
+  window.location.href = 'm8.html'; // Redirect to Level 2 directly
+}
+
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
+
