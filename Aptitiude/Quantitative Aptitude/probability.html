@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>probability Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">🎯 Probability Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+
+
+const quizData = [
+      // Easy (5 Questions)
+      {
+        question: "What is the probability of getting a head when a fair coin is tossed?",
+        options: ["0", "1/2", "1", "2/3"],
+        answer: 1,
+        explanation: "There are 2 outcomes (head or tail). Probability of head = 1/2."
+      },
+      {
+        question: "What is the probability of getting an even number when a die is thrown?",
+        options: ["1/2", "1/3", "2/3", "1/6"],
+        answer: 0,
+        explanation: "Even numbers on a die: 2, 4, 6 (3 outcomes out of 6). So probability = 3/6 = 1/2."
+      },
+      {
+        question: "What is the probability of getting a 3 when a fair die is rolled?",
+        options: ["1/2", "1/6", "1/3", "1/4"],
+        answer: 1,
+        explanation: "There are 6 faces on a die and only one 3, so 1/6."
+      },
+      {
+        question: "A bag has 3 red and 2 blue balls. Probability of picking a red ball?",
+        options: ["1/5", "2/5", "3/5", "4/5"],
+        answer: 2,
+        explanation: "Total balls = 5. Red balls = 3. Probability = 3/5."
+      },
+      {
+        question: "A card is drawn from a deck. Probability of getting a King?",
+        options: ["1/13", "1/52", "4/52", "1/4"],
+        answer: 0,
+        explanation: "There are 4 Kings in 52 cards. So, probability = 4/52 = 1/13."
+      },
+
+      // Intermediate (10 Questions)
+      {
+        question: "Two dice are thrown. Probability that the sum is 7?",
+        options: ["1/6", "1/12", "1/36", "5/36"],
+        answer: 0,
+        explanation: "Favorable outcomes = (1,6), (2,5), (3,4), (4,3), (5,2), (6,1). So 6/36 = 1/6."
+      },
+      {
+        question: "A card is drawn. Probability it's a red queen?",
+        options: ["1/26", "1/13", "2/52", "1/52"],
+        answer: 2,
+        explanation: "There are 2 red queens (hearts & diamonds) in a deck. So 2/52."
+      },
+      {
+        question: "A number is selected from 1 to 10. Probability it is a prime?",
+        options: ["2/5", "3/5", "4/5", "1/2"],
+        answer: 1,
+        explanation: "Primes in 1 to 10: 2, 3, 5, 7 (4 numbers). So 4/10 = 2/5."
+      },
+      {
+        question: "Probability of drawing a black card from a deck?",
+        options: ["1/2", "1/4", "3/4", "1/3"],
+        answer: 0,
+        explanation: "Half the cards (26) are black in a deck. So 26/52 = 1/2."
+      },
+      {
+        question: "What is the probability of getting a leap year when a year is selected at random?",
+        options: ["1/4", "1/2", "1/3", "1/6"],
+        answer: 0,
+        explanation: "1 out of every 4 years is a leap year. So probability = 1/4."
+      },
+      {
+        question: "Probability of drawing an ace from a pack of cards?",
+        options: ["1/13", "1/26", "1/4", "4/13"],
+        answer: 0,
+        explanation: "There are 4 aces in a deck. So 4/52 = 1/13."
+      },
+      {
+        question: "A bag has 5 white, 3 black balls. Probability of black ball?",
+        options: ["3/5", "3/8", "5/8", "1/2"],
+        answer: 1,
+        explanation: "Total = 8, black = 3. Probability = 3/8."
+      },
+      {
+        question: "Probability of getting a multiple of 3 when selecting a number from 1 to 10?",
+        options: ["3/10", "1/3", "2/5", "4/10"],
+        answer: 2,
+        explanation: "Multiples of 3: 3, 6, 9. So 3/10 = 0.3."
+      },
+      {
+        question: "From 1 to 20, probability of choosing a number divisible by 5?",
+        options: ["1/4", "1/5", "4/20", "5/20"],
+        answer: 3,
+        explanation: "5, 10, 15, 20 → 4 numbers out of 20 = 4/20 = 1/5."
+      },
+      {
+        question: "2 coins tossed. Probability of getting at least one tail?",
+        options: ["1/2", "3/4", "1/4", "2/3"],
+        answer: 1,
+        explanation: "Outcomes: HH, HT, TH, TT. 3 have tails → 3/4."
+      },
+
+      // Tough (10 Questions)
+      {
+        question: "3 cards drawn from deck without replacement. Probability all are kings?",
+        options: ["1/22100", "1/5525", "1/1100", "1/132600"],
+        answer: 1,
+        explanation: "(4/52)(3/51)(2/50) = 1/5525."
+      },
+      {
+        question: "2 dice thrown. Probability of getting doublet (same number on both)?",
+        options: ["1/6", "1/12", "1/36", "5/36"],
+        answer: 0,
+        explanation: "Doublets: (1,1)...(6,6): 6 outcomes. So 6/36 = 1/6."
+      },
+      {
+        question: "Probability of drawing 2 red cards from deck without replacement?",
+        options: ["1/4", "25/102", "1/2", "13/102"],
+        answer: 1,
+        explanation: "(26/52)*(25/51) = 25/102."
+      },
+      {
+        question: "From 3 men & 2 women, one person selected. Probability that person is woman?",
+        options: ["1/3", "2/5", "1/5", "1/2"],
+        answer: 1,
+        explanation: "Total = 5, women = 2. So probability = 2/5."
+      },
+      {
+        question: "Probability of drawing a face card from a deck?",
+        options: ["3/13", "1/4", "2/13", "1/2"],
+        answer: 0,
+        explanation: "12 face cards (J, Q, K of 4 suits). So 12/52 = 3/13."
+      },
+      {
+        question: "Probability of choosing a vowel randomly from the word ‘PROBABILITY’?",
+        options: ["4/11", "3/11", "5/11", "2/11"],
+        answer: 2,
+        explanation: "Vowels: O, A, I, I. 4 vowels in 11 letters."
+      },
+      {
+        question: "Two people toss a coin. Probability they get same outcome?",
+        options: ["1/2", "1/4", "3/4", "2/3"],
+        answer: 0,
+        explanation: "Outcomes: HH, TT (same), HT, TH (different). So 2/4 = 1/2."
+      },
+      {
+        question: "Probability of getting 2 heads when 3 coins are tossed?",
+        options: ["3/8", "1/2", "1/8", "2/8"],
+        answer: 0,
+        explanation: "Favorable: HHT, HTH, THH. 3/8 total outcomes."
+      },
+      {
+        question: "Bag: 6 white, 4 red balls. Two drawn. Probability both white?",
+        options: ["9/20", "3/5", "1/2", "2/5"],
+        answer: 0,
+        explanation: "(6/10)*(5/9) = 30/90 = 1/3."
+      },
+      {
+        question: "Probability of not drawing a heart from a deck?",
+        options: ["3/4", "1/2", "1/4", "2/3"],
+        answer: 0,
+        explanation: "Hearts = 13. Not heart = 39. So 39/52 = 3/4."
+      }
+    ];
+
+
+
+let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
+

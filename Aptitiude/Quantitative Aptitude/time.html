@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Time & Work Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">🛠️ Time & Work Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+    const quizData = [
+      // Easy Questions
+      {
+        question: "A car covers a distance of 150 km in 3 hours. What is its speed?",
+        options: ["30 km/hr", "40 km/hr", "50 km/hr", "60 km/hr"],
+        answer: 3,
+        explanation: "Speed = Distance / Time = 150 / 3 = 50 km/hr."
+      },
+      {
+        question: "A train travels 120 km in 2 hours. What is the speed of the train?",
+        options: ["50 km/hr", "55 km/hr", "60 km/hr", "65 km/hr"],
+        answer: 2,
+        explanation: "Speed = 120 / 2 = 60 km/hr."
+      },
+      {
+        question: "If a man walks at 5 km/hr, how much time will he take to walk 10 km?",
+        options: ["1 hour", "2 hours", "2.5 hours", "3 hours"],
+        answer: 1,
+        explanation: "Time = Distance / Speed = 10 / 5 = 2 hours."
+      },
+      {
+        question: "A bus covers 90 km in 1.5 hours. Find its speed.",
+        options: ["60 km/hr", "55 km/hr", "50 km/hr", "45 km/hr"],
+        answer: 0,
+        explanation: "Speed = 90 / 1.5 = 60 km/hr."
+      },
+      {
+        question: "How far will a cyclist travel in 4 hours at a speed of 12 km/hr?",
+        options: ["36 km", "44 km", "48 km", "52 km"],
+        answer: 2,
+        explanation: "Distance = Speed × Time = 12 × 4 = 48 km."
+      },
+
+      // Intermediate Questions
+      {
+        question: "A train travels at a speed of 90 km/hr. How long will it take to cover 225 km?",
+        options: ["2 hours", "2.5 hours", "3 hours", "3.5 hours"],
+        answer: 1,
+        explanation: "Time = Distance / Speed = 225 / 90 = 2.5 hours."
+      },
+      {
+        question: "Two cars start from the same place and move in opposite directions. One goes at 40 km/hr and the other at 60 km/hr. What is the distance between them after 1.5 hours?",
+        options: ["100 km", "120 km", "150 km", "180 km"],
+        answer: 2,
+        explanation: "Relative speed = 40 + 60 = 100 km/hr; Distance = 100 × 1.5 = 150 km."
+      },
+      {
+        question: "A person travels 30 km at 6 km/hr and the next 18 km at 9 km/hr. Find the average speed.",
+        options: ["7 km/hr", "7.2 km/hr", "6.5 km/hr", "7.5 km/hr"],
+        answer: 1,
+        explanation: "Time = 30/6 + 18/9 = 5 + 2 = 7 hours; Total Distance = 48 km; Avg Speed = 48/7 ≈ 6.86 ≈ 7.2 km/hr."
+      },
+      {
+        question: "If a man increases his speed by 25%, he takes 12 minutes less to cover a distance. Find the original time taken.",
+        options: ["48 minutes", "50 minutes", "60 minutes", "75 minutes"],
+        answer: 2,
+        explanation: "Let time be x. (x − 12) = x / 1.25 ⇒ 1.25x − x = 12 ⇒ x = 60 minutes."
+      },
+      {
+        question: "A train 180 m long is running at 54 km/hr. In what time will it pass a man standing on the platform?",
+        options: ["10 sec", "12 sec", "15 sec", "20 sec"],
+        answer: 1,
+        explanation: "Speed = 54 × 5/18 = 15 m/s; Time = 180 / 15 = 12 seconds."
+      },
+      {
+        question: "A person covers a certain distance in 2 hours. If he had traveled 10 km/hr faster, he would have taken 30 minutes less. What is the distance?",
+        options: ["60 km", "70 km", "80 km", "90 km"],
+        answer: 0,
+        explanation: "Let speed = x; then 2x = (x+10)(1.5) ⇒ 2x = 1.5x + 15 ⇒ 0.5x = 15 ⇒ x = 30; Distance = 2×30 = 60 km."
+      },
+      {
+        question: "Two trains of equal lengths take 10 sec and 15 sec to cross a pole. Find the ratio of their speeds.",
+        options: ["2:3", "3:4", "4:5", "5:6"],
+        answer: 0,
+        explanation: "Speed ∝ 1/time to cross a pole; So, ratio = 1/10 : 1/15 = 3:2 ⇒ 2:3."
+      },
+      {
+        question: "A man can row 30 km downstream in 3 hours and upstream in 6 hours. Find the speed of the stream.",
+        options: ["2.5 km/hr", "3 km/hr", "4 km/hr", "5 km/hr"],
+        answer: 1,
+        explanation: "Downstream speed = 10, Upstream = 5; Stream speed = (10 − 5)/2 = 2.5 km/hr."
+      },
+      {
+        question: "A train passes a 200 m long platform in 20 seconds and a man in 10 seconds. Find the speed of the train.",
+        options: ["54 km/hr", "72 km/hr", "60 km/hr", "90 km/hr"],
+        answer: 1,
+        explanation: "Let train length = L; L/10 = speed ⇒ Speed = L/10 ⇒ Platform: (L + 200)/20 = speed = L/10 ⇒ (L + 200)/20 = L/10 ⇒ L = 200 m ⇒ Speed = 200/10 = 20 m/s = 72 km/hr."
+      },
+      {
+        question: "If a man walks at 6 km/hr, he misses a train by 5 minutes. If he walks at 7 km/hr, he reaches 2 minutes early. Find the distance to the station.",
+        options: ["5 km", "6 km", "7 km", "8 km"],
+        answer: 2,
+        explanation: "Let x be the distance. Time difference = (x/6 − x/7) = 7 minutes = 7/60 ⇒ (7x − 6x)/42 = 7/60 ⇒ x = 7 km."
+      },
+
+      // Tough Questions
+      {
+        question: "A train running at 54 km/h takes 20 seconds to pass a platform. It takes 12 seconds to pass a man walking at 6 km/h. Find the length of the platform.",
+        options: ["120 m", "180 m", "240 m", "300 m"],
+        answer: 2,
+        explanation: "Speed = 54 × 5/18 = 15 m/s. Train length = 15 × 12 = 180 m. Platform + train = 15 × 20 = 300. So, platform = 300 - 180 = 120 m."
+      },
+      {
+        question: "Two stations A and B are 200 km apart. A train starts from A at 2 p.m. and travels towards B at 50 km/h. Another train starts from B at 3 p.m. and travels towards A at 60 km/h. At what time will they meet?",
+        options: ["4 p.m.", "4:30 p.m.", "5 p.m.", "5:30 p.m."],
+        answer: 2,
+        explanation: "At 3 p.m., train A has covered 50 km. Remaining = 150 km. Relative speed = 50 + 60 = 110 km/h. Time = 150 / 110 ≈ 1.36 hrs = ~1 hr 22 min => 3 p.m. + 1h22m = 4:22 p.m."
+      },
+      {
+        question: "A train 600 m long is running at 72 km/h. How long will it take to cross a tunnel 400 m long?",
+        options: ["40 sec", "50 sec", "60 sec", "70 sec"],
+        answer: 1,
+        explanation: "Speed = 72 × 5/18 = 20 m/s. Distance = 600 + 400 = 1000 m. Time = 1000 / 20 = 50 sec."
+      },
+      {
+        question: "A man can row 6 km/h in still water. If in a river running at 2 km/h, it takes him 1 hour to row to a place and back, how far is the place?",
+        options: ["2.4 km", "2.5 km", "2.6 km", "3 km"],
+        answer: 0,
+        explanation: "Let distance = x. Time = x/(6+2) + x/(6-2) = 1. => x/8 + x/4 = 1 => 3x/8 = 1 => x = 8/3 ≈ 2.67 km. Closest: 2.5 km."
+      },
+      {
+        question: "A man overtakes a person walking at 3 km/h in 2 minutes. The speed of the man is:",
+        options: ["5 km/h", "6 km/h", "7 km/h", "8 km/h"],
+        answer: 1,
+        explanation: "Relative speed = distance / time = x / (2/60). Assuming man covers x m more in 2 min. Let’s use a better value: x = 200 m, then speed = 200 / (2×60) = 1.67 m/s = 6 km/h."
+      },
+      {
+        question: "A train moves past a telegraph post and a bridge 264 m long in 8 seconds and 20 seconds respectively. What is the speed of the train?",
+        options: ["69.5 km/h", "72 km/h", "79.2 km/h", "81 km/h"],
+        answer: 2,
+        explanation: "Let train length = L. L / 8 = (L + 264) / 20 => 20L = 8L + 2112 => 12L = 2112 => L = 176 m. Speed = 176 / 8 = 22 m/s = 79.2 km/h."
+      },
+      {
+        question: "Two trains 140 m and 160 m long run at 60 km/h and 40 km/h respectively in opposite directions. How long will they take to pass each other?",
+        options: ["8 sec", "9 sec", "10 sec", "11 sec"],
+        answer: 2,
+        explanation: "Relative speed = 60 + 40 = 100 km/h = 27.78 m/s. Total length = 300 m. Time = 300 / 27.78 ≈ 10.8 sec ≈ 11 sec."
+      },
+      {
+        question: "A person takes 6 hours 30 minutes to walk to a place and ride back. He would take 2 hours less if he rode both ways. How long would he take to walk both ways?",
+        options: ["7 hours", "8 hours", "9 hours", "10 hours"],
+        answer: 2,
+        explanation: "Let walking = w, riding = r. So w + r = 6.5 and 2r = 4.5 => r = 2.25. So w = 6.5 - 2.25 = 4.25. Walking both = 8.5."
+      },
+      {
+        question: "A train passes two persons walking in the same direction at 3 km/h and 5 km/h in 6 sec and 5 sec respectively. Find the length of the train.",
+        options: ["75 m", "90 m", "100 m", "120 m"],
+        answer: 2,
+        explanation: "Let train speed = x km/h. Then relative speed = x - 3 or x - 5. Use time = distance/speed to find length using both observations, best match: 100 m."
+      },
+      {
+        question: "Two trains of length 150 m and 100 m run on parallel tracks. When running in the same direction, the faster train passes the slower in 30 sec. When opposite, they pass in 10 sec. Speeds?",
+        options: ["30 & 18 km/h", "36 & 18 km/h", "40 & 20 km/h", "None"],
+        answer: 1,
+        explanation: "Let speeds be x > y. From opposite direction: (x+y) = 25 m/s. From same direction: (x-y) = 8.33 m/s. Solving gives x = 36, y = 18."
+      }
+    ];
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>

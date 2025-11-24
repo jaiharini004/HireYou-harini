@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Average Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">📈 Average Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+  
+    const quizData = [
+      // 5 Easy Questions
+      {
+        question: "The average of 5, 10, 15, 20 and 25 is:",
+        options: ["10", "15", "20", "25"],
+        answer: 1,
+        explanation: "Sum = 5 + 10 + 15 + 20 + 25 = 75. Average = 75 / 5 = 15."
+      },
+      {
+        question: "Find the average of first five natural numbers.",
+        options: ["2", "3", "4", "5"],
+        answer: 1,
+        explanation: "Sum = 1+2+3+4+5 = 15, Average = 15/5 = 3."
+      },
+      {
+        question: "Average of 4, 6, 8, 10, 12 is:",
+        options: ["8", "7", "10", "6"],
+        answer: 0,
+        explanation: "Sum = 40, Average = 40 / 5 = 8."
+      },
+      {
+        question: "What is the average of 100, 200 and 300?",
+        options: ["100", "200", "250", "300"],
+        answer: 1,
+        explanation: "Average = (100 + 200 + 300) / 3 = 600 / 3 = 200."
+      },
+      {
+        question: "Average of 7 consecutive even numbers starting from 2 is:",
+        options: ["10", "12", "14", "16"],
+        answer: 1,
+        explanation: "Numbers: 2,4,6,8,10,12,14. Sum = 56. Average = 56/7 = 8."
+      },
+
+      // 10 Intermediate Questions
+      {
+        question: "The average of 9 numbers is 36. If the average of the first 5 is 32 and the last 3 is 39, then the 6th number is:",
+        options: ["36", "39", "41", "42"],
+        answer: 2,
+        explanation: "Total = 9×36 = 324. First 5 = 5×32 = 160. Last 3 = 3×39 = 117. So, 6th = 324 - (160 + 117) = 47."
+      },
+      {
+        question: "Average age of A, B, and C is 30 years. If D joins the group, the average becomes 32. What is D’s age?",
+        options: ["38", "40", "42", "44"],
+        answer: 3,
+        explanation: "Total of A+B+C = 30×3 = 90. New total = 32×4 = 128. So, D = 128 - 90 = 38."
+      },
+      {
+        question: "Average of 5 numbers is 27. If one number is excluded, the average becomes 25. The excluded number is:",
+        options: ["35", "40", "45", "50"],
+        answer: 2,
+        explanation: "Total = 5×27 = 135. Remaining 4 = 4×25 = 100. Excluded = 135 - 100 = 35."
+      },
+      {
+        question: "If the average of x, x+2, x+4 is 15, find x.",
+        options: ["12", "13", "14", "15"],
+        answer: 0,
+        explanation: "(x + x+2 + x+4)/3 = 15 => (3x+6)/3 = 15 => x = 12."
+      },
+      {
+        question: "Average of 4 numbers is 45. One of them is 60 and others are equal. Find the repeated number.",
+        options: ["40", "45", "50", "55"],
+        answer: 1,
+        explanation: "Total = 180, so 3 numbers = 180 - 60 = 120 => each = 120/3 = 40."
+      },
+      {
+        question: "Average marks in Math of 10 students is 50. One student’s marks was written as 40 instead of 50. Find the correct average.",
+        options: ["50", "51", "49", "52"],
+        answer: 0,
+        explanation: "Error = 10 marks. New total = 500 + 10 = 510. Average = 510 / 10 = 51."
+      },
+      {
+        question: "Average of 7 numbers is 20. If one number is 13 more than the average, find that number.",
+        options: ["33", "30", "27", "20"],
+        answer: 0,
+        explanation: "Required number = 20 + 13 = 33."
+      },
+      {
+        question: "The average age of 10 people increases by 2 years when a new person is added. Find the age of the new person.",
+        options: ["20", "22", "40", "42"],
+        answer: 3,
+        explanation: "Old total = 10x, New total = 11(x+2). New - Old = 22 => x = 20 => new = 42."
+      },
+      {
+        question: "The average of 8 numbers is 26. If two numbers, 30 and 34 are removed, find the new average.",
+        options: ["24.5", "25", "25.5", "26"],
+        answer: 1,
+        explanation: "Total = 208, removed = 64, remaining = 144 => average = 144/6 = 24."
+      },
+      {
+        question: "Average weight of 12 students is 40 kg. If teacher's weight is added, average becomes 41 kg. Find teacher’s weight.",
+        options: ["52", "53", "54", "55"],
+        answer: 2,
+        explanation: "Old total = 480, New = 13×41 = 533 => Teacher = 533 - 480 = 53."
+      },
+
+      // 10 Tough Questions
+      {
+        question: "Average of 10 results is 20. If the average of first 5 is 15 and of the next 4 is 25, then the 10th result is:",
+        options: ["20", "25", "30", "35"],
+        answer: 2,
+        explanation: "Total = 200, 5×15 = 75, 4×25 = 100. Remaining = 200 - 175 = 25."
+      },
+      {
+        question: "Average of 11 numbers is 10. If one number is removed, the average becomes 9. Find the removed number.",
+        options: ["20", "18", "15", "12"],
+        answer: 0,
+        explanation: "Total = 110, New = 90 => Removed = 20."
+      },
+      {
+        question: "Average of 30 numbers is 35. The average of first 20 is 30 and that of last 15 is 40. Find the 20th number.",
+        options: ["50", "60", "55", "45"],
+        answer: 0,
+        explanation: "Total = 1050, First 20 = 600, Last 15 = 600 (overlap at 20th), so 20th = 600 + 600 - 1050 = 150."
+      },
+      {
+        question: "The average salary of 15 people is ₹20,000. If one more person joins, the average becomes ₹21,000. Salary of new person?",
+        options: ["₹35,000", "₹36,000", "₹38,000", "₹40,000"],
+        answer: 3,
+        explanation: "Old total = ₹3,00,000, new = ₹3,36,000 => new person = ₹36,000."
+      },
+      {
+        question: "Average of 5 consecutive odd numbers is 61. Find the largest number.",
+        options: ["63", "65", "67", "69"],
+        answer: 2,
+        explanation: "Middle number = 61. Series = 57,59,61,63,65 => Largest = 65."
+      },
+      {
+        question: "Average of x, x+2, x+4,... up to 7 terms is 20. Find x.",
+        options: ["14", "16", "18", "20"],
+        answer: 1,
+        explanation: "Sum = 7x + 2+4+6+8+10+12 = 7x+42 => 7x+42 = 140 => x = 14."
+      },
+      {
+        question: "A batsman scores 87 runs in the 18th innings and his average increases by 3. His previous average was?",
+        options: ["34", "36", "37", "39"],
+        answer: 1,
+        explanation: "Let previous avg = x, Total = 17x. New avg = x+3 = (17x + 87)/18 => x = 36."
+      },
+      {
+        question: "Average of 3 numbers is 20 more than the least and 10 less than the highest. Find the numbers.",
+        options: ["10, 40, 50", "20, 40, 50", "30, 50, 60", "15, 35, 45"],
+        answer: 0,
+        explanation: "Let least = x, avg = x+20 = y, highest = x+30 = z. So, numbers: x, x+30, 3x+60/3 = x+20."
+      },
+      {
+        question: "Average of 6 results is 50. If the average of first four is 45 and last three is 55, then the 4th result is:",
+        options: ["40", "45", "50", "55"],
+        answer: 2,
+        explanation: "Total = 300, First 4 = 180, Last 3 = 165, Overlap at 4th => 180 + 165 - 300 = 45."
+      },
+      {
+        question: "The average weight of A, B and C is 40 kg. If D joins, the average becomes 38. What is D’s weight?",
+        options: ["30", "34", "36", "38"],
+        answer: 0,
+        explanation: "Total A+B+C = 120, A+B+C+D = 152 => D = 32."
+      }
+    ];
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>

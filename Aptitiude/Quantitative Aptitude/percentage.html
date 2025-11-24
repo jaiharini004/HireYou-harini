@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Percentage Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">📊 Percentage Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      <button onclick="location.reload()" class="px-4 py-2 bg-purple-500 text-white rounded-xl hover:bg-purple-600">🔁 Restart</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      { question: "What is 20% of 150?", options: ["25", "30", "35", "40"], answer: 1, explanation: "20% of 150 = (20/100) * 150 = 30" },
+      { question: "If a shirt costs $200 and is marked 10% off, what is the discount?", options: ["10", "15", "20", "25"], answer: 2, explanation: "10% of $200 = $20 discount" },
+      { question: "Increase 50 by 10%", options: ["55", "60", "65", "70"], answer: 0, explanation: "10% of 50 = 5, so new value = 50 + 5 = 55" },
+      { question: "Find 5% of 80", options: ["2", "4", "6", "8"], answer: 1, explanation: "5% of 80 = (5/100) * 80 = 4" },
+      { question: "What percentage of 40 is 10?", options: ["10%", "25%", "50%", "75%"], answer: 1, explanation: "(10/40) * 100 = 25%" },
+      { question: "A value is increased by 20% and then decreased by 20%. Find the net change.", options: ["No change", "4% decrease", "4% increase", "8% increase"], answer: 1, explanation: "Net change = (20*20)/100 = 4% decrease" },
+      { question: "What is the percentage change from 60 to 75?", options: ["15%", "20%", "25%", "30%"], answer: 2, explanation: "Change = 15, so (15/60)*100 = 25%" },
+      { question: "70% of 50 is equal to:", options: ["30", "35", "40", "45"], answer: 1, explanation: "70% of 50 = 35" },
+      { question: "If A is 25% more than B, then B is how much less than A?", options: ["20%", "25%", "15%", "10%"], answer: 0, explanation: "If B = 100, A = 125, so B is 25/125 = 20% less than A" },
+      { question: "If the price of a product increases from 80 to 100, what is the % increase?", options: ["20%", "25%", "30%", "15%"], answer: 1, explanation: "Increase = 20; (20/80)*100 = 25%" },
+      { question: "A number is decreased by 10% and then increased by 10%. Net change?", options: ["No change", "1% increase", "1% decrease", "2% increase"], answer: 2, explanation: "Net change = 10*10/100 = 1% decrease" },
+      { question: "If 60% of a number is 180, find the number.", options: ["200", "250", "300", "400"], answer: 2, explanation: "60% of x = 180 → x = 300" },
+      { question: "In a class of 40, 25% are girls. How many girls?", options: ["8", "10", "12", "15"], answer: 0, explanation: "25% of 40 = 10" },
+      { question: "If 45 is 30% of a number, what is the number?", options: ["100", "120", "130", "150"], answer: 3, explanation: "30% of x = 45 → x = 150" },
+      { question: "What % of 80 is 32?", options: ["40%", "35%", "45%", "50%"], answer: 0, explanation: "(32/80)*100 = 40%" },
+      { question: "If 40% of A = 60% of B, what is the ratio A:B?", options: ["2:3", "3:2", "4:5", "5:4"], answer: 1, explanation: "40A = 60B → A/B = 60/40 = 3/2" },
+      { question: "If 75% of a number is equal to 3/4 of another number, are the two numbers equal?", options: ["Yes", "No", "Cannot determine", "Depends"], answer: 0, explanation: "75% = 3/4, so both are same" },
+      { question: "If 25% of x = 30% of y, find x : y", options: ["6:5", "5:6", "3:4", "4:3"], answer: 1, explanation: "25x = 30y → x/y = 6/5 → x:y = 5:6" },
+      { question: "If the population increases by 10% annually, what will be the population after 2 years if it’s 1000 now?", options: ["1200", "1210", "1220", "1250"], answer: 1, explanation: "1000 * (1.1)^2 = 1210" },
+      { question: "A number increased by 20% gives 144. What is the number?", options: ["120", "110", "100", "130"], answer: 0, explanation: "120% of x = 144 → x = 120" },
+      {
+        question: "If a salary is increased by 15% and then by 10%, what is the net % increase?",
+        options: ["25%", "26.5%", "27%", "28.5%"],
+        answer: 1,
+        explanation: "Net increase = 15 + 10 + (15*10)/100 = 26.5%"
+      },
+      {
+        question: "A number is 30% more than another. What % is the second number less than the first?",
+        options: ["23.08%", "30%", "20%", "25%"],
+        answer: 0,
+        explanation: "100 to 130 → 30/130 *100 = 23.08%"
+      },
+      {
+        question: "Find the single equivalent discount for successive discounts of 20% and 10%",
+        options: ["28%", "30%", "25%", "32%"],
+        answer: 0,
+        explanation: "20 + 10 - (20*10)/100 = 28%"
+      },
+      {
+        question: "If 20% of x = 15% of y, then x : y = ?",
+        options: ["4:3", "3:4", "5:6", "6:5"],
+        answer: 3,
+        explanation: "20x = 15y → x/y = 15/20 = 3/4 → x:y = 4:3"
+      },
+      {
+        question: "Find a number whose 25% is 120",
+        options: ["480", "500", "460", "520"],
+        answer: 0,
+        explanation: "25% of x = 120 → x = 120 * 4 = 480"
+      }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+
+  
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trains Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">🚂 Trains Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-purple-700">
+      <p id="score-text" class="mb-4"></p>
+      <button onclick="location.reload()" class="px-4 py-2 bg-purple-500 text-white rounded-xl hover:bg-purple-600">🔁 Restart</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      // Easy Questions (5)
+      {
+        question: "A train 120 meters long takes 6 seconds to cross a man running at 10 km/hr in the same direction. Find the speed of the train.",
+        options: ["60 km/hr", "72 km/hr", "80 km/hr", "90 km/hr"],
+        answer: 1,
+        explanation: "Relative speed = speed of train - speed of man = x - 10. Speed = Distance / Time => x - 10 = (120/6) * (18/5) => x = 72 km/hr."
+      },
+      {
+        question: "A train 100 meters long is running at the speed of 36 km/hr. In what time will it pass a man who is running at 6 km/hr in the opposite direction?",
+        options: ["6 sec", "8 sec", "9 sec", "10 sec"],
+        answer: 1,
+        explanation: "Relative speed = 36 + 6 = 42 km/hr = 11.67 m/s. Time = 100 / 11.67 ≈ 8.57 sec ≈ 8 sec."
+      },
+      {
+        question: "A train 150 meters long passes a pole in 15 seconds. What is its speed?",
+        options: ["36 km/hr", "45 km/hr", "54 km/hr", "60 km/hr"],
+        answer: 2,
+        explanation: "Speed = 150/15 = 10 m/s = 10 * 18/5 = 36 km/hr."
+      },
+      {
+        question: "A train 180 meters long is running at a speed of 90 km/hr. In what time will it cross a platform 120 meters long?",
+        options: ["8 sec", "10 sec", "12 sec", "15 sec"],
+        answer: 2,
+        explanation: "Distance = 180 + 120 = 300m; Speed = 90 km/hr = 25 m/s; Time = 300 / 25 = 12 sec."
+      },
+      {
+        question: "A train moves past a telegraph post in 5 seconds and a 200 m long platform in 15 seconds. Find the length of the train.",
+        options: ["100 m", "150 m", "200 m", "250 m"],
+        answer: 2,
+        explanation: "Let length = L. Speed = L / 5 = (L + 200)/15. Solving gives L = 100. So total = 200 m."
+      },
+
+      // Intermediate Questions (10)
+      {
+        question: "Two trains are running in opposite directions with speeds of 60 km/hr and 90 km/hr. Their lengths are 1.10 km and 0.9 km. Find the time taken by the slower train to cross the faster one.",
+        options: ["36 sec", "45 sec", "48 sec", "60 sec"],
+        answer: 2,
+        explanation: "Relative speed = 150 km/hr = 150×5/18 = 41.67 m/s; Total length = 2000m; Time = 2000/41.67 ≈ 48 sec."
+      },
+      {
+        question: "A train 300 m long is moving at a speed of 90 km/hr. In what time will it cross a man standing on the platform?",
+        options: ["10 sec", "12 sec", "14 sec", "16 sec"],
+        answer: 1,
+        explanation: "Speed = 90 km/hr = 25 m/s; Time = 300/25 = 12 sec."
+      },
+      {
+        question: "A train running at 72 km/hr crosses a platform 120 m long in 10 seconds. Find the length of the train.",
+        options: ["600 m", "720 m", "480 m", "360 m"],
+        answer: 3,
+        explanation: "Speed = 20 m/s; Distance = 20×10 = 200; Train length = 200 - 120 = 80 m."
+      },
+      {
+        question: "A train passes two persons walking in opposite directions at 4 km/hr and 6 km/hr in 10 sec and 12 sec respectively. Find the length of the train.",
+        options: ["80 m", "100 m", "120 m", "150 m"],
+        answer: 1,
+        explanation: "Let length = L; Let train speed = x. Use relative speeds and solve equations from both cases. L = 100 m."
+      },
+      {
+        question: "A train 350 m long crosses a 150 m long platform in 20 sec. What is its speed?",
+        options: ["90 km/hr", "72 km/hr", "80 km/hr", "100 km/hr"],
+        answer: 0,
+        explanation: "Total distance = 500 m; Time = 20 sec; Speed = 25 m/s = 90 km/hr."
+      },
+      {
+        question: "A train takes 18 sec to pass a platform 162 m long and 12 sec to pass a man. Find the length of the train.",
+        options: ["120 m", "180 m", "240 m", "300 m"],
+        answer: 1,
+        explanation: "Let train length = L; speed = L/12; Then, (L + 162)/18 = L/12. Solve to get L = 180 m."
+      },
+      {
+        question: "Two trains of equal length are running on parallel tracks in the same direction at 46 km/hr and 36 km/hr. The faster train passes the slower in 36 sec. Find the length of each train.",
+        options: ["100 m", "120 m", "150 m", "200 m"],
+        answer: 3,
+        explanation: "Relative speed = 10 km/hr = 2.78 m/s; Total length = 2L = 2.78×36 ≈ 100 m => L = 200/2 = 100 m."
+      },
+      {
+        question: "A 150 m long train crosses another 150 m train in 15 sec, running in opposite direction. Find the speed of the first train if the other runs at 36 km/hr.",
+        options: ["54 km/hr", "60 km/hr", "72 km/hr", "66 km/hr"],
+        answer: 1,
+        explanation: "Total distance = 300 m; Time = 15 sec; Combined speed = 20 m/s = 72 km/hr; First train = 72 - 36 = 36 km/hr."
+      },
+      {
+        question: "A train 280 m long is moving at 60 km/hr. How long will it take to pass a platform 220 m long?",
+        options: ["20 sec", "25 sec", "30 sec", "35 sec"],
+        answer: 2,
+        explanation: "Total = 500 m; Speed = 16.67 m/s; Time = 500/16.67 ≈ 30 sec."
+      },
+      {
+        question: "A 90 m long train passes a standing man in 10 sec. It will take how long to pass a 240 m platform?",
+        options: ["20 sec", "28 sec", "30 sec", "35 sec"],
+        answer: 1,
+        explanation: "Speed = 90/10 = 9 m/s; Distance = 330 m; Time = 330 / 9 ≈ 36.6 sec."
+      },
+
+      // Tough Questions (10)
+      {
+        question: "Two trains of 110 m and 90 m are running at 60 km/hr and 40 km/hr. How long will they take to cross each other if running in same direction?",
+        options: ["12 sec", "18 sec", "20 sec", "36 sec"],
+        answer: 2,
+        explanation: "Relative speed = 20 km/hr = 5.56 m/s; Distance = 200 m; Time = 200/5.56 ≈ 36 sec."
+      },
+      {
+        question: "A train 400 m long crosses a man in 10 sec and a platform in 25 sec. Find the platform length.",
+        options: ["200 m", "250 m", "300 m", "350 m"],
+        answer: 2,
+        explanation: "Speed = 400/10 = 40 m/s; Platform = 40×25 - 400 = 600 m."
+      },
+      {
+        question: "A train passes a signal post in 7 seconds and a 264 m long platform in 20 seconds. Find the length of the train.",
+        options: ["100 m", "120 m", "140 m", "150 m"],
+        answer: 1,
+        explanation: "Let train = L. Speed = L/7. Then (L + 264)/20 = L/7. Solving gives L = 120 m."
+      },
+      {
+        question: "Two trains of 90 m and 150 m are moving in opposite directions and cross each other in 12 sec. Find their combined speed.",
+        options: ["72 km/hr", "90 km/hr", "96 km/hr", "100 km/hr"],
+        answer: 2,
+        explanation: "Total distance = 240 m; Time = 12 sec; Speed = 20 m/s = 72 km/hr."
+      },
+      {
+        question: "A train of length 300 m passes a person in 25 sec. Find the speed in km/hr.",
+        options: ["36", "43.2", "45", "48"],
+        answer: 1,
+        explanation: "Speed = 300/25 = 12 m/s = 43.2 km/hr."
+      },
+      {
+        question: "A 600 m long train runs at 72 km/hr. How much time will it take to pass a platform 400 m long?",
+        options: ["45 sec", "50 sec", "55 sec", "60 sec"],
+        answer: 1,
+        explanation: "Speed = 20 m/s; Distance = 1000 m; Time = 50 sec."
+      },
+      {
+        question: "A train 240 m long crosses a pole in 12 seconds. Find its speed in km/hr.",
+        options: ["60", "65", "72", "80"],
+        answer: 2,
+        explanation: "Speed = 240/12 = 20 m/s = 72 km/hr."
+      },
+      {
+        question: "A train 180 m long passes a man in 6 sec. Find its speed in km/hr.",
+        options: ["96", "108", "120", "132"],
+        answer: 1,
+        explanation: "Speed = 180 / 6 = 30 m/s = 108 km/hr."
+      },
+      {
+        question: "Two trains 120 m and 180 m long are running in the same direction at 45 km/hr and 54 km/hr. How long will the faster train take to pass the other?",
+        options: ["32 sec", "36 sec", "40 sec", "48 sec"],
+        answer: 1,
+        explanation: "Relative speed = 9 km/hr = 2.5 m/s; Distance = 300 m; Time = 300/2.5 = 120 sec."
+      },
+      {
+        question: "A train 150 m long crosses a platform 350 m long in 20 sec. Find the speed of the train.",
+        options: ["80 km/hr", "90 km/hr", "100 km/hr", "108 km/hr"],
+        answer: 3,
+        explanation: "Distance = 500 m; Time = 20 sec; Speed = 25 m/s = 90 km/hr."
+      }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-green-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-700 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          document.getElementById('explanation').textContent = q.explanation;
+          document.getElementById('explanation').classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+        nextBtn.classList.add('hidden');
+      } else {
+        container.innerHTML = "";
+        scoreDiv.classList.remove('hidden');
+        scoreDiv.textContent = `🎉 You scored ${score} out of 50!`;
+        nextBtn.classList.add('hidden');
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
+
+
+  

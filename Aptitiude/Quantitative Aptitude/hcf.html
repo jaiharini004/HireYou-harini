@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HCF & LCM Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">➗ HCF & LCM Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-purple-700">
+      <p id="score-text" class="mb-4"></p>
+      <button onclick="location.reload()" class="px-4 py-2 bg-purple-500 text-white rounded-xl hover:bg-purple-600">🔁 Restart</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      // 25 H.C.F & L.C.M Questions (Mix of Easy, Medium, Hard)
+      {
+        question: "What is the HCF of 12 and 16?",
+        options: ["2", "4", "6", "8"],
+        answer: 1,
+        explanation: "HCF of 12 and 16 = 4"
+      },
+      {
+        question: "What is the LCM of 3 and 5?",
+        options: ["10", "15", "8", "20"],
+        answer: 1,
+        explanation: "LCM of 3 and 5 = 15"
+      },
+      {
+        question: "Find the HCF of 9 and 27.",
+        options: ["3", "6", "9", "18"],
+        answer: 2,
+        explanation: "HCF of 9 and 27 = 9"
+      },
+      {
+        question: "Find the LCM of 4 and 6.",
+        options: ["10", "12", "14", "16"],
+        answer: 1,
+        explanation: "LCM of 4 and 6 = 12"
+      },
+      {
+        question: "What is the HCF of 5 and 20?",
+        options: ["2", "5", "10", "20"],
+        answer: 1,
+        explanation: "HCF of 5 and 20 = 5"
+      },
+      {
+        question: "LCM of two numbers is 84 and their HCF is 6. If one number is 12, find the other.",
+        options: ["42", "36", "48", "28"],
+        answer: 0,
+        explanation: "LCM × HCF = 12 × x → x = (84×6)/12 = 42"
+      },
+      {
+        question: "The greatest number that divides 48 and 60 exactly is?",
+        options: ["6", "8", "12", "24"],
+        answer: 2,
+        explanation: "HCF of 48 and 60 = 12"
+      },
+      {
+        question: "HCF of 0 and any number is?",
+        options: ["0", "1", "Number itself", "Undefined"],
+        answer: 2,
+        explanation: "HCF(0, x) = x"
+      },
+      {
+        question: "The least number divisible by 6, 9, and 15 is?",
+        options: ["90", "60", "30", "120"],
+        answer: 0,
+        explanation: "LCM of 6, 9, 15 = 90"
+      },
+      {
+        question: "If HCF of two numbers is 1, they are called?",
+        options: ["Even", "Odd", "Prime", "Co-prime"],
+        answer: 3,
+        explanation: "Co-primes have HCF = 1"
+      },
+      {
+        question: "LCM of 2, 3, and 4 is?",
+        options: ["12", "6", "8", "24"],
+        answer: 0,
+        explanation: "LCM of 2, 3, 4 = 12"
+      },
+      {
+        question: "If the HCF is 5 and the product of two numbers is 300, what is their LCM?",
+        options: ["60", "30", "75", "50"],
+        answer: 2,
+        explanation: "HCF × LCM = product → LCM = 300 / 5 = 75"
+      },
+      {
+        question: "Find the HCF of 24, 36 and 60",
+        options: ["6", "12", "18", "24"],
+        answer: 1,
+        explanation: "Common factor = 12"
+      },
+      {
+        question: "LCM of two co-primes is?",
+        options: ["Product of numbers", "Sum of numbers", "HCF", "Difference of numbers"],
+        answer: 0,
+        explanation: "LCM of co-primes = product"
+      },
+      {
+        question: "HCF of 1 and 0 is?",
+        options: ["0", "1", "Undefined", "Not possible"],
+        answer: 1,
+        explanation: "HCF(1, 0) = 1"
+      },
+      {
+        question: "HCF of 14 and 49 is?",
+        options: ["14", "7", "21", "1"],
+        answer: 1,
+        explanation: "HCF(14, 49) = 7"
+      },
+      {
+        question: "Find the LCM of 10, 20, 25",
+        options: ["50", "100", "200", "300"],
+        answer: 2,
+        explanation: "LCM of 10, 20, 25 = 100"
+      },
+      {
+        question: "Which is always a multiple of LCM of given numbers?",
+        options: ["HCF", "Any one number", "Their sum", "Product of numbers"],
+        answer: 3,
+        explanation: "Product = HCF × LCM"
+      },
+      {
+        question: "What is the LCM of 8 and 12?",
+        options: ["16", "24", "48", "36"],
+        answer: 1,
+        explanation: "LCM of 8 and 12 = 24"
+      },
+      {
+        question: "What is the HCF of 100 and 125?",
+        options: ["5", "25", "50", "75"],
+        answer: 1,
+        explanation: "HCF of 100 and 125 = 25"
+      },
+      {
+        question: "Find HCF of 81 and 27",
+        options: ["9", "3", "27", "81"],
+        answer: 2,
+        explanation: "HCF = 27"
+      },
+      {
+        question: "If one number is 18 and LCM is 72, other number is?",
+        options: ["6", "12", "24", "36"],
+        answer: 3,
+        explanation: "Other = LCM / HCF(18, x) → 72/18 = 4 → x = 36"
+      },
+      {
+        question: "LCM of 7 and 3 is?",
+        options: ["21", "14", "10", "9"],
+        answer: 0,
+        explanation: "LCM(7,3) = 21"
+      },
+      {
+        question: "What is the HCF of two consecutive even numbers?",
+        options: ["2", "1", "Even number", "Can't say"],
+        answer: 0,
+        explanation: "HCF of consecutive evens = 2"
+      },
+      {
+        question: "The LCM of two numbers is 120 and their HCF is 10. If one is 20, other is?",
+        options: ["60", "80", "40", "100"],
+        answer: 0,
+        explanation: "LCM × HCF = a × b → 120×10 = 20×b → b = 60"
+      }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-green-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-700 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          document.getElementById('explanation').textContent = q.explanation;
+          document.getElementById('explanation').classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+        nextBtn.classList.add('hidden');
+      } else {
+        container.innerHTML = "";
+        scoreDiv.classList.remove('hidden');
+        scoreDiv.textContent = `🎉 You scored ${score} out of 50!`;
+        nextBtn.classList.add('hidden');
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>

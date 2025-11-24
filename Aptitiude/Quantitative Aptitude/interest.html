@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Compound interest Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">💐 Simple & Compound Interest Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+
+const quizData= [
+// ✅ Easy (5 Questions)
+{
+  question: "What is the simple interest on $1000 at 5% per annum for 2 years?",
+  options: ["$50", "$100", "$150", "$200"],
+  answer: 1,
+  explanation: "SI = (P × R × T)/100 = (1000×5×2)/100 = $100."
+},
+{
+  question: "If the principal is $500, rate is 4% p.a., and time is 3 years, what is the simple interest?",
+  options: ["$60", "$50", "$40", "$30"],
+  answer: 0,
+  explanation: "SI = (500×4×3)/100 = $60."
+},
+{
+  question: "Find the amount after 2 years if the principal is $800 and rate is 5% per annum (Simple Interest).",
+  options: ["$880", "$860", "$840", "$800"],
+  answer: 0,
+  explanation: "SI = (800×5×2)/100 = $80 → Amount = 800+80 = $880."
+},
+{
+  question: "What is the compound interest on $1000 at 10% for 1 year (annually)?",
+  options: ["$100", "$110", "$105", "$95"],
+  answer: 0,
+  explanation: "CI = P[(1 + R/100)^T − 1] = 1000[(1+0.10)^1−1] = $100."
+},
+{
+  question: "Simple interest on a sum is $200 for 4 years at 5%. Find the principal.",
+  options: ["$1000", "$800", "$900", "$950"],
+  answer: 0,
+  explanation: "SI = PRT/100 → 200 = P×5×4/100 → P = $1000."
+},
+
+// 🔵 Intermediate (10 Questions)
+{
+  question: "Find compound interest on $2000 at 10% per annum for 2 years.",
+  options: ["$400", "$420", "$440", "$450"],
+  answer: 1,
+  explanation: "CI = 2000[(1+10/100)^2 − 1] = 2000[1.21−1] = $420."
+},
+{
+  question: "A sum amounts to $6600 in 2 years at 10% SI. Find the principal.",
+  options: ["$6000", "$5500", "$5800", "$6200"],
+  answer: 0,
+  explanation: "Let principal be P → SI = P×10×2/100 = 0.2P → P + 0.2P = 6600 → P = 6600/1.2 = $5500."
+},
+{
+  question: "In how many years will $500 double at 10% compound interest per annum?",
+  options: ["6 years", "7 years", "8 years", "Approximately 8 years"],
+  answer: 3,
+  explanation: "Use CI formula: 500(1.10)^t = 1000 → (1.10)^t = 2 → t ≈ 7.27 years."
+},
+{
+  question: "Find the SI on $1200 at 6% for 3 years.",
+  options: ["$180", "$216", "$200", "$150"],
+  answer: 0,
+  explanation: "SI = 1200×6×3/100 = $216."
+},
+{
+  question: "A sum of money becomes $1331 in 3 years at 10% CI. Find the principal.",
+  options: ["$1000", "$1100", "$1200", "$1250"],
+ answer: 0,
+  explanation: "A = P(1.10)^3 = 1331 → P = 1331 / 1.331 = $1000."
+},
+{
+  question: "If the interest earned in 2 years on $4000 is $640, find the rate of simple interest.",
+  options: ["8%", "6%", "10%", "12%"],
+  answer: 0,
+  explanation: "SI = 640 → SI = PRT/100 → 640 = 4000×R×2/100 → R = 8%."
+},
+{
+  question: "The difference between CI and SI on $1000 for 2 years at 10% is?",
+  options: ["$10", "$5", "$20", "$15"],
+  answer: 0,
+  explanation: "SI = $200, CI = $210 → Difference = $10."
+},
+{
+  question: "Find CI on $8000 at 5% for 3 years compounded annually.",
+  options: ["$1261", "$1250", "$1200", "$1300"],
+  answer: 0,
+  explanation: "CI = 8000[(1.05)^3 − 1] = $1261."
+},
+{
+  question: "At what rate will $2400 amount to $3000 in 5 years at SI?",
+  options: ["5%", "6%", "4%", "7%"],
+  answer: 1,
+  explanation: "SI = 600 → SI = PRT/100 → 600 = 2400×R×5/100 → R = 5%."
+},
+{
+  question: "What is the total amount after 2 years on $5000 at 12% compound interest annually?",
+  options: ["$6272", "$6200", "$6256", "$6300"],
+  answer: 2,
+  explanation: "A = 5000(1.12)^2 = $6272."
+},
+
+// 🔴 Tough (10 Questions)
+{
+  question: "What sum will amount to $9680 in 2 years at 10% p.a. compound interest?",
+  options: ["$8000", "$8500", "$8800", "$9000"],
+ answer: 0,
+  explanation: "A = P(1.10)^2 → P = 9680 / 1.21 = $8000."
+},
+{
+  question: "Find the difference between CI and SI on $10000 for 3 years at 10%.",
+  options: ["$31", "$100", "$50", "$120"],
+  answer: 1,
+  explanation: "CI = $3310, SI = $3000 → Difference = $310."
+},
+{
+  question: "A sum becomes $8820 in 2 years and $9261 in 3 years at CI. Find the rate.",
+  options: ["5%", "6%", "7%", "4%"],
+  answer: 1,
+  explanation: "R = (9261−8820)/8820 × 100 = 5%."
+},
+{
+  question: "What is the compound interest on $4000 for 3 years at 8%?",
+  options: ["$1038", "$1049", "$1050", "$1060"],
+  answer: 1,
+  explanation: "CI = 4000[(1.08)^3 − 1] = $1049."
+},
+{
+  question: "A man borrows $5000 at 10% CI. What will he pay after 2 years?",
+  options: ["$6000", "$6050", "$6100", "$6150"],
+  answer: 3,
+  explanation: "A = 5000(1.10)^2 = $6050."
+},
+{
+  question: "If the SI on a sum for 5 years is $600 and CI is $630, find the sum.",
+  options: ["$2000", "$2400", "$3000", "$2500"],
+  answer: 0,
+  explanation: "Difference = $30, use formula for difference CI−SI = P(R/100)^2."
+},
+{
+  question: "What sum will amount to $4410 in 2 years at 10% SI?",
+  options: ["$3600", "$3700", "$3800", "$4000"],
+ answer: 3,
+  explanation: "SI = A−P = 4410−P → SI = P×10×2/100 → P = $4000."
+},
+{
+  question: "If $8000 grows to $9261 in 2 years, find the rate of compound interest.",
+  options: ["6%", "7%", "8%", "9%"],
+  answer: 1,
+  explanation: "9261 = 8000(1 + R/100)^2 → R = 7%."
+},
+{
+  question: "Find the time if $5000 amounts to $6050 at 10% CI.",
+  options: ["2 years", "3 years", "4 years", "5 years"],
+  answer: 0,
+  explanation: "A = P(1+R/100)^t → 6050 = 5000(1.10)^t → t = 2."
+},
+{
+  question: "At what rate will $1600 amount to $1936 in 2 years CI?",
+  options: ["10%", "8%", "6%", "7%"],
+  answer: 1,
+  explanation: "A = 1600(1+R/100)^2 = 1936 → (1+R/100)^2 = 1.21 → R = 10%."
+}
+];
+
+let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profit & Loss Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">💰 Profit & Loss Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+
+const quizData = [
+  // ---------- EASY ----------
+  {
+    question: "A man buys a toy for ₹60 and sells it for ₹75. What is his profit percentage?",
+    options: ["20%", "25%", "30%", "15%"],
+    answer: 1,
+    explanation: "Profit = 75 - 60 = ₹15, Profit% = (15/60)*100 = 25%"
+  },
+  {
+    question: "If a product is sold at ₹120 with a profit of 20%, what was the cost price?",
+    options: ["₹90", "₹100", "₹110", "₹95"],
+    answer: 1,
+    explanation: "Let CP be x. Then, x + 20% of x = ₹120 ⇒ 1.2x = 120 ⇒ x = ₹100"
+  },
+  {
+    question: "A book is bought for ₹200 and sold at a loss of 10%. Find the selling price.",
+    options: ["₹180", "₹190", "₹170", "₹175"],
+    answer: 0,
+    explanation: "Loss = 10% of 200 = ₹20 ⇒ SP = 200 - 20 = ₹180"
+  },
+  {
+    question: "If the cost price is ₹500 and profit is 15%, find the selling price.",
+    options: ["₹550", "₹575", "₹525", "₹600"],
+    answer: 1,
+    explanation: "Profit = 15% of 500 = ₹75 ⇒ SP = 500 + 75 = ₹575"
+  },
+  {
+    question: "On selling a shirt for ₹880, a man gains 10%. What is the cost price?",
+    options: ["₹800", "₹850", "₹780", "₹820"],
+    answer: 0,
+    explanation: "Let CP = x ⇒ x + 10% of x = 880 ⇒ 1.1x = 880 ⇒ x = ₹800"
+  },
+
+  // ---------- INTERMEDIATE ----------
+  {
+    question: "A man gains 25% by selling an article for ₹250. What is the cost price?",
+    options: ["₹200", "₹225", "₹240", "₹230"],
+    answer: 0,
+    explanation: "Let CP = x ⇒ x + 25% of x = ₹250 ⇒ 1.25x = 250 ⇒ x = ₹200"
+  },
+  {
+    question: "If a man sells an article at 10% loss, which he bought for ₹450, what is the selling price?",
+    options: ["₹405", "₹400", "₹410", "₹420"],
+    answer: 0,
+    explanation: "Loss = 10% of 450 = ₹45 ⇒ SP = 450 - 45 = ₹405"
+  },
+  {
+    question: "A cycle was sold for ₹800 at a profit of 25%. What was its cost price?",
+    options: ["₹640", "₹700", "₹600", "₹720"],
+    answer: 0,
+    explanation: "Let CP = x ⇒ x + 25% of x = ₹800 ⇒ 1.25x = 800 ⇒ x = ₹640"
+  },
+  {
+    question: "Selling price of an article is ₹690 and loss is 8%. Find the cost price.",
+    options: ["₹750", "₹700", "₹680", "₹720"],
+    answer: 0,
+    explanation: "Let CP = x ⇒ x - 8% of x = 690 ⇒ 0.92x = 690 ⇒ x = ₹750"
+  },
+  {
+    question: "A trader sells goods at 20% profit. If cost price is ₹600, find selling price.",
+    options: ["₹720", "₹700", "₹750", "₹680"],
+    answer: 0,
+    explanation: "Profit = 20% of 600 = ₹120 ⇒ SP = 600 + 120 = ₹720"
+  },
+  {
+    question: "A product is marked at ₹500. A discount of 10% is given. If the profit is 20%, find the cost price.",
+    options: ["₹375", "₹400", "₹425", "₹450"],
+    answer: 0,
+    explanation: "SP = 500 - 10% = ₹450 ⇒ Let CP = x, 1.2x = 450 ⇒ x = ₹375"
+  },
+  {
+    question: "An article is sold at 15% profit. If SP is ₹460, find the CP.",
+    options: ["₹400", "₹410", "₹420", "₹430"],
+    answer: 0,
+    explanation: "Let CP = x ⇒ 1.15x = 460 ⇒ x = ₹400"
+  },
+  {
+    question: "A trader gives 10% discount and still gains 8%. What is the marked price if CP is ₹250?",
+    options: ["₹300", "₹310", "₹320", "₹330"],
+    answer: 0,
+    explanation: "SP = 250 + 8% = ₹270 ⇒ MP = 270/0.9 = ₹300"
+  },
+  {
+    question: "A man sells an article at a loss of 5%. If the selling price is ₹570, find the cost price.",
+    options: ["₹600", "₹580", "₹590", "₹605"],
+    answer: 0,
+    explanation: "Let CP = x ⇒ 0.95x = 570 ⇒ x = ₹600"
+  },
+  {
+    question: "CP of an article is ₹1200. If SP is ₹1380, find profit %.",
+    options: ["15%", "16%", "18%", "20%"],
+    answer: 3,
+    explanation: "Profit = 1380 - 1200 = ₹180 ⇒ Profit% = (180/1200)*100 = 15%"
+  },
+
+  // ---------- TOUGH ----------
+  {
+    question: "An article is sold for ₹528 at a loss of 12%. What is the cost price?",
+    options: ["₹600", "₹580", "₹620", "₹550"],
+    answer: 0,
+    explanation: "Let CP = x ⇒ 0.88x = 528 ⇒ x = ₹600"
+  },
+  {
+    question: "A dealer buys a product at ₹720, spends ₹30 on transport and sells for ₹840. Find the profit %.",
+    options: ["10%", "12.5%", "15%", "18%"],
+    answer: 1,
+    explanation: "Total CP = 720 + 30 = ₹750 ⇒ Profit = 90 ⇒ Profit% = (90/750)*100 = 12%"
+  },
+  {
+    question: "An article marked ₹1000 is sold for ₹850. If seller incurs 15% loss, what is cost price?",
+    options: ["₹1000", "₹900", "₹1000", "₹1000"],
+    answer: 1,
+    explanation: "Let CP = x ⇒ 0.85x = 850 ⇒ x = ₹1000"
+  },
+  {
+    question: "A shopkeeper sells an article at 10% discount and still gains 8%. If the marked price is ₹500, find CP.",
+    options: ["₹400", "₹420", "₹430", "₹450"],
+    answer: 1,
+    explanation: "SP = 500 - 10% = ₹450 ⇒ CP = 450 / 1.08 = ₹416.67 ≈ ₹420"
+  },
+  {
+    question: "An item was bought for ₹480 and sold at ₹600. What is profit %?",
+    options: ["20%", "22%", "25%", "30%"],
+    answer: 2,
+    explanation: "Profit = 120 ⇒ Profit% = (120/480)*100 = 25%"
+  },
+  {
+    question: "An article is sold at ₹1200 with 20% profit. If selling price is increased by 10%, new profit %?",
+    options: ["30%", "32%", "35%", "28%"],
+    answer: 1,
+    explanation: "CP = 1200 / 1.2 = ₹1000 ⇒ New SP = 1200 + 10% = 1320 ⇒ Profit = 320 ⇒ % = 32%"
+  },
+  {
+    question: "An article costs ₹840. It's sold at ₹924. Find profit percent.",
+    options: ["10%", "12%", "15%", "18%"],
+    answer: 1,
+    explanation: "Profit = 84 ⇒ Profit% = (84/840)*100 = 10%"
+  },
+  {
+    question: "CP of 20 items = SP of 16 items. Find profit %.",
+    options: ["20%", "25%", "30%", "40%"],
+    answer: 3,
+    explanation: "SP of 16 = CP of 20 ⇒ Profit = 4 items on 16 ⇒ (4/16)*100 = 25%"
+  },
+  {
+    question: "A man sells two articles at ₹600 each, one at 20% profit, other at 20% loss. Net result?",
+    options: ["No loss no gain", "Loss", "Profit", "Can't be determined"],
+    answer: 1,
+    explanation: "This is a loss scenario. Use formula: Net loss = (profit% * loss%) / 100 = 4%"
+  },
+  {
+    question: "A seller marked an article at 50% above CP, gave 20% discount. Find profit %.",
+    options: ["20%", "25%", "30%", "28%"],
+    answer: 0,
+    explanation: "Marked = 150% ⇒ After 20% discount = 120% ⇒ Profit = 20%"
+  },
+];
+
+let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
+

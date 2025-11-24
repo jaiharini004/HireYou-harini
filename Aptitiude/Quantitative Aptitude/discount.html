@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Discount Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">🏷️ Discount Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+
+const quizData = [
+      // Easy (5 Questions)
+      {
+        question: "A shopkeeper gives a discount of 10% on the marked price of Rs. 500. What is the selling price?",
+        options: ["Rs. 450", "Rs. 400", "Rs. 460", "Rs. 440"],
+        answer: 0,
+        explanation: "10% of 500 = 50, so Selling Price = 500 - 50 = Rs. 450."
+      },
+      {
+        question: "If a book costs Rs. 200 and is sold with a 15% discount, what is the selling price?",
+        options: ["Rs. 185", "Rs. 175", "Rs. 170", "Rs. 160"],
+        answer: 1,
+        explanation: "15% of 200 = 30, so Selling Price = 200 - 30 = Rs. 170."
+      },
+      {
+        question: "A shirt has a marked price of Rs. 800. It is sold at a discount of 20%. What is the selling price?",
+        options: ["Rs. 640", "Rs. 680", "Rs. 700", "Rs. 750"],
+        answer: 0,
+        explanation: "20% of 800 = 160, so SP = 800 - 160 = Rs. 640."
+      },
+      {
+        question: "A pen costs Rs. 60 and a 5% discount is given. What is the selling price?",
+        options: ["Rs. 57", "Rs. 55", "Rs. 56", "Rs. 58"],
+        answer: 0,
+        explanation: "5% of 60 = 3, so SP = 60 - 3 = Rs. 57."
+      },
+      {
+        question: "A jacket is marked at Rs. 1200 and a discount of 25% is offered. What is the selling price?",
+        options: ["Rs. 900", "Rs. 850", "Rs. 800", "Rs. 950"],
+        answer: 0,
+        explanation: "25% of 1200 = 300, SP = 1200 - 300 = Rs. 900."
+      },
+
+      // Intermediate (10 Questions)
+      {
+        question: "A TV is marked at Rs. 25,000 and sold for Rs. 21,250. What is the discount percentage?",
+        options: ["10%", "12%", "15%", "20%"],
+        answer: 2,
+        explanation: "Discount = 25000 - 21250 = 3750. (3750/25000)*100 = 15%."
+      },
+      {
+        question: "A product is marked at Rs. 400 and is sold at Rs. 340. Find the discount percentage.",
+        options: ["10%", "12.5%", "15%", "20%"],
+        answer: 1,
+        explanation: "Discount = 60. So (60/400)*100 = 15%."
+      },
+      {
+        question: "A laptop costs Rs. 50,000. During a sale, it is offered at a 20% discount. What is the sale price?",
+        options: ["Rs. 40,000", "Rs. 42,000", "Rs. 45,000", "Rs. 38,000"],
+        answer: 0,
+        explanation: "20% of 50,000 = 10,000. Sale Price = 50,000 - 10,000 = Rs. 40,000."
+      },
+      {
+        question: "If a fan is sold for Rs. 1700 after a 15% discount, what was the marked price?",
+        options: ["Rs. 2000", "Rs. 1800", "Rs. 1900", "Rs. 2100"],
+        answer: 0,
+        explanation: "Let MP be x. 85% of x = 1700. x = 1700/0.85 = Rs. 2000."
+      },
+      {
+        question: "A mobile marked Rs. 15000 is sold for Rs. 12750. What is the discount %?",
+        options: ["12%", "13%", "14%", "15%"],
+        answer: 3,
+        explanation: "Discount = 2250. (2250/15000)*100 = 15%."
+      },
+      {
+        question: "Marked price of a product is Rs. 600. After two successive discounts of 10% and 5%, find SP.",
+        options: ["Rs. 510", "Rs. 513", "Rs. 514", "Rs. 512"],
+        answer: 1,
+        explanation: "First discount = 60, SP = 540. Then 5% of 540 = 27, final SP = 540 - 27 = Rs. 513."
+      },
+      {
+        question: "A cycle marked at Rs. 8000 is sold for Rs. 6800. What is the discount percentage?",
+        options: ["12.5%", "15%", "17.5%", "20%"],
+        answer: 3,
+        explanation: "Discount = 1200. (1200/8000)*100 = 15%."
+      },
+      {
+        question: "A customer gets 25% off on a Rs. 2000 product. How much does he pay?",
+        options: ["Rs. 1500", "Rs. 1600", "Rs. 1650", "Rs. 1550"],
+        answer: 1,
+        explanation: "25% of 2000 = 500. SP = 2000 - 500 = Rs. 1500."
+      },
+      {
+        question: "An item marked at Rs. 5000 is sold for Rs. 4000. What is the discount %?",
+        options: ["15%", "18%", "20%", "25%"],
+        answer: 2,
+        explanation: "Discount = 1000. (1000/5000)*100 = 20%."
+      },
+      {
+        question: "If a discount of 20% is followed by 10%, what is the net discount?",
+        options: ["28%", "30%", "25%", "26%"],
+        answer: 3,
+        explanation: "Net discount = a + b - (ab/100) = 20 + 10 - (200/100) = 30 - 2 = 28%."
+      },
+
+      // Tough (10 Questions)
+      {
+        question: "A product is marked at Rs. 6000. After two successive discounts of 20% and 10%, what is SP?",
+        options: ["Rs. 4320", "Rs. 4260", "Rs. 4300", "Rs. 4400"],
+        answer: 0,
+        explanation: "First discount = 1200, SP1 = 4800. Then 10% of 4800 = 480. Final SP = Rs. 4320."
+      },
+      {
+        question: "After a discount of 20% on a product, there is a loss of 10%. Find profit % if no discount was given.",
+        options: ["10%", "12.5%", "15%", "20%"],
+        answer: 1,
+        explanation: "Assume CP = Rs. 100. Loss = 10, SP = 90. SP after 20% discount = 90, so MP = 90/0.8 = 112.5. Profit = 12.5%."
+      },
+      {
+        question: "A trader gives 2 successive discounts of 15% and 10%. What is the equivalent single discount?",
+        options: ["23.5%", "25%", "26.5%", "24.5%"],
+        answer: 0,
+        explanation: "Net discount = 15 + 10 - (15*10)/100 = 25 - 1.5 = 23.5%."
+      },
+      {
+        question: "A shopkeeper gives 20% discount and still gains 20%. What is the cost price if MP is Rs. 750?",
+        options: ["Rs. 500", "Rs. 600", "Rs. 625", "Rs. 650"],
+        answer: 0,
+        explanation: "SP = 750 - 20% = 600. CP = 600 / 1.2 = Rs. 500."
+      },
+      {
+        question: "A person sold a camera at Rs. 4800 after giving 20% discount. What is the MP?",
+        options: ["Rs. 5500", "Rs. 5600", "Rs. 6000", "Rs. 5800"],
+        answer: 2,
+        explanation: "SP = 4800 = 80% of MP, so MP = 4800/0.8 = Rs. 6000."
+      },
+      {
+        question: "Marked price of article is Rs. 1000. Discount is 20%, and profit is 25%. Find cost price.",
+        options: ["Rs. 640", "Rs. 650", "Rs. 670", "Rs. 700"],
+        answer: 1,
+        explanation: "SP = 800. CP = 800 / 1.25 = Rs. 640."
+      },
+      {
+        question: "If an item is sold at 10% profit after a 20% discount, find the markup percentage.",
+        options: ["33.3%", "37.5%", "40%", "25%"],
+        answer: 1,
+        explanation: "Let CP = 100. SP = 110. MP = 110/0.8 = 137.5. Markup = 37.5%."
+      },
+      {
+        question: "A trader gives 3 successive discounts of 10%, 15%, and 20%. Find the net discount %.",
+        options: ["39.8%", "41.3%", "43.6%", "44.2%"],
+        answer: 2,
+        explanation: "Net = 1 - [(0.9)(0.85)(0.8)] = 1 - 0.612 = 0.388 = 38.8% approx."
+      },
+      {
+        question: "Successive discounts of 25% and 20% are equal to a single discount of:",
+        options: ["40%", "42%", "45%", "30%"],
+        answer: 1,
+        explanation: "Net = 25 + 20 - (25*20)/100 = 45 - 5 = 40%."
+      },
+      {
+        question: "What is the selling price of an article marked at Rs. 5000 with two successive discounts of 10%?",
+        options: ["Rs. 4050", "Rs. 4100", "Rs. 4200", "Rs. 4000"],
+        answer: 0,
+        explanation: "After 1st discount: 5000 - 500 = 4500. Then 10% of 4500 = 450. Final SP = 4050."
+      }
+    ];
+
+let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
+

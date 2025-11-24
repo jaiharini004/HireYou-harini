@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Height & Distance Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">⛰️ Height & Distance Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+
+    const quizData = [
+      // Easy (1-5)
+      {
+        question: " A man observes a tower from a distance and finds the angle of elevation to be 30°. If the height of the tower is 100 m, what is the distance of the man from the foot of the tower?",
+        options: ["173.2 m", "100 m", "86.6 m", "50 m"],
+        correct: 0,
+        explanation: "tan(30°) = height/base → 1/√3 = 100/x → x = 100√3 ≈ 173.2 m"
+      },
+      {
+        question: " If the angle of elevation of the sun is 45°, then the length of the shadow of a pole is equal to:",
+        options: ["Its height", "Twice its height", "Half its height", "Cannot be determined"],
+        correct: 0,
+        explanation: "tan(45°) = height/shadow → 1 = h/h → Shadow = Height"
+      },
+      {
+        question: " The angle of elevation of the top of a tower from a point 100 meters away from its base is 60°. Find the height of the tower.",
+        options: ["100√3 m", "100 m", "50√3 m", "150 m"],
+        correct: 0,
+        explanation: "tan(60°) = height/100 → √3 = h/100 → h = 100√3 ≈ 173.2 m"
+      },
+      {
+        question: " The angle of depression of a car from the top of a 60 m high tower is 30°. Find the distance of the car from the base of the tower.",
+        options: ["60√3 m", "120 m", "60 m", "20 m"],
+        correct: 0,
+        explanation: "tan(30°) = 60/base → 1/√3 = 60/x → x = 60√3 ≈ 103.9 m"
+      },
+      {
+        question: " A tree is broken by the wind. The top struck the ground at an angle of 30° and at a distance of 20 m from the root. The height of the tree before it broke was:",
+        options: ["40 m", "20√3 m", "20 m", "10 m"],
+        correct: 1,
+        explanation: "The broken part forms a triangle: sin(30°) = opposite/hypotenuse. Use trigonometry to get height = 20√3 m."
+      },
+
+      // Intermediate (6-15)
+      {
+        question: " The angle of elevation of a tower from a point on the ground is 45°. After walking 30 m towards the tower, the angle becomes 60°. Find the height of the tower.",
+        options: ["30 m", "45 m", "51.96 m", "60 m"],
+        correct: 2,
+        explanation: "Use two tan equations: tan(45°) = h/x, tan(60°) = h/(x−30). Solve to get h ≈ 51.96 m"
+      },
+      {
+        question: " A balloon is flying at a height of 120 m. The angle of elevation from a point on the ground is 60°. What is the horizontal distance of the balloon from the point?",
+        options: ["60√3 m", "120√3 m", "60 m", "120 m"],
+        correct: 0,
+        explanation: "tan(60°) = 120/x → √3 = 120/x → x = 120/√3 = 60√3 ≈ 103.9 m"
+      },
+      {
+        question: " From the top of a hill 100 m high, the angles of depression of two objects in the horizontal plane are 30° and 45°. Find the distance between them.",
+        options: ["73.2 m", "50 m", "100 m", "40 m"],
+        correct: 0,
+        explanation: "Use tan(θ) for both: x1 = 100/√3, x2 = 100. Distance = 100 - 100/√3 ≈ 73.2 m"
+      },
+      {
+        question: " From a boat, the angle of elevation of the top of a lighthouse 45 m high is 30°. How far is the boat from the base of the lighthouse?",
+        options: ["45√3 m", "90 m", "45 m", "30 m"],
+        correct: 0,
+        explanation: "tan(30°) = 45/x → x = 45/ (1/√3) = 45√3 ≈ 77.94 m"
+      },
+      {
+        question: " A man 1.8 m tall observes the top of a tower at an angle of elevation of 60°. He is standing 20 m from the tower. What is the height of the tower?",
+        options: ["36.64 m", "34.64 m", "38.44 m", "40 m"],
+        correct: 2,
+        explanation: "Let total height be h. Then, tan(60°) = (h − 1.8)/20 → √3 = (h − 1.8)/20 → h ≈ 38.44 m"
+      },
+      {
+        question: " A person standing on a cliff 100 m high observes a boat moving away. The angle of depression changes from 60° to 45°. What is the distance the boat has traveled?",
+        options: ["57.74 m", "41.42 m", "73.2 m", "100 m"],
+        correct: 2,
+        explanation: "Use tan(θ) for both angles: x1 = 100/√3, x2 = 100 → distance = 100 − 100/√3 ≈ 73.2 m"
+      },
+      {
+        question: " The angle of elevation of a cloud from a point 60 m above a lake is 30°, and the angle of depression of its reflection in the lake is 60°. Find the height of the cloud from the lake.",
+        options: ["60 m", "180 m", "120 m", "240 m"],
+        correct: 3,
+        explanation: "Use geometry and tan(θ) → total = 60 + x + x = 60 + 2x → Solve for x to get height = 240 m"
+      },
+      {
+        question: " A ladder leaning against a wall makes an angle of 60° with the horizontal. If the foot is 10 m from the wall, find the height it reaches.",
+        options: ["5 m", "8.66 m", "10 m", "12 m"],
+        correct: 1,
+        explanation: "tan(60°) = h/10 → √3 = h/10 → h = 10√3 ≈ 17.32 m"
+      },
+      {
+        question: " From a point 15 m above a lake, the angle of elevation of a balloon is 30° and the angle of depression of the reflection is 45°. Find the height of the balloon.",
+        options: ["30 m", "45 m", "60 m", "75 m"],
+        correct: 3,
+        explanation: "Use geometry and both angles to set up tan(θ) equations. Solving gives height ≈ 75 m"
+      },
+      {
+        question: " Two towers of equal height are 100 m apart. From the mid-point of the line joining their bases, the angles of elevation of their tops are 30° and 60°. Find their height.",
+        options: ["50 m", "57.74 m", "40 m", "86.6 m"],
+        correct: 1,
+        explanation: "Use symmetry and tan(θ) on both sides. tan(30°) = h/50 → h = 50 tan(30°) ≈ 28.87; similarly for 60°.They contradict unless height is 57.74"
+      },
+
+      // Tough (16-25)
+      {
+        question: " A man is standing on the deck of a ship 10 m above sea level. He observes the angle of elevation of the top of a lighthouse as 30° and the angle of depression of its base as 45°. Find the height of the lighthouse.",
+        options: ["20 m", "24.64 m", "34.64 m", "30 m"],
+        correct: 2,
+        explanation: "Use trigonometric relations for both angles and combine: total height ≈ 34.64 m"
+      },
+      {
+        question: " From a point on a bridge across a river, the angles of depression of the banks on opposite sides of the river are 45° and 60°. If the bridge is 30 m above water, find the width of the river.",
+        options: ["50 m", "60 m", "66.96 m", "70 m"],
+        correct: 2,
+        explanation: "Use tan(θ) on both sides. Width = 30 tan(45°) + 30 tan(60°) = 30 + 30√3 ≈ 66.96 m"
+      },
+      {
+        question: " An airplane is flying at a height of 5000 m. The angle of depression to a point on the ground is 30°. Find the distance of the airplane from the point.",
+        options: ["10000 m", "5000√3 m", "8660 m", "5773 m"],
+        correct: 1,
+        explanation: "sin(30°) = 5000/x → x = 5000/sin(30°) = 10000 m"
+      },
+      {
+        question: " A tower stands vertically on the ground. From a point on the ground 40 m away, the angle of elevation to the top is 60°. Find the height of the tower.",
+        options: ["40√3 m", "40 m", "20√3 m", "60 m"],
+        correct: 0,
+        explanation: "tan(60°) = h/40 → √3 = h/40 → h = 40√3 ≈ 69.28 m"
+      },
+      {
+        question: " A pole 5 m high casts a shadow of length 5√3 m. Find the angle of elevation of the sun.",
+        options: ["60°", "30°", "45°", "90°"],
+        correct: 1,
+        explanation: "tan(θ) = 5 / (5√3) = 1/√3 → θ = 30°"
+      },
+      {
+        question: " A man observes the top of a building at an angle of elevation of 30°. On walking 40 m closer, the angle becomes 60°. Find the height of the building.",
+        options: ["34.64 m", "51.96 m", "40 m", "20√3 m"],
+        correct: 1,
+        explanation: "Use tan(θ) equations and solve to get height ≈ 51.96 m"
+      },
+      {
+        question: " Two buildings are 30 m and 50 m high. If the angle of depression of the top of the smaller building from the top of the taller one is 30°, find the distance between them.",
+        options: ["20 m", "34.64 m", "40 m", "57.74 m"],
+        correct: 3,
+        explanation: "tan(30°) = (50 − 30)/x → 1/√3 = 20/x → x = 20√3 ≈ 34.64 m"
+      },
+      {
+        question: " A man is 1.7 m tall and observes the angle of elevation of a tower to be 45°. The distance from the man to the tower is 50 m. Find the height of the tower.",
+        options: ["51.7 m", "48.3 m", "40 m", "43.3 m"],
+        correct: 0,
+        explanation: "tan(45°) = (h − 1.7)/50 → 1 = (h − 1.7)/50 → h = 51.7 m"
+      },
+      {
+        question: " A pole is fixed on the top of a building. The angles of elevation of the top and bottom of the pole are 60° and 45° respectively. If the height of the building is 20 m, find the height of the pole.",
+        options: ["20 m", "17.32 m", "10 m", "12.68 m"],
+        correct: 1,
+        explanation: "Use tan(θ) equations and subtract heights. Pole height ≈ 17.32 m"
+      },
+      {
+        question: " From a point on the ground, the angle of elevation of the top of a tower is observed to be 30°. On moving 20 m closer, the angle becomes 60°. Find the height of the tower.",
+        options: ["17.32 m", "34.64 m", "30 m", "40 m"],
+        correct: 1,
+        explanation: "Use tan(θ) formulas and solve to find height ≈ 34.64 m"
+      }
+    ];
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>

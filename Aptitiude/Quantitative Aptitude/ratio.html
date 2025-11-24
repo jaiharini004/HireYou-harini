@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ratio Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">⚖️ Ratio & Proportion Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+
+const quizData = [
+// --- Easy (1-5) ---
+{
+  question: " What is the ratio of 4:5 expressed as a percentage?",
+  options: ["80%", "90%", "75%", "60%"],
+  answer: "80%",
+  explanation: "4/5 = 0.8 = 80%"
+},
+{
+  question: " Simplify the ratio 18:24.",
+  options: ["3:4", "6:8", "9:12", "2:3"],
+  answer: "3:4",
+  explanation: "Divide both terms by 6: 18 ÷ 6 = 3, 24 ÷ 6 = 4."
+},
+{
+  question: " Find the fourth proportional to 3, 4, and 6.",
+  options: ["8", "9", "7", "6"],
+  answer: "8",
+  explanation: "3:4 = 6:x → x = (4×6)/3 = 8."
+},
+{
+  question: " Divide Rs. 600 in the ratio 2:3.",
+  options: ["Rs. 240 and Rs. 360", "Rs. 300 and Rs. 300", "Rs. 250 and Rs. 350", "Rs. 200 and Rs. 400"],
+  answer: "Rs. 240 and Rs. 360",
+  explanation: "2+3=5 parts. So 600/5 = 120 → 2×120 = 240, 3×120 = 360."
+},
+{
+  question: " The ratio of boys to girls in a class is 5:3. If there are 40 students, how many are girls?",
+  options: ["15", "25", "10", "30"],
+  answer: "15",
+  explanation: "5+3=8 parts, so 1 part = 40/8 = 5. Girls = 3×5 = 15."
+},
+
+// --- Intermediate (6-15) ---
+{
+  question: " Find the mean proportional between 4 and 25.",
+  options: ["10", "20", "15", "8"],
+  answer: "10",
+  explanation: "Mean proportional = √(4×25) = √100 = 10."
+},
+{
+  question: " A and B divide Rs. 630 in the ratio 3:4. Find B’s share.",
+  options: ["Rs. 360", "Rs. 270", "Rs. 280", "Rs. 350"],
+  answer: "Rs. 360",
+  explanation: "3+4 = 7 parts → B’s share = (4/7)×630 = 360."
+},
+{
+  question: " What is the ratio of 1 hour to 30 minutes?",
+  options: ["2:1", "1:2", "3:1", "1:3"],
+  answer: "2:1",
+  explanation: "1 hour = 60 mins, so ratio = 60:30 = 2:1."
+},
+{
+  question: " In what ratio should Rs. 2000 be divided between A and B if A gets twice as much as B?",
+  options: ["2:1", "1:2", "1:3", "3:1"],
+  answer: "2:1",
+  explanation: "Let B = x, A = 2x → x + 2x = 3x = 2000 → x = 666.67."
+},
+{
+  question: " Find the third proportional to 6 and 12.",
+  options: ["24", "18", "30", "36"],
+  answer: "24",
+  explanation: "Third proportional x = (12×12)/6 = 24."
+},
+{
+  question: " A and B can complete a task in ratio 5:3. If total wage is Rs. 640, find B’s share.",
+  options: ["Rs. 240", "Rs. 320", "Rs. 360", "Rs. 280"],
+  answer: "Rs. 240",
+  explanation: "5+3=8 parts → B’s share = (3/8)×640 = 240."
+},
+{
+  question: " What must be added to both terms of 3:5 to make it 2:3?",
+  options: ["2", "1", "3", "4"],
+  answer: "1",
+  explanation: "Let x be added: (3+x)/(5+x) = 2/3 → Solve to get x=1."
+},
+{
+  question: " Find the ratio of 2.5 kg to 250 g.",
+  options: ["10:1", "1:10", "5:2", "25:1"],
+  answer: "10:1",
+  explanation: "2.5 kg = 2500 g → 2500:250 = 10:1."
+},
+{
+  question: " Find the duplicate ratio of 4:5.",
+  options: ["16:25", "8:10", "2:3", "9:16"],
+  answer: "16:25",
+  explanation: "Duplicate ratio = square of terms = 4²:5² = 16:25."
+},
+{
+  question: " A number is divided in the ratio 7:5. If the larger part is 84, what is the number?",
+  options: ["144", "120", "126", "135"],
+  answer: "144",
+  explanation: "Larger part = 7x = 84 → x = 12 → Total = 12×(7+5) = 144."
+},
+
+// --- Tough (16-25) ---
+{
+  question: " If a:b = 2:3 and b:c = 4:5, find a:c.",
+  options: ["8:15", "2:5", "3:4", "5:8"],
+  answer: "8:15",
+  explanation: "a:b = 2:3, b:c = 4:5 → make b same = LCM(3,4) = 12 → a:b = 8:12, b:c = 12:15 → a:c = 8:15."
+},
+{
+  question: " A and B earn in the ratio 3:2 and spend in ratio 5:3. If each saves Rs. 1000, find A’s income.",
+  options: ["Rs. 6000", "Rs. 5000", "Rs. 4000", "Rs. 3000"],
+  answer: "Rs. 6000",
+  explanation: "Let incomes be 3x and 2x, expenses be 5y and 3y. Savings: 3x-5y = 1000, 2x-3y = 1000 → solve to get x = 2000 → A = 3x = 6000."
+},
+{
+  question: " If a:b = 5:6 and b:c = 7:8, what is a:b:c?",
+  options: ["35:42:48", "5:6:7", "10:12:14", "25:30:36"],
+  answer: "35:42:48",
+  explanation: "a:b = 5:6, b:c = 7:8 → make b same: LCM(6,7)=42 → a:b = 35:42, b:c = 42:48 → a:b:c = 35:42:48."
+},
+{
+  question: " A:B = 2:3, B:C = 4:5, C:D = 6:7. Find A:D.",
+  options: ["16:35", "8:15", "4:7", "48:105"],
+  answer: "48:105",
+  explanation: "A:B=2:3, B:C=4:5, C:D=6:7 → combine all: A:B=8:12, B:C=12:15, C:D=18:21 → A:D = 48:105."
+},
+{
+  question: " The incomes of A, B, and C are in the ratio 10:12:15 and their expenses are in the ratio 8:9:10. If A saves Rs. 2000, what is C's saving?",
+  options: ["Rs. 4500", "Rs. 5000", "Rs. 6000", "Rs. 5500"],
+  answer: "Rs. 5000",
+  explanation: "Let income = 10x, 12x, 15x; expenses = 8y, 9y, 10y → A's saving = 10x - 8y = 2000. Solve: x=1000, y=1000 → C's saving = 15x - 10y = 5000."
+},
+{
+  question: " Divide Rs. 2520 among A, B, and C in the ratio 2:3:4.",
+  options: ["Rs. 560, Rs. 840, Rs. 1120", "Rs. 500, Rs. 800, Rs. 1220", "Rs. 700, Rs. 900, Rs. 920", "Rs. 600, Rs. 960, Rs. 960"],
+  answer: "Rs. 560, Rs. 840, Rs. 1120",
+  explanation: "Sum = 9 parts → 2520/9 = 280 → A = 2×280 = 560, B = 840, C = 1120."
+},
+{
+  question: " If 3A = 2B and 4B = 5C, find A:B:C.",
+  options: ["6:9:8", "3:2:2.5", "15:10:8", "3:2:2"],
+  answer: "15:10:8",
+  explanation: "3A=2B → A:B = 2:3, 4B=5C → B:C=5:4 → A:B:C = 10:15:12 → divide by GCD 1 = 15:10:8."
+},
+{
+  question: " In a mixture of 60 liters, the ratio of milk to water is 2:1. How much water must be added to make the ratio 1:2?",
+  options: ["60 L", "90 L", "80 L", "70 L"],
+  answer: "90 L",
+  explanation: "Milk = 40 L, Water = 20 L. Let x L water be added → (40):(20+x) = 1:2 → 2×40 = 20+x → x = 60."
+},
+{
+  question: " A and B start a business in ratio 3:5. After 4 months, A adds Rs. 2000 more. If they made Rs. 8800 profit in a year, find A's share.",
+  options: ["Rs. 3600", "Rs. 4200", "Rs. 4000", "Rs. 4400"],
+  answer: "Rs. 3600",
+  explanation: "A's investment = 3x×12 + 2000×8, B = 5x×12 → ratio = A:B = (36x+16000):(60x) → solve to get A’s share = Rs. 3600."
+},
+{
+  question: " A and B have incomes in ratio 7:9 and spend in ratio 4:5. If their savings are equal, find the ratio of their incomes.",
+  options: ["28:45", "7:9", "36:45", "27:35"],
+  answer: "28:45",
+  explanation: "Let incomes = 7x, 9x; expenses = 4y, 5y. Savings equal → 7x - 4y = 9x - 5y → solve: 2x = y → x:y = 1:2 → income ratio = 7:9 → actual = 7×2:9×2 = 14:18 = 28:45."
+}
+];
+
+let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
