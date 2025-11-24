@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Analogies & Puzzle Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">🧩 Analogies & Puzzles Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+    const quizData = [
+
+  {
+    question: "Book : Reading :: Fork : ?",
+    options: ["Drawing", "Writing", "Stirring", "Eating"],
+    answer: 3,
+    explanation: "A book is used for reading as a fork is used for eating."
+  },
+  {
+    question: "Paint : Artist :: Symphony : ?",
+    options: ["Composer", "Author", "Sculptor", "Poet"],
+    answer: 0,
+    explanation: "An artist creates a painting; a composer creates a symphony."
+  },
+  {
+    question: "Cup : Lip :: Bird : ?",
+    options: ["Grass", "Beak", "Forest", "Nest"],
+    answer: 1,
+    explanation: "A cup touches the lip, and a bird uses its beak."
+  },
+  {
+    question: "Clock : Time :: Thermometer : ?",
+    options: ["Mercury", "Heat", "Temperature", "Cold"],
+    answer: 2,
+    explanation: "Clock measures time; thermometer measures temperature."
+  },
+  {
+    question: "Puppy : Dog :: Kitten : ?",
+    options: ["Goat", "Lion", "Cat", "Cub"],
+    answer: 2,
+    explanation: "A puppy grows into a dog, and a kitten grows into a cat."
+  },
+  {
+    question: "Glove : Hand :: Sock : ?",
+    options: ["Finger", "Foot", "Ankle", "Shoe"],
+    answer: 1,
+    explanation: "A glove fits the hand; a sock fits the foot."
+  },
+  {
+    question: "Fish : Aquarium :: Monkey : ?",
+    options: ["Mountain", "Forest", "Cage", "Zoo"],
+    answer: 3,
+    explanation: "Fish live in aquariums; monkeys are found in zoos."
+  },
+  {
+    question: "Sugar : Sweet :: Lemon : ?",
+    options: ["Sour", "Bitter", "Salt", "Juice"],
+    answer: 0,
+    explanation: "Sugar is sweet; lemon is sour."
+  },
+  {
+    question: "Army : Soldiers :: Class : ?",
+    options: ["Teachers", "Books", "Students", "Desks"],
+    answer: 2,
+    explanation: "An army is made up of soldiers; a class is made up of students."
+  },
+  {
+    question: "Needle : Thread :: Pen : ?",
+    options: ["Ink", "Pencil", "Paper", "Book"],
+    answer: 0,
+    explanation: "A needle uses thread; a pen uses ink."
+  },
+  {
+    question: "If in a certain code, HOUSE is written as IPVTF, then LIGHT is?",
+    options: ["MJHIU", "MJHIU", "KJFGS", "MJHGU"],
+    answer: 1,
+    explanation: "Each letter is shifted by +1: L→M, I→J, G→H, H→I, T→U ⇒ MJHIU"
+  },
+  {
+    question: "If 1 = 5, 2 = 25, 3 = 325, 4 = 4325, then 5 = ?",
+    options: ["54325", "5325", "5", "None of these"],
+    answer: 2,
+    explanation: "The pattern ends: 5 = 1"
+  },
+  {
+    question: "I am a three-digit number. My tens digit is five more than my ones digit. My hundreds digit is eight less than my tens digit. What number am I?",
+    options: ["194", "185", "294", "174"],
+    answer: 0,
+    explanation: "Let ones = x ⇒ tens = x+5 ⇒ hundreds = x+5–8 = x–3; Try x=4 ⇒ 1(=4–3), 9(=4+5), 4 ⇒ 194"
+  },
+  {
+    question: "John is twice as old as Peter. If Peter is 10, how old is John?",
+    options: ["20", "15", "10", "30"],
+    answer: 0,
+    explanation: "John = 2 × 10 = 20"
+  },
+  {
+    question: "Which number replaces the question mark: 2, 6, 12, 20, ?, 42",
+    options: ["30", "28", "32", "34"],
+    answer: 1,
+    explanation: "Pattern: +4, +6, +8, +10, +12 ⇒ Next is 20+8=28"
+  },
+  {
+    question: "What comes next in the series? A, C, F, J, O, ?",
+    options: ["U", "W", "V", "T"],
+    answer: 0,
+    explanation: "Pattern: +2, +3, +4, +5, +6 ⇒ O(15)+6 = U"
+  },
+  {
+    question: "I am an odd number. Take away one letter and I become even. What am I?",
+    options: ["Seven", "Nine", "Eleven", "Five"],
+    answer: 0,
+    explanation: "Remove 'S' from 'Seven' ⇒ 'Even'"
+  },
+  {
+    question: "If the day after tomorrow is Thursday, what day was yesterday?",
+    options: ["Monday", "Tuesday", "Wednesday", "Sunday"],
+    answer: 3,
+    explanation: "Day after tomorrow = Thursday ⇒ Today = Tuesday ⇒ Yesterday = Monday"
+  },
+  {
+    question: "Which word doesn’t belong? Apple, Banana, Carrot, Mango",
+    options: ["Apple", "Banana", "Carrot", "Mango"],
+    answer: 2,
+    explanation: "Carrot is a vegetable, others are fruits"
+  },
+  {
+    question: "If you rearrange the letters 'CIFAIPC', you get the name of a:",
+    options: ["Ocean", "River", "City", "Country"],
+    answer: 3,
+    explanation: "Rearranged: PACIFIC (ocean)"
+  },
+  {
+    question: "Find the odd one out: 2, 3, 5, 7, 11, 13, 15, 17",
+    options: ["13", "15", "11", "17"],
+    answer: 1,
+    explanation: "15 is not a prime number"
+  },
+  {
+    question: "Which comes next: 1, 4, 9, 16, 25, ?",
+    options: ["30", "36", "49", "64"],
+    answer: 1,
+    explanation: "Perfect squares: 1², 2²,... ⇒ Next = 6² = 36"
+  },
+  {
+    question: "What comes next: Z, X, V, T, ?",
+    options: ["S", "R", "Q", "P"],
+    answer: 1,
+    explanation: "Skipping 1 letter backward: Z, X, V, T, R"
+  },
+  {
+    question: "Which number does not belong: 3, 5, 8, 11, 14, 17",
+    options: ["3", "5", "8", "17"],
+    answer: 2,
+    explanation: "Others follow +3 pattern. 8 breaks the pattern"
+  },
+  {
+    question: "Which shape comes next: ◯, ◯, ⬤, ⬤, ◯, ◯, ?",
+    options: ["◯", "⬤", "⬛", "⬜"],
+    answer: 1,
+    explanation: "Repeating pattern: ◯, ◯, ⬤, ⬤ ⇒ next is ⬤"
+  }
+];
+ 
+
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>

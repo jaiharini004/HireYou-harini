@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>letters Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">🔠 Letters Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+    const quizData = [
+    { question: "What comes next in the series: A, C, E, G, ?", options: ["H", "I", "J", "K"], answer: 1, explanation: "Each letter skips 1 alphabet: A, C, E, G → next is I" },
+{ question: "Find the next letter: Z, X, V, T, ?", options: ["S", "R", "Q", "P"], answer: 0, explanation: "Moving back by 2 letters: Z, X, V, T → next is R" },
+{ question: "Complete the series: A, B, D, G, K, ?", options: ["L", "M", "N", "O"], answer: 2, explanation: "Add 1, 2, 3, 4... positions → next is K+5 = N" },
+{ question: "What comes next: B, D, G, K, P, ?", options: ["U", "V", "W", "X"], answer: 0, explanation: "Increasing gaps: +2, +3, +4... → P+5 = U" },
+{ question: "Next in series: M, N, O, P, ?", options: ["Q", "R", "S", "T"], answer: 0, explanation: "Consecutive letters: next after P is Q" },
+{ question: "Find the next: A, E, I, M, ?", options: ["Q", "R", "S", "T"], answer: 0, explanation: "Every 4th letter: A(+4)=E, E(+4)=I... → M+4=Q" },
+{ question: "Complete the pattern: C, F, I, L, ?", options: ["M", "N", "O", "P"], answer: 2, explanation: "Add 3 positions: C+3=F, F+3=I... → L+3=O" },
+{ question: "What letter comes next: A, Z, B, Y, C, ?", options: ["D", "X", "E", "W"], answer: 1, explanation: "Alternating A–Z, B–Y, C–X..." },
+{ question: "Find the next: D, G, J, M, ?", options: ["N", "O", "P", "Q"], answer: 2, explanation: "Add 3 letters: D+3=G... M+3=P" },
+{ question: "Next letter: Z, Y, X, W, ?", options: ["V", "U", "T", "S"], answer: 0, explanation: "Reverse alphabet series: Z, Y, X, W → V" },
+{ question: "What comes next: A, C, F, J, O, ?", options: ["R", "S", "T", "U"], answer: 2, explanation: "Gaps: +2, +3, +4, +5... O+6 = U" },
+{ question: "Complete the sequence: M, L, J, G, C, ?", options: ["A", "B", "D", "E"], answer: 0, explanation: "Going back: -1, -2, -3... → C–5 = A" },
+{ question: "Find the next: A, D, H, M, S, ?", options: ["Z", "Y", "X", "W"], answer: 0, explanation: "Add 3, 4, 5, 6... S+7 = Z" },
+{ question: "What is next: B, E, H, K, ?", options: ["M", "N", "O", "P"], answer: 1, explanation: "Add 3: B+3=E, E+3=H... K+3=N" },
+{ question: "Next in series: Z, X, U, Q, L, ?", options: ["K", "J", "I", "H"], answer: 2, explanation: "Back by 2,3,4,5... Z–2=X, X–3=U... L–6=I" },
+{ question: "What comes next: A, B, D, G, K, P, ?", options: ["Q", "R", "S", "T"], answer: 3, explanation: "Add 1,2,3,4,5,6 → P+6 = T" },
+{ question: "Find the next: Z, V, Q, I, ?", options: ["H", "F", "E", "D"], answer: 2, explanation: "Z–4=V, V–5=Q... I–6=E" },
+{ question: "Next letter: A, C, F, J, O, U, ?", options: ["X", "Y", "Z", "A"], answer: 0, explanation: "Increasing gap: +2, +3, +4... U+6=X" },
+{ question: "What comes next: F, I, L, O, ?", options: ["Q", "R", "S", "T"], answer: 1, explanation: "Add 3 each time: F+3=I, I+3=L... O+3=R" },
+{ question: "Complete the series: A, E, I, M, Q, ?", options: ["T", "U", "V", "W"], answer: 0, explanation: "Every 4th letter: A, E, I... Q+4=T" },
+{ question: "Find the next: A, C, F, J, O, ?", options: ["S", "T", "U", "V"], answer: 2, explanation: "Increasing gap +2, +3, +4... O+6=U" },
+{ question: "What comes next: Z, W, S, N, H, ?", options: ["E", "F", "D", "C"], answer: 0, explanation: "Back by 3, 4, 5... H–6=E" },
+{ question: "Next in series: M, J, G, D, ?", options: ["A", "B", "C", "D"], answer: 0, explanation: "Decrease by 3: M–3=J, J–3=G... D–3=A" },
+{ question: "What comes next: B, D, G, K, P, ?", options: ["V", "W", "X", "Y"], answer: 0, explanation: "Increasing steps +2,3,4,5 → P+6=V" },
+{ question: "Complete the pattern: A, C, F, J, O, U, ?", options: ["Z", "Y", "X", "W"], answer: 2, explanation: "Gaps of +2,3,4... → U+6=X" }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>

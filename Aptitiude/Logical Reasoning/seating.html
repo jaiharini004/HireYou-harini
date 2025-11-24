@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Seating Arrangement Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">🪑 Seating Arrangements Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+    const quizData = [
+
+  {
+    question: "A, B, C, D, E and F are sitting in a circle. A is between D and B. B is to the immediate right of E. Who is to the left of D?",
+    options: ["C", "F", "E", "B"],
+    answer: 0,
+    explanation: "Seating them based on clues shows C is to the left of D."
+  },
+  {
+    question: "P, Q, R, S, T and U are sitting in a row. S is between P and T. P is not at the end. Who is at the end?",
+    options: ["Q", "P", "R", "U"],
+    answer: 3,
+    explanation: "P is not at the end. Arrangement leads to U at the end."
+  },
+  {
+    question: "Seven people sit in a row. A is left of B and right of C. D is right of B. Who is in the middle?",
+    options: ["B", "C", "D", "A"],
+    answer: 3,
+    explanation: "Based on positions, A ends up in the middle."
+  },
+  {
+    question: "A, B, C, D, E are sitting around a circle. B is between A and C. D is to the immediate left of E. Who is opposite to B?",
+    options: ["E", "D", "A", "C"],
+    answer: 1,
+    explanation: "Using circular arrangement, D sits opposite B."
+  },
+  {
+    question: "Six people are sitting in a row. P is next to Q but not next to R. Q is not at an end. Who must be at an end?",
+    options: ["P", "R", "S", "Q"],
+    answer: 1,
+    explanation: "R is not next to Q but P is ⇒ R must be at end."
+  },
+  {
+    question: "A, B, C, D, E, F are sitting in a line. D is at one end, C is to the right of A but left of F. Who is in the middle?",
+    options: ["C", "E", "B", "F"],
+    answer: 0,
+    explanation: "Arranging properly, C lands in the middle."
+  },
+  {
+    question: "In a row of girls, Ritu is 10th from the left and 15th from the right. How many girls are there in the row?",
+    options: ["25", "24", "26", "27"],
+    answer: 1,
+    explanation: "Total = Left + Right - 1 = 10 + 15 - 1 = 24"
+  },
+  {
+    question: "Eight friends sit in a circle facing the center. D is between F and B. C is opposite D. Who is to the immediate left of C?",
+    options: ["F", "E", "A", "H"],
+    answer: 2,
+    explanation: "Using placement, A is left to C."
+  },
+  {
+    question: "Six persons A, B, C, D, E, F are sitting in a circle. C is between A and D. F is opposite C. Who is to the immediate right of F?",
+    options: ["B", "E", "A", "D"],
+    answer: 1,
+    explanation: "Following clues places E to F’s right."
+  },
+  {
+    question: "Five boys A, B, C, D and E are sitting in a row. A is to the right of B but to the left of C. Who is sitting at the extreme right?",
+    options: ["E", "C", "A", "D"],
+    answer: 1,
+    explanation: "Based on order, C is at the extreme right."
+  },
+  {
+    question: "Ten people are sitting in a row. A is sitting at the 4th position from left and B at 7th from right. How many people are between them?",
+    options: ["1", "2", "3", "4"],
+    answer: 2,
+    explanation: "Total = 10; A at 4th from left ⇒ position 4, B at 7th from right ⇒ position 4 ⇒ so 3 people between."
+  },
+  {
+    question: "P, Q, R, S, T are sitting in a line. Q is to the immediate right of P, but left of R. T is not at an end. Who is sitting in the middle?",
+    options: ["Q", "R", "S", "P"],
+    answer: 0,
+    explanation: "Arranging gives Q in the middle."
+  },
+  {
+    question: "Eight people A-H sit in a row. C sits 3rd to the left of G. Who is exactly in the middle?",
+    options: ["C", "E", "D", "F"],
+    answer: 1,
+    explanation: "Using seating positions, E ends up in the middle."
+  },
+  {
+    question: "Seven persons are sitting in a row. E is to the right of D but left of F. Who is seated exactly between D and F?",
+    options: ["E", "B", "C", "A"],
+    answer: 0,
+    explanation: "E is between D and F."
+  },
+  {
+    question: "In a row of 21 students, A is 10th from left. What is his position from right?",
+    options: ["12", "11", "10", "13"],
+    answer: 1,
+    explanation: "21 - 10 + 1 = 12"
+  },
+  {
+    question: "A, B, C, D are sitting in a square facing the center. A is to the right of B. Who is opposite to A?",
+    options: ["B", "D", "C", "A"],
+    answer: 2,
+    explanation: "With center-facing seating, C is opposite A."
+  },
+  {
+    question: "Five people are sitting on a bench. P is left to Q, Q is left to R, R is left to S, and S is left to T. Who is at the extreme left?",
+    options: ["P", "Q", "R", "S"],
+    answer: 0,
+    explanation: "Arrangement: P Q R S T ⇒ P is at extreme left."
+  },
+  {
+    question: "A is sitting second to the right of B. C is to the left of B. If all face center, who is to the immediate left of A?",
+    options: ["C", "D", "B", "E"],
+    answer: 2,
+    explanation: "If all face center, left of A is B."
+  },
+  {
+    question: "Eight persons are sitting in a circle. A is opposite D. E is to the right of B. Who is to the left of A?",
+    options: ["H", "C", "G", "E"],
+    answer: 1,
+    explanation: "Arranging circularly puts C to A’s left."
+  },
+  {
+    question: "Six people sit in a line facing north. D is third to the left of F. Who is at the extreme left?",
+    options: ["D", "C", "A", "E"],
+    answer: 0,
+    explanation: "D is 3rd left of F; D must be at the extreme left."
+  },
+  {
+    question: "P, Q, R, S, T are sitting in a row. T is in the middle. Who is at the left end?",
+    options: ["P", "Q", "R", "T"],
+    answer: 0,
+    explanation: "Arranging as per T in the middle gives P at the left end."
+  },
+  {
+    question: "In a row of children facing north, R is 5th to the left of S who is 8th from the right end. What is R’s position from right end?",
+    options: ["3", "4", "5", "6"],
+    answer: 3,
+    explanation: "S is 8th ⇒ R = 8+5 = 13th from right end"
+  },
+  {
+    question: "A, B, C, D, E are sitting in a circle. A is 2nd to the right of B. B is to the immediate right of C. Who is to the left of A?",
+    options: ["E", "B", "D", "C"],
+    answer: 0,
+    explanation: "Left of A in circular order is E."
+  },
+  {
+    question: "If R is seated between M and P, and P is to the right of N, who is in the middle if they are in a row?",
+    options: ["R", "M", "P", "N"],
+    answer: 0,
+    explanation: "R sits between M and P ⇒ R is in the middle."
+  },
+  {
+    question: "In a line of 10 people, A is 4th from left, B is 6th from right. Who is exactly in between them?",
+    options: ["C", "D", "E", "F"],
+    answer: 2,
+    explanation: "A at 4, B at 5 ⇒ Middle is position 4.5 ⇒ 5 ⇒ E"
+  }
+];
+
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>

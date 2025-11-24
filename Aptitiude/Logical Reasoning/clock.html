@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clock & Calendar Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">⏰ Clock & Calendar Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+    const quizData = [
+   
+  {
+    question: "What angle is formed between the hands at 3:00?",
+    options: ["90°", "75°", "60°", "45°"],
+    answer: 0,
+    explanation: "At 3:00, the hands form a right angle = 90°."
+  },
+  {
+    question: "How many times in a day do the hands of a clock overlap?",
+    options: ["22", "24", "12", "11"],
+    answer: 0,
+    explanation: "They overlap every 65.45 minutes, i.e., 22 times in 24 hours."
+  },
+  {
+    question: "What is the angle between the hands at 4:20?",
+    options: ["10°", "20°", "30°", "40°"],
+    answer: 2,
+    explanation: "Angle = |(30×H - (11/2)×M)| = |120 - 110| = 10°."
+  },
+  {
+    question: "How many degrees does the hour hand move in one hour?",
+    options: ["30°", "15°", "60°", "6°"],
+    answer: 0,
+    explanation: "Hour hand moves 360° in 12 hours ⇒ 360/12 = 30° per hour."
+  },
+  {
+    question: "At what time between 7 and 8 will the hands be in the same straight line?",
+    options: ["7:05:27", "7:32:43", "7:38:10", "7:49:05"],
+    answer: 3,
+    explanation: "Straight line means angle = 180°. Happens at 7:49:05."
+  },
+  {
+    question: "If January 1st is a Sunday, what day is January 31st?",
+    options: ["Wednesday", "Tuesday", "Thursday", "Friday"],
+    answer: 0,
+    explanation: "31 days = 3 weeks + 3 days ⇒ Sunday + 3 days = Wednesday."
+  },
+  {
+    question: "Which months have 31 days?",
+    options: ["Jan, Mar, May, Jul, Aug, Oct, Dec", "Apr, Jun, Sep, Nov", "Feb, May, Sep", "Mar, Jun, Nov"],
+    answer: 0,
+    explanation: "These 7 months have 31 days."
+  },
+  {
+    question: "How many times are the hands at right angles in a day?",
+    options: ["44", "48", "24", "22"],
+    answer: 0,
+    explanation: "Twice every hour ⇒ 2 × 12 = 24; 24 × 2 = 48 times in a day."
+  },
+  {
+    question: "How many odd days are there in 100 years?",
+    options: ["5", "6", "4", "2"],
+    answer: 0,
+    explanation: "100 years = 76 ordinary + 24 leap ⇒ 76×1 + 24×2 = 124 odd days ⇒ 124 mod 7 = 5."
+  },
+  {
+    question: "Which year will have the same calendar as 2021?",
+    options: ["2027", "2029", "2022", "2026"],
+    answer: 1,
+    explanation: "Check same leap year pattern and day start – 2029 matches."
+  },
+  {
+    question: "If March 1st, 2023 is Wednesday, what day is April 1st?",
+    options: ["Saturday", "Friday", "Sunday", "Monday"],
+    answer: 0,
+    explanation: "March has 31 days ⇒ 3 odd days ⇒ Wednesday + 3 = Saturday."
+  },
+  {
+    question: "If today is Monday, what day will it be after 45 days?",
+    options: ["Friday", "Wednesday", "Thursday", "Saturday"],
+    answer: 0,
+    explanation: "45 mod 7 = 3 ⇒ Monday + 3 = Thursday."
+  },
+  {
+    question: "How long will it take the minute hand to gain 180° on the hour hand?",
+    options: ["65.45 minutes", "5 hours", "32.73 minutes", "20 minutes"],
+    answer: 2,
+    explanation: "Relative speed = 5.5° per min ⇒ 180/5.5 ≈ 32.73 min."
+  },
+  {
+    question: "On what date of April 2025 is Tamil New Year?",
+    options: ["April 12", "April 13", "April 14", "April 15"],
+    answer: 2,
+    explanation: "Tamil New Year is always on April 14."
+  },
+  {
+    question: "If 1st Jan 2020 was Wednesday, what day was 1st Jan 2021?",
+    options: ["Thursday", "Friday", "Saturday", "Sunday"],
+    answer: 1,
+    explanation: "2020 is a leap year ⇒ +2 days ⇒ Wednesday + 2 = Friday."
+  },
+  {
+    question: "What is the angle between the hands at 6:30?",
+    options: ["15°", "20°", "25°", "30°"],
+    answer: 0,
+    explanation: "Angle = |180 - 165| = 15°."
+  },
+  {
+    question: "If Feb has 28 days in a year, the year is:",
+    options: ["Leap year", "Odd year", "Ordinary year", "Even year"],
+    answer: 2,
+    explanation: "Only ordinary years have 28 days in Feb."
+  },
+  {
+    question: "If 15th August 2020 is Saturday, what is 15th August 2021?",
+    options: ["Sunday", "Monday", "Tuesday", "Wednesday"],
+    answer: 1,
+    explanation: "2020 is leap ⇒ +2 days ⇒ Saturday + 2 = Monday."
+  },
+  {
+    question: "How many minutes are there between 4:20 and 5:00?",
+    options: ["30", "40", "45", "60"],
+    answer: 0,
+    explanation: "5:00 - 4:20 = 40 mins."
+  },
+  {
+    question: "How many times do the hands form 90° in 12 hours?",
+    options: ["11", "22", "24", "44"],
+    answer: 3,
+    explanation: "Hands form 90° 2 times/hour ⇒ 2×12 = 24 times; 24×2 = 48/day."
+  },
+  {
+    question: "Which is the day on 1st January 2000?",
+    options: ["Saturday", "Sunday", "Friday", "Monday"],
+    answer: 0,
+    explanation: "1 Jan 2000 was a Saturday (verify from calendar)."
+  },
+  {
+    question: "At what time between 2 and 3 are the hands at right angle?",
+    options: ["2:16:21", "2:43:39", "2:15:00", "2:18:00"],
+    answer: 0,
+    explanation: "Using formula ⇒ M = (2×5 ± 15)/11 ⇒ 16.36 mins ≈ 2:16:21."
+  },
+  {
+    question: "How many odd days are there in 400 years?",
+    options: ["0", "1", "2", "4"],
+    answer: 0,
+    explanation: "400 years = 0 odd days (exactly divisible by 7)."
+  },
+  {
+    question: "How many leap years are there from 2001 to 2100?",
+    options: ["24", "25", "26", "23"],
+    answer: 0,
+    explanation: "Leap years = years divisible by 4 (excluding 2100) ⇒ 24 years."
+  },
+  {
+    question: "If a clock is 10 min slow at 10 AM and gains 5 min per hour, when will it show the correct time?",
+    options: ["12 PM", "2 PM", "4 PM", "3 PM"],
+    answer: 3,
+    explanation: "It gains 5 min/hour ⇒ to cover 10 min, it needs 2 hrs ⇒ 10 AM + 2 hrs = 12 PM."
+  }
+];
+
+    
+
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>

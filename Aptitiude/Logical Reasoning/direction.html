@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Direction Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">🧭 Direction Sense Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+    const quizData = [
+{
+    question: "A man walks 10 meters north, then turns right and walks 5 meters. He then turns right and walks 10 meters. Where is he now from the starting point?",
+    options: ["5m East", "10m North", "5m West", "10m South"],
+    answer: 0,
+    explanation: "He ends up 5 meters to the east of the starting point."
+  },
+  {
+    question: "A person walks 6 km north, then turns west and walks 4 km. Then he turns south and walks 2 km. What is his final position from starting point?",
+    options: ["4 km NW", "4.47 km NW", "2 km SW", "2.82 km NW"],
+    answer: 3,
+    explanation: "Displacement: 4 km west, 4 km north ⇒ √(4²+4²) = 5.66 km NW."
+  },
+  {
+    question: "Ravi walks 10 m south, then turns left and walks 6 m, then left again and walks 10 m. Which direction is he facing now?",
+    options: ["East", "West", "North", "South"],
+    answer: 1,
+    explanation: "After two left turns, he is facing west."
+  },
+  {
+    question: "Mohan walked 30 m towards north, then turned right and walked 40 m, then turned right again and walked 30 m. How far is he from starting point?",
+    options: ["60 m", "40 m", "30 m", "70 m"],
+    answer: 1,
+    explanation: "Net displacement is 40 m east from the start."
+  },
+  {
+    question: "A boy goes 20 m north, then 30 m east, then 10 m south. How far is he from the starting point?",
+    options: ["20 m", "40 m", "50 m", "30 m"],
+    answer: 1,
+    explanation: "Net: 10 m north, 30 m east ⇒ √(10²+30²) = 31.62 ≈ 32 m"
+  },
+  {
+    question: "Kiran walks 7 m north, then turns left and walks 6 m, then turns right and walks 10 m. Which direction is he facing?",
+    options: ["East", "North", "West", "South"],
+    answer: 1,
+    explanation: "Final direction is north."
+  },
+  {
+    question: "If East becomes North, North becomes West, West becomes South and so on, what will South-West become?",
+    options: ["North-East", "South-East", "North-West", "South-West"],
+    answer: 0,
+    explanation: "Apply changes: SW ⇒ NE"
+  },
+  {
+    question: "A person faces north. He turns 90° clockwise, then 180° anti-clockwise. What direction is he facing now?",
+    options: ["West", "South", "East", "North"],
+    answer: 0,
+    explanation: "Turns: North → East → West"
+  },
+  {
+    question: "A person walks 3 km south, then 4 km east. What is the shortest distance from the starting point?",
+    options: ["5 km", "6 km", "7 km", "4.5 km"],
+    answer: 0,
+    explanation: "√(3² + 4²) = √25 = 5 km"
+  },
+  {
+    question: "Sheela walks 5 km west, then 3 km south. In which direction is she from the starting point?",
+    options: ["South-West", "South-East", "North-West", "North-East"],
+    answer: 0,
+    explanation: "5 km west, 3 km south ⇒ SW direction"
+  },
+  {
+    question: "A person walks 10 m north, 6 m east, 10 m south. How far and in which direction is he from his start?",
+    options: ["6 m East", "6 m West", "10 m North", "4 m East"],
+    answer: 0,
+    explanation: "Net position = 6 m east from starting point"
+  },
+  {
+    question: "If a person faces south and turns 45° clockwise, then 90° anti-clockwise, what direction is he facing?",
+    options: ["South-East", "East", "South-West", "West"],
+    answer: 2,
+    explanation: "South → 45° clockwise → SW → 90° anti-clockwise → SE"
+  },
+  {
+    question: "Praveen walks 6 m south, then 3 m left, then 6 m north. How far is he from his starting point?",
+    options: ["3 m", "6 m", "0 m", "9 m"],
+    answer: 0,
+    explanation: "Ends 3 m west of start"
+  },
+  {
+    question: "Ravi walks 8 m north, then turns left and walks 5 m, then turns right and walks 6 m. Where is he from start?",
+    options: ["13 m North-West", "13 m North-East", "7 m North-West", "9 m North-East"],
+    answer: 2,
+    explanation: "Net: 8+6=14 m north, 5 m west ⇒ √(14²+5²) ≈ 14.86 NW"
+  },
+  {
+    question: "If someone is facing east and turns 270° clockwise, which direction are they now facing?",
+    options: ["North", "South", "West", "East"],
+    answer: 0,
+    explanation: "East → 270° clockwise → North"
+  },
+  {
+    question: "Sita walks 4 km north, then 3 km east, then 4 km south. How far is she from the starting point?",
+    options: ["3 km", "5 km", "7 km", "4 km"],
+    answer: 1,
+    explanation: "Net: 3 km east ⇒ 5 km displacement"
+  },
+  {
+    question: "Facing south, a person turns 135° clockwise. What is the new direction?",
+    options: ["North-West", "South-West", "South-East", "North-East"],
+    answer: 2,
+    explanation: "South + 135° clockwise = South-East"
+  },
+  {
+    question: "Rahul walks 12 km east, then 5 km south, then 8 km west. How far is he from the start?",
+    options: ["13 km", "9 km", "5 km", "7 km"],
+    answer: 1,
+    explanation: "Net: 4 km east, 5 km south ⇒ √(16 + 25) = √41 ≈ 6.4"
+  },
+  {
+    question: "Mira walks 5 m towards east, then 5 m left. Which direction is she facing now?",
+    options: ["North", "South", "East", "West"],
+    answer: 0,
+    explanation: "Turning left from east = north"
+  },
+  {
+    question: "Facing east, if you turn left, then right, then left again, which direction are you facing?",
+    options: ["North", "South", "West", "East"],
+    answer: 2,
+    explanation: "East → North → East → North ⇒ Final = West"
+  },
+  {
+    question: "A person goes 5 m west, then 5 m south, then 5 m east. How far and in which direction from start?",
+    options: ["5 m South", "5 m North", "5 m West", "5 m East"],
+    answer: 0,
+    explanation: "Net position: 5 m south"
+  },
+  {
+    question: "Raj walks 6 km north, 8 km east. What is the distance from the start?",
+    options: ["10 km", "12 km", "14 km", "15 km"],
+    answer: 0,
+    explanation: "√(6² + 8²) = √100 = 10 km"
+  },
+  {
+    question: "If you face west and turn 180°, which direction are you facing?",
+    options: ["East", "North", "South", "West"],
+    answer: 0,
+    explanation: "180° turn from west = east"
+  },
+  {
+    question: "A girl walks 3 m north, 4 m east, 3 m south. What's the distance from starting point?",
+    options: ["4 m", "6 m", "7 m", "5 m"],
+    answer: 0,
+    explanation: "Net: 4 m east"
+  },
+  {
+    question: "Facing north, a man turns 45° anti-clockwise. What is his new direction?",
+    options: ["North-East", "North-West", "West", "East"],
+    answer: 1,
+    explanation: "North → 45° anti-clockwise = North-West"
+  }
+];
+
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>

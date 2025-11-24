@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Syllogism Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">🌀 Syllogism Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    question: "Statements: All apples are fruits. All fruits are healthy.\nConclusion: I. All apples are healthy. II. Some fruits are apples.",
+    options: ["Only I follows", "Only II follows", "Both I and II follow", "Neither follows"],
+    answer: 2,
+    explanation: "If all apples are fruits and all fruits are healthy, then all apples are healthy (I) and some fruits are apples (II)."
+  },
+  {
+    question: "Statements: All cats are animals. Some animals are dogs.\nConclusion: I. Some cats are dogs. II. All dogs are animals.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 1,
+    explanation: "Conclusion I is not necessarily true. II is a universal truth."
+  },
+  {
+    question: "Statements: Some tables are chairs. All chairs are wood.\nConclusion: I. Some tables are wood. II. All tables are wood.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 3,
+    explanation: "No definite relation between tables and wood. Both conclusions don’t follow."
+  },
+  {
+    question: "Statements: All birds are animals. Some animals are insects.\nConclusion: I. Some birds are insects. II. All insects are birds.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 3,
+    explanation: "No direct connection between birds and insects."
+  },
+  {
+    question: "Statements: All pens are tools. No tool is red.\nConclusion: I. No pen is red. II. Some tools are pens.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 2,
+    explanation: "All pens are tools (so II follows), but nothing confirms that no pen is red (I doesn’t follow)."
+  },
+  {
+    question: "Statements: Some mangoes are sweet. Some sweet things are yellow.\nConclusion: I. Some mangoes are yellow. II. Some yellow things are mangoes.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 3,
+    explanation: "No direct relation between mangoes and yellow things."
+  },
+  {
+    question: "Statements: All men are humans. All humans are mortal.\nConclusion: I. All men are mortal. II. All mortals are men.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 0,
+    explanation: "All men → humans → mortal. So I follows. II is not necessarily true."
+  },
+  {
+    question: "Statements: Some cars are bikes. All bikes are vehicles.\nConclusion: I. Some vehicles are bikes. II. Some cars are vehicles.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 2,
+    explanation: "I is directly true. II is true since some cars are bikes which are vehicles."
+  },
+  {
+    question: "Statements: Some flowers are red. Some reds are bright.\nConclusion: I. Some flowers are bright. II. All reds are flowers.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 3,
+    explanation: "No direct connection between flowers and brightness."
+  },
+  {
+    question: "Statements: No dog is a cat. All cats are animals.\nConclusion: I. No dog is an animal. II. Some animals are not dogs.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 1,
+    explanation: "I doesn’t follow. II follows based on logic – cats are animals, but no dogs are cats."
+  },
+  {
+    question: "Statements: All A are B. Some B are C.\nConclusion: I. Some A are C. II. All B are A.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 3,
+    explanation: "No definite relation between A and C or all B being A."
+  },
+  {
+    question: "Statements: All musicians are artists. Some artists are dancers.\nConclusion: I. Some musicians are dancers. II. All dancers are artists.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 3,
+    explanation: "No definite conclusion can be drawn."
+  },
+  {
+    question: "Statements: Some books are novels. All novels are fiction.\nConclusion: I. Some books are fiction. II. All fiction are books.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 0,
+    explanation: "Some books → novels → fiction. So, some books are fiction."
+  },
+  {
+    question: "Statements: All engineers are smart. Some smart people are funny.\nConclusion: I. Some engineers are funny. II. All funny people are smart.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 3,
+    explanation: "No definite relation between engineers and funny people."
+  },
+  {
+    question: "Statements: No banana is an apple. All apples are fruits.\nConclusion: I. No banana is a fruit. II. Some fruits are apples.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 1,
+    explanation: "II is true, I is not necessarily true."
+  },
+  {
+    question: "Statements: Some students are intelligent. All intelligent are creative.\nConclusion: I. All students are creative. II. Some students are creative.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 1,
+    explanation: "Only some students are intelligent → creative, so only II follows."
+  },
+  {
+    question: "Statements: All oranges are fruits. All fruits are juicy.\nConclusion: I. Some oranges are juicy. II. All oranges are juicy.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 1,
+    explanation: "Oranges → fruits → juicy. So all oranges are juicy."
+  },
+  {
+    question: "Statements: All keys are locks. No lock is a door.\nConclusion: I. No key is a door. II. Some locks are keys.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 2,
+    explanation: "I follows from the chain. II is directly from 'All keys are locks'."
+  },
+  {
+    question: "Statements: Some boys are students. All students are teachers.\nConclusion: I. Some boys are teachers. II. All teachers are boys.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 0,
+    explanation: "Some boys → students → teachers. So I follows."
+  },
+  {
+    question: "Statements: All mobiles are devices. Some devices are computers.\nConclusion: I. All computers are mobiles. II. Some mobiles are computers.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 3,
+    explanation: "No direct link between mobiles and computers."
+  },
+  {
+    question: "Statements: All actors are performers. All performers are celebrities.\nConclusion: I. All celebrities are actors. II. All actors are celebrities.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 1,
+    explanation: "Actors → performers → celebrities. So all actors are celebrities."
+  },
+  {
+    question: "Statements: All chairs are furniture. Some furniture are tables.\nConclusion: I. Some tables are chairs. II. Some furniture are chairs.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 1,
+    explanation: "Only II follows directly."
+  },
+  {
+    question: "Statements: No fruits are vegetables. Some vegetables are green.\nConclusion: I. Some fruits are green. II. Some green things are not fruits.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 1,
+    explanation: "II follows from the negative statement."
+  },
+  {
+    question: "Statements: All clouds are water. No water is solid.\nConclusion: I. No cloud is solid. II. Some clouds are solid.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 0,
+    explanation: "All clouds are water and no water is solid → no cloud is solid."
+  },
+  {
+    question: "Statements: Some men are strong. All strong are brave.\nConclusion: I. All men are brave. II. Some men are brave.",
+    options: ["Only I follows", "Only II follows", "Both follow", "Neither follows"],
+    answer: 1,
+    explanation: "Some men → strong → brave. So, some men are brave."
+  }
+
+
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>

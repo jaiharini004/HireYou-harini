@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coding - Decoding Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">💻 Coding - Decoding Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+    const quizData = [
+{ question: "If CAT is coded as DBU, how is DOG coded?", options: ["EPH", "FPI", "DPH", "EOH"], answer: 0, explanation: "Each letter is shifted by +1: C→D, A→B, T→U ⇒ DOG→EPH" },
+{ question: "If APPLE is coded as BQQMF, how is BANANA coded?", options: ["CBOBOB", "CBNBNB", "CBNCNC", "CBNBNC"], answer: 0, explanation: "Each letter +1: A→B, P→Q, L→M, E→F ⇒ BANANA→CBOBOB" },
+{ question: "If BOOK is coded as DQQL, how is READ coded?", options: ["TGCF", "TFCE", "TGBF", "TGCE"], answer: 3, explanation: "Each letter +2: B→D, O→Q, K→L ⇒ READ→TGCE" },
+{ question: "If TREE is coded as USFF, how is PLANT coded?", options: ["QMBOU", "QMBNU", "QMBOT", "QMCOT"], answer: 0, explanation: "+1 to each letter: P→Q, L→M, A→B, N→O, T→U" },
+{ question: "If DOOR is coded as FQQT, how is HOME coded?", options: ["JQOG", "IPNF", "JQPF", "HPMG"], answer: 2, explanation: "+2 to each letter: H→J, O→Q, M→O, E→F" },
+{ question: "If LION is coded as MJPO, how is BEAR coded?", options: ["CFBS", "CFBS", "CFAS", "CFAR"], answer: 0, explanation: "+1 to each letter: B→C, E→F, A→B, R→S" },
+{ question: "If BALL is coded as YZOO, how is CALL coded?", options: ["XZOO", "XZPP", "XZNN", "XZOO"], answer: 0, explanation: "B→Y, A→Z, L→O → CALL = XZOO" },
+{ question: "If KING is coded as LJPH, how is QUEEN coded?", options: ["SWGGQ", "SWFFP", "RVDDM", "SVFFQ"], answer: 1, explanation: "+1, +1, +1... Q→R, U→V, E→F, E→F, N→P = RVFFP" },
+{ question: "If ROAD = URDG, how is PATH coded?", options: ["SBWK", "SBTW", "SBWI", "QBTI"], answer: 0, explanation: "+3 to each letter: P→S, A→D, T→W, H→K" },
+{ question: "If FISH is coded as GJTI, how is BIRD coded?", options: ["CJSE", "CJSE", "CJQE", "DJSE"], answer: 0, explanation: "+1 to each letter" },
+{ question: "If MANGO is coded as OBPIQ, how is GRAPE coded?", options: ["ITCRG", "HTCQG", "ITCQG", "ISCPH"], answer: 2, explanation: "+2 each letter: G→I, R→T, A→C, P→Q, E→G" },
+{ question: "If BOY = DQZ, what is GIRL?", options: ["IKTN", "HKSM", "IKSM", "HJSL"], answer: 2, explanation: "+2 to each letter" },
+{ question: "If SKY is coded as TMZ, how is SUN coded?", options: ["TVO", "TVM", "TUN", "TVN"], answer: 3, explanation: "+1 to each letter: S→T, U→V, N→O" },
+{ question: "If LEFT is coded as OGHU, what is RIGHT?", options: ["ULJHU", "UJKIU", "UJHIU", "UJKHT"], answer: 2, explanation: "+3 to each letter: R→U, I→L, G→J, H→I, T→U" },
+{ question: "If ZEBRA is coded as ADCUD, how is LION coded?", options: ["OMRQ", "MOQP", "OLQP", "OMRP"], answer: 0, explanation: "+1 to each letter" },
+{ question: "If COOK is coded as DPPJ, how is BAKE coded?", options: ["CBLF", "CFLF", "CBLF", "CBKE"], answer: 0, explanation: "+1 to each letter: B→C, A→B, K→L, E→F" },
+{ question: "If TEAM is coded as UFBM, what is LEAD?", options: ["MFBF", "MFBF", "MFBF", "MFBG"], answer: 0, explanation: "+1 to each letter" },
+{ question: "If FRIEND = GSJFOE, how is ENEMY coded?", options: ["FOFNZ", "FNEOZ", "FOFNZ", "FOFNZ"], answer: 2, explanation: "+1 to each letter" },
+{ question: "If JUMP = KVOQ, how is RUN?", options: ["SVO", "SVQ", "SVP", "TVP"], answer: 0, explanation: "+1 to each letter" },
+{ question: "If TREE = USFF, what is LEAF?", options: ["MFBI", "MFAG", "MGAF", "MFAG"], answer: 1, explanation: "+1 to each letter" },
+{ question: "If PAN = QBO, how is CUP?", options: ["DVQ", "CVQ", "DUQ", "CVR"], answer: 0, explanation: "+1 to each letter" },
+{ question: "If DAY = EBZ, how is NIGHT?", options: ["OJHIU", "OIJIU", "OJHIU", "OJGIU"], answer: 2, explanation: "+1 to each letter" },
+{ question: "If GIRL = HJSM, how is BOY?", options: ["CPZ", "CPY", "CPX", "DQZ"], answer: 0, explanation: "+1 to each letter" },
+{ question: "If SWEET = TXFFU, how is SOUR?", options: ["TPVS", "TPVT", "TPVR", "TPUR"], answer: 3, explanation: "+1 to each letter" },
+{ question: "If CLEAR = DMBFS, how is BLUE?", options: ["CMVF", "CMVD", "CLVE", "CMUE"], answer: 0, explanation: "+1 to each letter" }
+        
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blood-Relations Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">👪 Blood - Relations Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+    const quizData = [
+  {
+    question: "Pointing to a man, Rina said, 'He is the son of my mother's brother.' Who is the man to Rina?",
+    options: ["Brother", "Cousin", "Uncle", "Nephew"],
+    answer: 1,
+    explanation: "Mother's brother's son is Rina's cousin."
+  },
+  {
+    question: "If A is the father of B and B is the brother of C, how is A related to C?",
+    options: ["Father", "Uncle", "Brother", "Cousin"],
+    answer: 0,
+    explanation: "A is the father of both B and C. So, A is the father of C."
+  },
+  {
+    question: "If P is the sister of Q, and Q is the father of R, how is P related to R?",
+    options: ["Mother", "Aunt", "Grandmother", "Sister"],
+    answer: 1,
+    explanation: "P is Q's sister and Q is R's father. So, P is R's aunt."
+  },
+  {
+    question: "A is the brother of B. B is the sister of C. C is the father of D. How is A related to D?",
+    options: ["Uncle", "Brother", "Father", "Cousin"],
+    answer: 0,
+    explanation: "A is the brother of B and B is C’s sister, so A is also C’s brother. C is D’s father, so A is D’s uncle."
+  },
+  {
+    question: "Pointing to a girl, Ram said, 'She is the daughter of my mother’s only son.' Who is the girl?",
+    options: ["Sister", "Niece", "Daughter", "Cousin"],
+    answer: 2,
+    explanation: "Mother's only son = Ram himself. So, the girl is Ram’s daughter."
+  },
+  {
+    question: "If A is the daughter of B, and B is the son of C, how is A related to C?",
+    options: ["Son", "Granddaughter", "Niece", "Cousin"],
+    answer: 1,
+    explanation: "A is B's daughter, B is C's son. So A is C's granddaughter."
+  },
+  {
+    question: "If M is the mother of N, and N is the father of P, how is M related to P?",
+    options: ["Aunt", "Sister", "Grandmother", "Mother"],
+    answer: 2,
+    explanation: "M is N’s mother and N is P’s father. So M is P’s grandmother."
+  },
+  {
+    question: "If A is the son of B, and B is the daughter of C, how is C related to A?",
+    options: ["Grandfather/Grandmother", "Mother", "Uncle", "Brother"],
+    answer: 0,
+    explanation: "C is B’s parent and A is B’s son. So C is A’s grandparent."
+  },
+  {
+    question: "A said to B, 'You are my father's only son.' How is B related to A?",
+    options: ["Brother", "Uncle", "Father", "Cousin"],
+    answer: 2,
+    explanation: "'Father’s only son' means A is talking about B as his father."
+  },
+  {
+    question: "If P is the father of Q and R is the brother of P, how is R related to Q?",
+    options: ["Uncle", "Brother", "Father", "Grandfather"],
+    answer: 0,
+    explanation: "R is P’s brother and P is Q’s father. So R is Q’s uncle."
+  },
+  {
+    question: "If D is the mother of B and C is the brother of D, how is C related to B?",
+    options: ["Father", "Uncle", "Brother", "Grandfather"],
+    answer: 1,
+    explanation: "C is D’s brother and D is B’s mother. So C is B’s uncle."
+  },
+  {
+    question: "Rani said, 'This boy is the son of my husband's only sister.' Who is the boy to Rani?",
+    options: ["Nephew", "Son", "Brother-in-law", "Cousin"],
+    answer: 0,
+    explanation: "Husband’s sister’s son is Rani’s nephew."
+  },
+  {
+    question: "If S is the brother of T and T is the daughter of M, how is M related to S?",
+    options: ["Father", "Mother", "Cannot be determined", "Sister"],
+    answer: 2,
+    explanation: "M is T’s parent, but we don’t know M’s gender."
+  },
+  {
+    question: "If A is the sister of B and B is the husband of C, what is A to C?",
+    options: ["Sister-in-law", "Daughter", "Mother", "Cousin"],
+    answer: 0,
+    explanation: "A is B’s sister and B is C’s husband. So A is C’s sister-in-law."
+  },
+  {
+    question: "Ravi said, 'That girl is the wife of the son of my father's only son.' Who is the girl to Ravi?",
+    options: ["Wife", "Daughter", "Sister-in-law", "Daughter-in-law"],
+    answer: 0,
+    explanation: "Father’s only son is Ravi himself. So the girl is Ravi’s wife."
+  },
+  {
+    question: "Sita is the niece of Ramu. How is Ramu related to Sita?",
+    options: ["Father", "Uncle", "Brother", "Cousin"],
+    answer: 1,
+    explanation: "Uncle-niece relation is directly stated."
+  },
+  {
+    question: "If A is the son of C and C is the daughter of B, how is A related to B?",
+    options: ["Son", "Grandson", "Nephew", "Cousin"],
+    answer: 1,
+    explanation: "A is C’s son and C is B’s daughter. So A is B’s grandson."
+  },
+  {
+    question: "If X is the mother of Y and Y is the father of Z, how is X related to Z?",
+    options: ["Mother", "Aunt", "Grandmother", "Cousin"],
+    answer: 2,
+    explanation: "X is Z’s grandmother (X → Y → Z)."
+  },
+  {
+    question: "If P is the sister of Q and Q is the brother of R, how is R related to P?",
+    options: ["Brother", "Cannot be determined", "Sister", "Uncle"],
+    answer: 1,
+    explanation: "R could be brother or sister; gender not mentioned."
+  },
+  {
+    question: "B is the daughter of A. A is the son of C. How is C related to B?",
+    options: ["Father", "Uncle", "Grandfather", "Brother"],
+    answer: 2,
+    explanation: "A is B’s father and C is A’s father. So, C is B’s grandfather."
+  },
+  {
+    question: "Pointing to a woman, John said, 'She is the daughter of the only son of my father.' Who is the woman?",
+    options: ["Sister", "Daughter", "Cousin", "Niece"],
+    answer: 1,
+    explanation: "Father’s only son = John. So, woman is John’s daughter."
+  },
+  {
+    question: "If M is married to N and N is the son of R, how is R related to M?",
+    options: ["Mother-in-law/Father-in-law", "Sister", "Aunt", "Sister-in-law"],
+    answer: 0,
+    explanation: "R is the parent of M’s husband, so R is M’s parent-in-law."
+  },
+  {
+    question: "If R is the mother of S and T is the father of S, how is T related to R?",
+    options: ["Brother", "Husband", "Father-in-law", "Son"],
+    answer: 1,
+    explanation: "Both are S’s parents; so T is R’s husband."
+  },
+  {
+    question: "Pointing to a photograph, Nisha said, 'He is the only son of the son of my grandfather.' Who is he?",
+    options: ["Brother", "Uncle", "Cousin", "Nephew"],
+    answer: 0,
+    explanation: "Son of grandfather = Nisha’s father. His only son = her brother."
+  },
+  {
+    question: "A is the mother of B, and C is the brother of A. How is C related to B?",
+    options: ["Father", "Uncle", "Grandfather", "Cousin"],
+    answer: 1,
+    explanation: "C is A’s brother. A is B’s mother. So, C is B’s uncle."
+  }
+];
+
+ 
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
