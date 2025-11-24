@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome | HireYou</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #d7c5f4, #fce4ec);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 50px 40px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      max-width: 700px;
+      width: 90%;
+      animation: fadeInUp 1s ease;
+      border: 2px solid violet;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      color: #4a148c;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 1.1rem;
+      color: #300a50;
+      font-weight: 500;
+      line-height: 1.8;
+      margin-bottom: 30px;
+    }
+
+    button {
+      background: #7b1fa2;
+      color: white;
+      padding: 14px 36px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+      background: #6a1b9a;
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      p {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Welcome to HireYou 👋</h1>
+    <p>
+      Hey, ready to attend an HR interview and showcase your <strong>communication skills</strong> and prove that you're <strong>smart and capable</strong>?<br><br>
+      It's completely okay to feel shy or lack confidence while representing yourself — we understand that.<br><br>
+      But here, you're safe. You're supported. You're free.<br><br>
+      HireYou is here to <strong>train you, uplift you</strong>, and bring out the best version of you. 🌟<br><br>
+      Here's your chance to <strong>grow, improve, and shine</strong> — step by step.<br>
+      Let’s begin your journey toward confidence and success!
+    </p>
+    <button onclick="window.location.href='confidence.html'">Let's Start 🚀</button>
+  </div>
+
+</body>
+</html>
