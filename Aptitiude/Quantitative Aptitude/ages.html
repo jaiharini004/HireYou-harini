@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ages Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">👶 Ages Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+    const quizData = [
+      // Easy (5)
+      {
+        question: "A father is twice as old as his son. If the sum of their ages is 36 years, what is the age of the son?",
+        options: ["10", "12", "14", "16"],
+        answer: 1,
+        explanation: "Let son's age be x. Then father's age = 2x. So, x + 2x = 36 → 3x = 36 → x = 12."
+      },
+      {
+        question: "The present age of a mother is three times that of her daughter. After 10 years, her age will be twice that of her daughter. What is the daughter’s present age?",
+        options: ["10", "12", "15", "18"],
+        answer: 0,
+        explanation: "Let daughter's age = x. Then mother = 3x. After 10 years: 3x+10 = 2(x+10) → 3x+10 = 2x+20 → x = 10."
+      },
+      {
+        question: "The age of a man is 3 times the age of his son. After 5 years, the age of the man will be twice that of his son. Find the son’s age.",
+        options: ["10", "15", "20", "25"],
+        answer: 0,
+        explanation: "Let son = x. Then man = 3x. After 5 yrs: 3x+5 = 2(x+5) → 3x+5 = 2x+10 → x = 5. Son is 5 now."
+      },
+      {
+        question: "If the sum of the ages of A and B is 48 years and A is 4 years older than B, what is the age of A?",
+        options: ["24", "26", "28", "30"],
+        answer: 2,
+        explanation: "Let B = x. Then A = x + 4. So x + x+4 = 48 → 2x + 4 = 48 → x = 22 → A = 26."
+      },
+      {
+        question: "The sum of ages of a father and son is 60 years. If the father’s age is four times that of the son, what is the son’s age?",
+        options: ["10", "12", "14", "16"],
+        answer: 0,
+        explanation: "Let son's age = x, then father's = 4x. x + 4x = 60 → 5x = 60 → x = 12."
+      },
+
+      // Intermediate (10)
+      {
+        question: "10 years ago, A was half the age of B. If the ratio of their current ages is 3:4, what is A’s present age?",
+        options: ["20", "24", "30", "36"],
+        answer: 1,
+        explanation: "Let A = 3x, B = 4x. Then, 3x -10 = 1/2 (4x -10) → 6x -20 = 4x -10 → 2x = 10 → x = 5 → A = 15."
+      },
+      {
+        question: "A is 5 years older than B and 3 years younger than C. If the sum of their ages is 45, what is A’s age?",
+        options: ["12", "15", "16", "17"],
+        answer: 3,
+        explanation: "Let A = x. Then B = x - 5, C = x + 3. x + x-5 + x+3 = 45 → 3x -2 = 45 → x = 15.67 → Round to 16."
+      },
+      {
+        question: "The average age of a class of 20 students is 12 years. If the teacher’s age is included, the average becomes 13. What is the teacher’s age?",
+        options: ["25", "30", "32", "35"],
+        answer: 3,
+        explanation: "Total age of students = 20×12 = 240. New total = 21×13 = 273 → Teacher = 273 - 240 = 33."
+      },
+      {
+        question: "The age of a father is twice the sum of the ages of his two children. After 10 years, the father's age will be equal to the sum of his children’s ages. What is the father's age?",
+        options: ["30", "35", "40", "50"],
+        answer: 3,
+        explanation: "Let children's sum = x → father = 2x. After 10 years: 2x+10 = x+20 → x = 10 → father = 20."
+      },
+      {
+        question: "A person’s present age is two-fifths of the age of his mother. After 8 years, he will be half the age of his mother. Find the present age of the person.",
+        options: ["16", "20", "24", "28"],
+        answer: 0,
+        explanation: "Let person = x, mother = 5x/2. x+8 = 1/2 (5x/2 + 8) → Solve: x = 16."
+      },
+      {
+        q: "The sum of the ages of A and B is 45 years. Five years ago, the ratio of their ages was 4:5. What is the present age of A?",
+        options: ["20", "25", "24", "21"],
+        answer: 2,
+        explanation: "Let the present ages be A and B. A + B = 45 ⇒ B = 45 - A. 5 years ago: (A - 5)/(40 - A) = 4/5 ⇒ 5(A - 5) = 4(40 - A) ⇒ A = 24."
+      },
+      {
+        q: "A father is three times as old as his son. After 8 years, he will be twice as old as his son. What is the son’s current age?",
+        options: ["8", "12", "16", "10"],
+        answer: 0,
+        explanation: "Let son's age be x. Father = 3x. In 8 years: 3x + 8 = 2(x + 8) ⇒ x = 8."
+      },
+      {
+        q: "The average age of a group of 4 people is 36. A new person joins, increasing the average to 38. What is the age of the new person?",
+        options: ["38", "42", "48", "50"],
+        answer: 3,
+        explanation: "Total of 4 = 36×4 = 144. New total = 38×5 = 190. New person's age = 190 - 144 = 46."
+      },
+      {
+        q: "If 6 years are subtracted from the present age of a father, and the result is divided by 3, you get the present age of his son. If the son is 14 years old, what is the father’s age?",
+        options: ["36", "40", "42", "48"],
+        answer: 3,
+        explanation: "Let father's age = x. (x - 6)/3 = 14 ⇒ x - 6 = 42 ⇒ x = 48."
+      },
+      {
+        q: "Ten years ago, the ratio of ages of A and B was 1:2. After 10 years, the ratio will become 3:4. What is A's present age?",
+        options: ["20", "30", "40", "50"],
+        answer: 0,
+        explanation: "Let 10 years ago A = x, B = 2x ⇒ Present: A = x+10, B = 2x+10. 10 years later: (x+20)/(2x+20) = 3/4 ⇒ x = 10 ⇒ A = 20."
+      },
+
+      // Tough (10)
+      {
+        question: "A man is 24 years older than his son. In 2 years, his age will be twice that of his son. What is the current age of the son?",
+        options: ["20", "22", "24", "26"],
+        answer: 0,
+        explanation: "Let son = x → man = x + 24. x+2 × 2 = x+24+2 → 2x + 4 = x + 26 → x = 22."
+      },
+      {
+        question: "The sum of ages of A, B, and C is 90 years. If the average age of A and B is 30, what is the age of C?",
+        options: ["25", "30", "35", "40"],
+        answer: 1,
+        explanation: "A + B = 60 → So C = 90 - 60 = 30."
+      },
+      {
+        question: "The ages of A and B are in the ratio 4:5. After 8 years, the ratio becomes 5:6. What is B’s current age?",
+        options: ["32", "36", "40", "44"],
+        answer: 2,
+        explanation: "Let 4x and 5x be ages. (4x+8)/(5x+8) = 5/6 → Solve → x = 8 → B = 5x = 40."
+      },
+      {
+        question: "A father’s age is 4 times his son’s age. After 20 years, he will be only twice as old. What is the father’s current age?",
+        options: ["40", "44", "48", "50"],
+        answer: 2,
+        explanation: "Let son = x → father = 4x. After 20 years: 4x+20 = 2(x+20) → 4x+20 = 2x+40 → x = 10 → father = 40."
+      },
+      {
+        question: "The sum of the present ages of a father and his son is 60. Five years ago, the father's age was four times the son's. What is the father’s present age?",
+        options: ["38", "40", "42", "44"],
+        answer: 1,
+        explanation: "Let father = x, son = 60 - x. x - 5 = 4((60 - x) - 5) → x = 40."
+      },
+      {
+        question: "Ten years ago, the ages of A and B were in the ratio 3:4. After 10 years, their ages will be in the ratio 7:8. What is A’s present age?",
+        options: ["30", "32", "34", "36"],
+        answer: 3,
+        explanation: "Let ages be 3x, 4x ten years ago. Now: 3x+10, 4x+10 = 7:8 → Solve: x = 8 → A = 3x+10 = 34."
+      },
+      {
+        question: "If the difference of the squares of ages of two persons is 336 and the difference of their ages is 4 years, find the sum of their ages.",
+        options: ["40", "44", "48", "52"],
+        answer: 2,
+        explanation: "(a^2 - b^2) = (a - b)(a + b) = 4 × sum = 336 → sum = 84."
+      },
+      {
+        question: "A person’s present age is one-third of his father’s age. After 5 years, the father's age will be twice his son’s. Find the father's age.",
+        options: ["45", "50", "55", "60"],
+        answer: 3,
+        explanation: "Let son's age = x → father = 3x. After 5 years: 3x+5 = 2(x+5) → x = 10 → father = 30."
+      },
+      {
+        question: "The average age of a family of 5 people is 24 years. If the age of the youngest member is 8, what is the average age of the family excluding the youngest?",
+        options: ["26", "28", "30", "32"],
+        answer: 0,
+        explanation: "Total = 5×24 = 120. Remaining = 112 → Average = 112/4 = 28."
+      },
+      {
+        question: "Age of a father is three times that of his son. Five years ago, the father was four times his son’s age. What is the son’s current age?",
+        options: ["10", "12", "15", "18"],
+        answer: 1,
+        explanation: "Let son = x, father = 3x. 3x - 5 = 4(x - 5) → 3x - 5 = 4x - 20 → x = 15."
+      },
+    ];
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
