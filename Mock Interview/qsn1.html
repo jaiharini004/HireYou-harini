@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HR Interview – Tell me about yourself</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h2 {
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 15px 25px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    #startBtn {
+      background-color: #0044cc;
+      color: white;
+    }
+
+    #stopBtn {
+      background-color: #cc0000;
+      color: white;
+    }
+
+    #transcriptBox {
+      margin-top: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      width: 80%;
+      text-align: left;
+    }
+
+    audio {
+      margin-top: 10px;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+
+    /* Text input section */
+    #textInputSection {
+      margin-top: 20px;
+      width: 80%;
+      text-align: left;
+    }
+
+    #textAnswer {
+      width: 100%;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    #textSubmit {
+      background: #0066ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Answer the Question: "Tell me about yourself"</h2>
+  <div>
+    <button id="startBtn">🎙️ Start Recording</button>
+    <button id="stopBtn">⏹️ Stop Recording</button>
+  </div>
+  <audio id="audioPlayback" controls></audio>
+
+  <div id="textInputSection">
+    <label class="label" for="textAnswer">Or type your answer:</label><br>
+    <textarea id="textAnswer" rows="4"></textarea><br>
+    <button id="textSubmit">Submit Text</button>
+  </div>
+
+  <div id="transcriptBox">
+    <p><span class="label">Transcript:</span> <span id="transcriptText">...</span></p>
+    <p><span class="label">Feedback:</span> <span id="feedbackText">Waiting for input...</span></p>
+  </div>
+
+  <script>
+    let mediaRecorder;
+    let audioChunks = [];
+    let recognition;
+    let finalTranscript = "";
+
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const audioPlayback = document.getElementById("audioPlayback");
+    const transcriptText = document.getElementById("transcriptText");
+    const feedbackText = document.getElementById("feedbackText");
+    const textAnswer = document.getElementById("textAnswer");
+    const textSubmit = document.getElementById("textSubmit");
+
+    // Start recording & recognition
+    startBtn.onclick = async () => {
+      finalTranscript = "";
+      transcriptText.textContent = "...listening";
+      feedbackText.textContent = "Recording your answer...";
+
+      // Audio setup
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks);
+        audioPlayback.src = URL.createObjectURL(audioBlob);
+      };
+      mediaRecorder.start();
+
+      // Speech recognition setup
+      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-IN';
+      recognition.interimResults = false;
+      recognition.continuous = true;
+
+      // Append each final chunk
+      recognition.onresult = (event) => {
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript + " ";
+          }
+        }
+      };
+
+      recognition.onerror = () => {
+        transcriptText.textContent = "Could not recognize speech.";
+        feedbackText.textContent = "Please speak clearly and try again.";
+      };
+
+      recognition.start();
+    };
+
+    // Stop recording & then validate
+    stopBtn.onclick = () => {
+      if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+      }
+      if (recognition) {
+        recognition.stop();
+        recognition.onend = () => {
+          const txt = finalTranscript.trim() || "Could not capture anything.";
+          transcriptText.textContent = txt;
+          giveFeedback(txt);
+        };
+      }
+    };
+
+    // Text input submission
+    textSubmit.onclick = () => {
+      const userText = textAnswer.value.trim();
+      if (!userText) {
+        feedbackText.textContent = "Please type something first.";
+        return;
+      }
+      transcriptText.textContent = userText;
+      giveFeedback(userText);
+    };
+
+    // Feedback logic
+    function giveFeedback(transcript) {
+      const lower = transcript.toLowerCase();
+      let feedback = "";
+
+      if (lower.includes("student") || lower.includes("learning")) {
+        feedback = "Nice! Talk about your education and projects next.";
+      } else if (lower.includes("data") || lower.includes("ai") || lower.includes("python")) {
+        feedback = "Great! You mentioned your tech stack — maybe add your goals.";
+      } else if (lower.length < 10) {
+        feedback = "Hmm... didn't catch much. Try speaking more clearly.";
+      } else {
+        feedback = "Good start! You can now add your strengths and career goals.";
+      }
+      feedbackText.textContent = feedback;
+    }
+  </script>
+</body>
+</html>
