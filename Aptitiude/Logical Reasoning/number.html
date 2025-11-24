@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Numbers Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    button:disabled {
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-3xl w-full">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">🔢 Numbers Quiz</h1>
+    <div id="quiz-container"></div>
+    <div class="text-center mt-6">
+      <button id="next-btn" class="hidden px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition">Next Question</button>
+    </div>
+    <div id="score-section" class="hidden text-center mt-8 text-xl font-semibold text-green-600">
+      <p id="score-text" class="mb-4"></p>
+      </div>
+  </div>
+
+  <script>
+    const quizData = [
+        {
+             question: "What comes next in the series: 2, 4, 6, 8, ?", options: ["9", "10", "12", "14"], answer: 1, explanation: "Each number increases by 2: 8 + 2 = 10" },
+{ question: "What comes next in the series: 1, 4, 9, 16, ?", options: ["20", "24", "25", "30"], answer: 2, explanation: "These are perfect squares: 1², 2², 3², 4², so next is 5² = 25" },
+{ question: "What comes next in the series: 3, 6, 12, 24, ?", options: ["30", "36", "42", "48"], answer: 3, explanation: "Each number doubles the previous one: 24 × 2 = 48" },
+{ question: "What comes next: 5, 10, 15, 20, ?", options: ["22", "23", "25", "30"], answer: 2, explanation: "This is a +5 pattern: 20 + 5 = 25" },
+{ question: "Find the next number in: 2, 3, 5, 8, 12, ?", options: ["16", "17", "18", "20"], answer: 1, explanation: "Add 1, 2, 3, 4... to previous term. 12 + 5 = 17" },
+{ question: "Complete the series: 81, 27, 9, 3, ?", options: ["0", "2", "1", "4"], answer: 2, explanation: "Each term is divided by 3. So, 3 ÷ 3 = 1" },
+{ question: "What comes next: 7, 14, 28, 56, ?", options: ["84", "108", "112", "120"], answer: 2, explanation: "Each number is multiplied by 2. 56 × 2 = 112" },
+{ question: "Find the missing number: 6, 11, 21, 36, ?", options: ["56", "57", "58", "60"], answer: 1, explanation: "Add 5, 10, 15... (increase by 5). 36 + 21 = 57" },
+{ question: "Find the next number: 2, 6, 12, 20, 30, ?", options: ["40", "42", "44", "46"], answer: 1, explanation: "Add 4, 6, 8, 10, 12... so 30 + 12 = 42" },
+{ question: "What comes next: 1, 2, 6, 24, 120, ?", options: ["720", "240", "360", "600"], answer: 0, explanation: "This is factorials: 6! = 720" },
+{ question: "Find the next term: 13, 16, 22, 31, 43, ?", options: ["56", "57", "58", "60"], answer: 2, explanation: "Differences: +3, +6, +9, +12, +15 → 43 + 15 = 58" },
+{ question: "What comes next: 4, 9, 19, 39, ?", options: ["69", "79", "89", "99"], answer: 1, explanation: "Multiply by 2 and add 1: 39 × 2 + 1 = 79" },
+{ question: "What comes next in the series: 1, 2, 3, 5, 8, ?", options: ["11", "12", "13", "15"], answer: 2, explanation: "Fibonacci series: 3+5=8, 5+8=13" },
+{ question: "What is the next number in: 2, 4, 8, 16, ?", options: ["18", "20", "32", "30"], answer: 2, explanation: "Powers of 2: 2^1, 2^2, 2^3, 2^4 → 2^5 = 32" },
+{ question: "Complete the series: 1, 4, 9, 16, 25, ?", options: ["35", "36", "38", "40"], answer: 1, explanation: "Perfect squares: 6² = 36" },
+{ question: "What comes next in: 2, 5, 10, 17, 26, ?", options: ["35", "36", "37", "38"], answer: 2, explanation: "Add 3,5,7,9… (odd numbers). 26+11=37" },
+{ question: "Find the missing number: 3, 6, 11, 18, 27, ?", options: ["35", "36", "37", "38"], answer: 1, explanation: "Add 3, 5, 7, 9, 11... → 27+9=36" },
+{ question: "What comes next: 100, 97, 93, 88, ?", options: ["82", "80", "78", "84"], answer: 3, explanation: "Subtractions: -3, -4, -5... → 88-6=82" },
+{ question: "What is the next number: 121, 100, 81, 64, ?", options: ["49", "46", "45", "44"], answer: 0, explanation: "Perfect squares decreasing: 11², 10²... → 7²=49" },
+{ question: "What comes next: 0, 1, 1, 2, 3, 5, 8, ?", options: ["11", "12", "13", "14"], answer: 2, explanation: "Fibonacci: 5+8=13" },
+{ question: "Find the next number: 10, 20, 30, 50, 80, ?", options: ["110", "120", "130", "140"], answer: 1, explanation: "Add 10,10,20,30 → next +40 → 80+40=120" },
+{ question: "Complete the series: 1, 8, 27, 64, ?", options: ["100", "125", "150", "175"], answer: 1, explanation: "Cubes: 1³, 2³, 3³, 4³, 5³=125" },
+{ question: "What comes next in: 1, 3, 7, 15, 31, ?", options: ["63", "64", "65", "66"], answer: 0, explanation: "×2 + 1 each step: 31×2+1=63" },
+{ question: "Find the next term: 5, 11, 23, 47, ?", options: ["94", "95", "96", "97"], answer: 1, explanation: "Multiply previous by 2 and subtract 1: 47×2–1=93" },
+{ question: "Complete the pattern: 2, 3, 5, 7, 11, ?", options: ["13", "14", "15", "17"], answer: 0, explanation: "Prime numbers → next prime after 11 is 13" }
+
+
+        
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDiv = document.getElementById('score-section');
+    const scoreText = document.getElementById('score-text');
+
+    function renderQuestion() {
+      const q = quizData[currentIndex];
+      container.innerHTML = `
+        <h2 class="text-2xl font-semibold text-purple-700 mb-4">Q${currentIndex + 1}. ${q.question}</h2>
+        <div class="grid grid-cols-1 gap-4">
+          ${q.options.map((opt, i) => `
+            <button class="option px-4 py-2 rounded-xl border border-gray-300 hover:bg-purple-100" data-index="${i}">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="explanation" class="mt-4 text-green-600 font-medium hidden"></div>
+      `;
+
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selected = parseInt(e.target.getAttribute('data-index'));
+          const correct = quizData[currentIndex].answer;
+          document.querySelectorAll('.option').forEach((b, i) => {
+            if (i === correct) b.classList.add('bg-green-200');
+            else if (i === selected) b.classList.add('bg-red-200');
+            b.disabled = true;
+          });
+
+          if (selected === correct) score += 2;
+          const exp = document.getElementById('explanation');
+          exp.textContent = quizData[currentIndex].explanation;
+          exp.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+        });
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      nextBtn.classList.add('hidden');
+      if (currentIndex < quizData.length) {
+        renderQuestion();
+      } else {
+        container.innerHTML = '';
+        scoreDiv.classList.remove('hidden');
+        scoreText.textContent = `✅ You scored ${score} out of ${quizData.length * 2}`;
+      }
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
