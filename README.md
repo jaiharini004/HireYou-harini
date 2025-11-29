@@ -15,3 +15,6 @@ Next comes the main round "HR INTERVIEW" which makes my user to learn how to ans
 Buddy Yeah You got that Right ! HireYou is to train the users in all means including aptitudes, syllabus, technical knowledge, listening and speaking skills. 
 
 Now, You can just open "index.html" and start using my website and I hope you all will really get benefited from this !
+
+DEMO😁 !!
+link: legendary-pothos-6e44d0.netlify.app
