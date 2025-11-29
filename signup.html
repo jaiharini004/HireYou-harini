@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sign Up</title>
+</head>
+<body>
+  <h2>Sign Up</h2>
+  <form onsubmit="signup(event)">
+    <input type="text" id="newUsername" placeholder="Username" required><br>
+    <input type="password" id="newPassword" placeholder="Password" required><br>
+    <button type="submit">Sign Up</button>
+  </form>
+
+  <script>
+    function signup(e) {
+      e.preventDefault();
+      const username = document.getElementById("newUsername").value;
+      const password = document.getElementById("newPassword").value;
+
+      const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+
+      const alreadyExists = existingUsers.find(user => user.username === username);
+      if (alreadyExists) {
+        alert("Username already exists!");
+        return;
+      }
+
+      existingUsers.push({ username, password });
+      localStorage.setItem("users", JSON.stringify(existingUsers));
+
+      alert("Signup successful! Please login.");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
