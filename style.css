@@ -1,0 +1,71 @@
+  body {
+    margin: 0;
+    background-image: url(videos/login2.png);
+    background-size: cover;
+    background-position: center;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  /*VIDEO PAGE*/
+  .video-page {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    background: black; /* optional: fill gaps if video doesn't fully cover */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  .video-page video {
+    height: 100%;
+    width: 100%;
+    object-fit: contain; /* Keeps aspect ratio, centers video */
+  }
+  
+/* Login form with background image and green border */
+.login-form {
+  padding: 40px;
+  border: 3px ;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+/* Inputs and button on top of image */
+.login-form input,
+.login-form button {
+  width: 250px;
+  padding: 12px;
+  margin: 10px 0;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 2px line;
+  background: rgb(246, 255, 208);
+  color: rgb(2, 47, 29);
+}
+
+.login-form input::placeholder {
+  color: #555;
+}
+
+.login-form button {
+  background-color: rgb(4, 94, 84);
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.login-form button:hover {
+  background-color: rgb(4, 101, 85);
+}

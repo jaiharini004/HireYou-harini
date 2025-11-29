@@ -1,0 +1,48 @@
+body {
+    background-color: #94d5d5; /* light pink background */
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .quant-title {
+    font-size: 2.25rem; /* Tailwind's text-4xl */
+    font-weight: 700;   /* Tailwind's font-bold */
+    color: #095141;     /* Tailwind's text-pink-700 */
+    margin-bottom: 2.5rem; /* Tailwind's mb-10 */
+    text-align: center;
+  }
+  
+  
+  .topic-card {
+    background-color: rgb(179, 238, 240); /* dark pink for all cards */
+    border: 2px solid rgb(18, 91, 87);
+    color: rgb(11, 61, 68);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-size: 1.125rem; /* Tailwind's text-lg */
+    font-weight: 600;    /* Tailwind's font-semibold */
+    padding: 1.2rem;     /* Tailwind's p-6 */
+    border-radius: 0.5rem; /* Tailwind's rounded-lg */
+    text-align: center;
+  }
+  
+  .topic-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+  }
+  
+  .back-button {
+    background-color: #1f739a;
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 20px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .back-button:hover {
+    background-color: #5babbd;
+  }
+  
