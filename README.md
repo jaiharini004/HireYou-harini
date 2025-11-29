@@ -17,4 +17,5 @@ Buddy Yeah You got that Right ! HireYou is to train the users in all means inclu
 Now, You can just open "index.html" and start using my website and I hope you all will really get benefited from this !
 
 DEMO😁 !!
-link: legendary-pothos-6e44d0.netlify.app
+
+link: https://legendary-pothos-6e44d0.netlify.app
